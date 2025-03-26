@@ -12,7 +12,7 @@ using UnityEngine.SceneManagement;
 namespace EFramework.Utility
 {
     /// <summary>
-    /// XPool 提供了一个对象缓存工具集，实现了基础对象池、Unity 游戏对象池和字节流缓冲池。支持线程安全的对象复用、预制体实例管理和高性能字节缓冲。
+    /// XPool 提供了一个对象缓存工具集，实现了基础对象池、Unity 游戏对象池和字节流缓冲池。
     /// </summary>
     /// <remarks>
     /// <code>
