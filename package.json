@@ -1,7 +1,7 @@
 {
   "name": "org.eframework.u3d.util",
-  "displayName": "EFramework Utility",
-  "description": "U3D.UTIL 提供了配置管理、任务调度、日志记录、事件系统、文件处理等基础功能模块。",
+  "displayName": "EFramework Utility for Unity",
+  "description": "EFramework Utility for Unity 提供了配置管理、任务调度、日志记录、事件系统、文件处理等基础功能模块。",
   "version": "0.0.1",
   "unity": "2021.3",
   "license": "MIT",
