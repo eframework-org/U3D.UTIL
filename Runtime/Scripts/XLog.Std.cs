@@ -109,7 +109,7 @@ namespace EFramework.Utility
 
         internal partial class StdAdapter
         {
-            public class Prefs : XPrefs.IPanel
+            public class Prefs : XPrefs.Panel
             {
                 public const string Config = "Log/Std";
 

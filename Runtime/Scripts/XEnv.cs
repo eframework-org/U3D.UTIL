@@ -420,7 +420,7 @@ namespace EFramework.Utility
         /// - Secret：密钥
         /// - Remote：远程配置地址
         /// </remarks>
-        public class Prefs : XPrefs.IPanel
+        public class Prefs : XPrefs.Panel
         {
 #if UNITY_EDITOR
             [UnityEditor.InitializeOnLoadMethod]

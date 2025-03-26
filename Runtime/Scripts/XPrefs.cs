@@ -1429,7 +1429,7 @@ namespace EFramework.Utility
     public partial class XPrefs
     {
         /// <summary>
-        /// 配置编辑面板基类，提供配置的可视化编辑功能。
+        /// 配置编辑面板接口，定义配置的可视化编辑功能。
         /// </summary>
         /// <remarks>
         /// 功能特点：
@@ -1438,38 +1438,111 @@ namespace EFramework.Utility
         /// 3. 支持折叠/展开配置组
         /// 4. 支持自定义显示顺序
         /// </remarks>
-        public class IPanel : ScriptableObject
+        public interface IPanel
         {
             /// <summary>
-            /// 配置节名称
+            /// 获取或设置目标配置对象。
+            /// </summary>
+            IBase Target { get; set; }
+
+            /// <summary>
+            /// 获取配置节名称。
+            /// </summary>
+            string Section { get; }
+
+            /// <summary>
+            /// 获取提示信息。
+            /// </summary>
+            string Tooltip { get; }
+
+            /// <summary>
+            /// 获取是否可折叠。
+            /// </summary>
+            bool Foldable { get; }
+
+            /// <summary>
+            /// 获取显示优先级。
+            /// </summary>
+            int Priority { get; }
+
+            /// <summary>
+            /// 面板激活时调用。
+            /// </summary>
+            /// <param name="searchContext">搜索上下文。</param>
+            /// <param name="rootElement">根元素。</param>
+            void OnActivate(string searchContext, VisualElement rootElement);
+
+            /// <summary>
+            /// 面板可视化时调用。
+            /// </summary>
+            /// <param name="searchContext">搜索上下文。</param>
+            void OnVisualize(string searchContext);
+
+            /// <summary>
+            /// 面板停用时调用。
+            /// </summary>
+            void OnDeactivate();
+
+            /// <summary>
+            /// 保存配置时调用。
+            /// </summary>
+            void OnSave();
+
+            /// <summary>
+            /// 应用配置时调用。
+            /// </summary>
+            void OnApply();
+
+            /// <summary>
+            /// 验证配置是否有效。
+            /// </summary>
+            /// <returns>是否有效。</returns>
+            bool Validate();
+
+            /// <summary>
+            /// 显示标题。
+            /// </summary>
+            /// <param name="text">标题文本。</param>
+            /// <param name="tooltip">提示信息。</param>
+            /// <param name="width">宽度，-1 表示使用默认宽度。</param>
+            void Title(string text, string tooltip = "", int width = -1);
+        }
+
+        /// <summary>
+        /// 配置编辑面板基类，提供配置的可视化编辑功能。
+        /// </summary>
+        public class Panel : ScriptableObject, IPanel
+        {
+            /// <summary>
+            /// 配置节名称。
             /// </summary>
             private readonly string section;
 
             /// <summary>
-            /// 配置节提示信息
+            /// 配置节提示信息。
             /// </summary>
             private readonly string tooltip;
 
             /// <summary>
-            /// 是否支持折叠
+            /// 是否支持折叠。
             /// </summary>
             private readonly bool foldable = true;
 
             /// <summary>
-            /// 显示优先级
+            /// 显示优先级。
             /// </summary>
             private readonly int priority;
 
-            public IPanel() { }
+            public Panel() { }
 
             /// <summary>
-            /// 初始化配置面板
+            /// 初始化配置面板。
             /// </summary>
-            /// <param name="section">配置节名称</param>
-            /// <param name="tooltip">提示信息</param>
-            /// <param name="foldable">是否可折叠</param>
-            /// <param name="priority">显示优先级</param>
-            public IPanel(string section, string tooltip = "", bool foldable = true, int priority = 0)
+            /// <param name="section">配置节名称。</param>
+            /// <param name="tooltip">提示信息。</param>
+            /// <param name="foldable">是否可折叠。</param>
+            /// <param name="priority">显示优先级。</param>
+            public Panel(string section, string tooltip = "", bool foldable = true, int priority = 0)
             {
                 this.section = section;
                 this.tooltip = tooltip;
@@ -1478,27 +1551,27 @@ namespace EFramework.Utility
             }
 
             /// <summary>
-            /// 获取或设置目标配置对象
+            /// 获取或设置目标配置对象。
             /// </summary>
             public virtual IBase Target { get; set; }
 
             /// <summary>
-            /// 获取配置节名称
+            /// 获取配置节名称。
             /// </summary>
             public virtual string Section => section;
 
             /// <summary>
-            /// 获取提示信息
+            /// 获取提示信息。
             /// </summary>
             public virtual string Tooltip => tooltip;
 
             /// <summary>
-            /// 获取是否可折叠
+            /// 获取是否可折叠。
             /// </summary>
             public virtual bool Foldable => foldable;
 
             /// <summary>
-            /// 获取显示优先级
+            /// 获取显示优先级。
             /// </summary>
             public virtual int Priority => priority;
 

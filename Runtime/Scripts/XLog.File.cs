@@ -406,7 +406,7 @@ namespace EFramework.Utility
                     newPath = XFile.NormalizePath(newPath);
                     File.Move(path, newPath);
 
-                RESTART_LOGGER:
+RESTART_LOGGER:
                     NewWriter();
                     currentLines = 0;
                     currentSize = 0;
@@ -470,7 +470,7 @@ namespace EFramework.Utility
 
         internal partial class FileAdapter
         {
-            public class Prefs : XPrefs.IPanel
+            public class Prefs : XPrefs.Panel
             {
                 public const string Config = "Log/File";
 
