@@ -5,7 +5,7 @@
 //#region XObject
 const XObjectThis = "__xobject_this"
 
-CS.U3D.UTIL.XObject.This = function () {
+CS.EFramework.Utility.XObject.This = function () {
     return function (target, propertyKey) {
         target[XObjectThis] = target[XObjectThis] || new Array()
         target[XObjectThis].push(propertyKey)
@@ -50,12 +50,12 @@ function HashCode(obj) {
     return Math.abs(hash)
 }
 
-CS.U3D.UTIL.XObject.HashCode = HashCode
-CS.U3D.UTIL.XObject.TypeOf = puer.$typeof
+CS.EFramework.Utility.XObject.HashCode = HashCode
+CS.EFramework.Utility.XObject.TypeOf = puer.$typeof
 //#endregion
 
 //#region XString
-CS.U3D.UTIL.XString.Format = function (fmt, ...args) {
+CS.EFramework.Utility.XString.Format = function (fmt, ...args) {
     if (fmt) {
         if (args.length > 0) {
             let index = 0
@@ -93,16 +93,16 @@ CS.U3D.UTIL.XString.Format = function (fmt, ...args) {
 //#endregion
 
 //#region XLog
-const _Emergency = CS.U3D.UTIL.XLog.Emergency
-const _Alert = CS.U3D.UTIL.XLog.Alert
-const _Critical = CS.U3D.UTIL.XLog.Critical
-const _Error = CS.U3D.UTIL.XLog.Error
-const _Warn = CS.U3D.UTIL.XLog.Warn
-const _Notice = CS.U3D.UTIL.XLog.Notice
-const _Info = CS.U3D.UTIL.XLog.Info
-const _Debug = CS.U3D.UTIL.XLog.Debug
+const _Emergency = CS.EFramework.Utility.XLog.Emergency
+const _Alert = CS.EFramework.Utility.XLog.Alert
+const _Critical = CS.EFramework.Utility.XLog.Critical
+const _Error = CS.EFramework.Utility.XLog.Error
+const _Warn = CS.EFramework.Utility.XLog.Warn
+const _Notice = CS.EFramework.Utility.XLog.Notice
+const _Info = CS.EFramework.Utility.XLog.Info
+const _Debug = CS.EFramework.Utility.XLog.Debug
 
-const isDebug = CS.U3D.UTIL.XEnv.Mode == CS.U3D.UTIL.XEnv.ModeType.Dev ||
+const isDebug = CS.EFramework.Utility.XEnv.Mode == CS.EFramework.Utility.XEnv.ModeType.Dev ||
     CS.UnityEngine.Debug.isDebugBuild ||
     CS.UnityEngine.Application.isEditor
 
@@ -129,7 +129,7 @@ function genTrace() {
     return ""
 }
 
-CS.U3D.UTIL.XLog.Emergency = function (...args) {
+CS.EFramework.Utility.XLog.Emergency = function (...args) {
     if (isDebug) {
         if (args != null && args.length > 0 && typeof (args[0]) == "string") {
             args[0] += "\n" + genTrace()
@@ -138,7 +138,7 @@ CS.U3D.UTIL.XLog.Emergency = function (...args) {
     _Emergency(...args)
 }
 
-CS.U3D.UTIL.XLog.Alert = function (...args) {
+CS.EFramework.Utility.XLog.Alert = function (...args) {
     if (isDebug) {
         if (args != null && args.length > 0 && typeof (args[0]) == "string") {
             args[0] += "\n" + genTrace()
@@ -147,7 +147,7 @@ CS.U3D.UTIL.XLog.Alert = function (...args) {
     _Alert(...args)
 }
 
-CS.U3D.UTIL.XLog.Critical = function (...args) {
+CS.EFramework.Utility.XLog.Critical = function (...args) {
     if (isDebug) {
         if (args != null && args.length > 0 && typeof (args[0]) == "string") {
             args[0] += "\n" + genTrace()
@@ -156,7 +156,7 @@ CS.U3D.UTIL.XLog.Critical = function (...args) {
     _Critical(...args)
 }
 
-CS.U3D.UTIL.XLog.Error = function (...args) {
+CS.EFramework.Utility.XLog.Error = function (...args) {
     if (isDebug) {
         if (args != null && args.length > 0 && typeof (args[0]) == "string") {
             args[0] += "\n" + genTrace()
@@ -165,7 +165,7 @@ CS.U3D.UTIL.XLog.Error = function (...args) {
     _Error(...args)
 }
 
-CS.U3D.UTIL.XLog.Warn = function (...args) {
+CS.EFramework.Utility.XLog.Warn = function (...args) {
     if (isDebug) {
         if (args != null && args.length > 0 && typeof (args[0]) == "string") {
             args[0] += "\n" + genTrace()
@@ -174,7 +174,7 @@ CS.U3D.UTIL.XLog.Warn = function (...args) {
     _Warn(...args)
 }
 
-CS.U3D.UTIL.XLog.Notice = function (...args) {
+CS.EFramework.Utility.XLog.Notice = function (...args) {
     if (isDebug) {
         if (args != null && args.length > 0 && typeof (args[0]) == "string") {
             args[0] += "\n" + genTrace()
@@ -183,7 +183,7 @@ CS.U3D.UTIL.XLog.Notice = function (...args) {
     _Notice(...args)
 }
 
-CS.U3D.UTIL.XLog.Info = function (...args) {
+CS.EFramework.Utility.XLog.Info = function (...args) {
     if (isDebug) {
         if (args != null && args.length > 0 && typeof (args[0]) == "string") {
             args[0] += "\n" + genTrace()
@@ -192,7 +192,7 @@ CS.U3D.UTIL.XLog.Info = function (...args) {
     _Info(...args)
 }
 
-CS.U3D.UTIL.XLog.Debug = function (...args) {
+CS.EFramework.Utility.XLog.Debug = function (...args) {
     if (isDebug) {
         if (args != null && args.length > 0 && typeof (args[0]) == "string") {
             args[0] += "\n" + genTrace()
@@ -203,19 +203,19 @@ CS.U3D.UTIL.XLog.Debug = function (...args) {
 //#endregion
 
 //#region XComp
-const _GetTransform = CS.U3D.UTIL.XComp.GetTransform
-const _GetComponent = CS.U3D.UTIL.XComp.GetComponent
-const _GetComponentInParent = CS.U3D.UTIL.XComp.GetComponentInParent
-const _GetComponentInChildren = CS.U3D.UTIL.XComp.GetComponentInChildren
-const _GetComponents = CS.U3D.UTIL.XComp.GetComponents
-const _GetComponentsInParent = CS.U3D.UTIL.XComp.GetComponentsInParent
-const _GetComponentsInChildren = CS.U3D.UTIL.XComp.GetComponentsInChildren
-const _RemoveComponent = CS.U3D.UTIL.XComp.RemoveComponent
-const _AddComponent = CS.U3D.UTIL.XComp.AddComponent
-const _SetComponentEnabled = CS.U3D.UTIL.XComp.SetComponentEnabled
+const _GetTransform = CS.EFramework.Utility.XComp.GetTransform
+const _GetComponent = CS.EFramework.Utility.XComp.GetComponent
+const _GetComponentInParent = CS.EFramework.Utility.XComp.GetComponentInParent
+const _GetComponentInChildren = CS.EFramework.Utility.XComp.GetComponentInChildren
+const _GetComponents = CS.EFramework.Utility.XComp.GetComponents
+const _GetComponentsInParent = CS.EFramework.Utility.XComp.GetComponentsInParent
+const _GetComponentsInChildren = CS.EFramework.Utility.XComp.GetComponentsInChildren
+const _RemoveComponent = CS.EFramework.Utility.XComp.RemoveComponent
+const _AddComponent = CS.EFramework.Utility.XComp.AddComponent
+const _SetComponentEnabled = CS.EFramework.Utility.XComp.SetComponentEnabled
 const MonoBehaviour = CS.UnityEngine.MonoBehaviour
 
-CS.U3D.UTIL.XComp.GetComponent = function (parentObj, pathOrType, typeOrAttach = false, attachIfMissing = false) {
+CS.EFramework.Utility.XComp.GetComponent = function (parentObj, pathOrType, typeOrAttach = false, attachIfMissing = false) {
     if (typeof pathOrType === "string") {
         let root = _GetTransform(parentObj, pathOrType)
         if (typeof typeOrAttach === "function") return getComponent(root.gameObject, typeOrAttach, attachIfMissing)
@@ -226,7 +226,7 @@ CS.U3D.UTIL.XComp.GetComponent = function (parentObj, pathOrType, typeOrAttach =
     }
 }
 
-CS.U3D.UTIL.XComp.GetComponentInParent = function (parentObj, pathOrType, typeOrInclude = false, includeInactive = false) {
+CS.EFramework.Utility.XComp.GetComponentInParent = function (parentObj, pathOrType, typeOrInclude = false, includeInactive = false) {
     if (typeof pathOrType === "string") {
         let root = _GetTransform(parentObj, pathOrType)
         if (typeof typeOrInclude === "function") return getComponentInParent(root.gameObject, typeOrInclude, includeInactive)
@@ -237,7 +237,7 @@ CS.U3D.UTIL.XComp.GetComponentInParent = function (parentObj, pathOrType, typeOr
     }
 }
 
-CS.U3D.UTIL.XComp.GetComponentInChildren = function (parentObj, pathOrType, typeOrInclude = false, includeInactive = false) {
+CS.EFramework.Utility.XComp.GetComponentInChildren = function (parentObj, pathOrType, typeOrInclude = false, includeInactive = false) {
     if (typeof pathOrType === "string") {
         let root = _GetTransform(parentObj, pathOrType)
         if (typeof typeOrInclude === "function") return getComponentInChildren(root.gameObject, typeOrInclude, includeInactive)
@@ -248,7 +248,7 @@ CS.U3D.UTIL.XComp.GetComponentInChildren = function (parentObj, pathOrType, type
     }
 }
 
-CS.U3D.UTIL.XComp.GetComponents = function (parentObj, pathOrType, type) {
+CS.EFramework.Utility.XComp.GetComponents = function (parentObj, pathOrType, type) {
     if (typeof pathOrType === "string") {
         let root = _GetTransform(parentObj, pathOrType)
         if (typeof type === "function") return getComponents(root.gameObject, type)
@@ -259,7 +259,7 @@ CS.U3D.UTIL.XComp.GetComponents = function (parentObj, pathOrType, type) {
     }
 }
 
-CS.U3D.UTIL.XComp.GetComponentsInParent = function (parentObj, pathOrType, typeOrInclude = false, includeInactive = false) {
+CS.EFramework.Utility.XComp.GetComponentsInParent = function (parentObj, pathOrType, typeOrInclude = false, includeInactive = false) {
     if (typeof pathOrType === "string") {
         let root = _GetTransform(parentObj, pathOrType)
         if (typeof typeOrInclude === "function") return getComponentsInParent(root.gameObject, typeOrInclude)
@@ -270,7 +270,7 @@ CS.U3D.UTIL.XComp.GetComponentsInParent = function (parentObj, pathOrType, typeO
     }
 }
 
-CS.U3D.UTIL.XComp.GetComponentsInChildren = function (parentObj, pathOrType, typeOrInclude = false, includeInactive = false) {
+CS.EFramework.Utility.XComp.GetComponentsInChildren = function (parentObj, pathOrType, typeOrInclude = false, includeInactive = false) {
     if (typeof pathOrType === "string") {
         let root = _GetTransform(parentObj, pathOrType)
         if (typeof typeOrInclude === "function") return getComponentsInChildren(root.gameObject, typeOrInclude)
@@ -281,7 +281,7 @@ CS.U3D.UTIL.XComp.GetComponentsInChildren = function (parentObj, pathOrType, typ
     }
 }
 
-CS.U3D.UTIL.XComp.RemoveComponent = function (parentObj, pathOrType, typeOrImmediate = false, immediate = false) {
+CS.EFramework.Utility.XComp.RemoveComponent = function (parentObj, pathOrType, typeOrImmediate = false, immediate = false) {
     if (typeof pathOrType === "string") {
         let root = _GetTransform(parentObj, pathOrType)
         if (typeof typeOrImmediate === "function") return removeComponent(root.gameObject, typeOrImmediate, immediate)
@@ -292,7 +292,7 @@ CS.U3D.UTIL.XComp.RemoveComponent = function (parentObj, pathOrType, typeOrImmed
     }
 }
 
-CS.U3D.UTIL.XComp.AddComponent = function (parentObj, pathOrType, type) {
+CS.EFramework.Utility.XComp.AddComponent = function (parentObj, pathOrType, type) {
     if (typeof pathOrType === "string") {
         if (typeof type === "function") return MonoBehaviour.Add(parentObj, pathOrType, type)
         else return _AddComponent(root, type)
@@ -302,7 +302,7 @@ CS.U3D.UTIL.XComp.AddComponent = function (parentObj, pathOrType, type) {
     }
 }
 
-CS.U3D.UTIL.XComp.SetComponentEnabled = function (parentObj, pathOrType, typeOrEnabled, enabled) {
+CS.EFramework.Utility.XComp.SetComponentEnabled = function (parentObj, pathOrType, typeOrEnabled, enabled) {
     if (typeof pathOrType === "string") {
         let root = _GetTransform(parentObj, pathOrType)
         if (typeof typeOrEnabled === "function") return setComponentEnabled(root.gameObject, typeOrEnabled, enabled)
@@ -383,8 +383,8 @@ function setComponentEnabled(obj, type, enabled) {
 //#endregion
 
 //#region XEvent
-const XLog = CS.U3D.UTIL.XLog
-const XEvent = CS.U3D.UTIL.XEvent
+const XLog = CS.EFramework.Utility.XLog
+const XEvent = CS.EFramework.Utility.XEvent
 const Manager = XEvent.Manager
 
 XEvent.Manager = class {
