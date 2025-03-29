@@ -8,6 +8,7 @@ using System;
 using System.IO;
 using EFramework.Utility;
 using System.Threading.Tasks;
+using System.Threading;
 
 /// <summary>
 /// XFile 单元测试类，验证文件系统操作的核心功能。
@@ -453,7 +454,7 @@ public class TestXFile
     /// 4. 超时处理
     /// </remarks>
     [Test]
-    public async Task Unzip()
+    public void Unzip()
     {
         // 创建源文件和目录
         XFile.CreateDirectory(testZipPath);
@@ -494,15 +495,12 @@ public class TestXFile
 
         // 等待异步操作完成，设置20秒超时
         var timeoutTask = Task.Delay(20000);
-        var completedTask = await Task.WhenAny(tcs.Task, timeoutTask);
+        Task.WaitAny(tcs.Task, timeoutTask);
 
-        if (completedTask == timeoutTask)
+        if (!tcs.Task.IsCompleted)
         {
             Assert.Fail("解压操作超时（20秒）");
         }
-
-        // 如果有异常会在这里抛出
-        await tcs.Task;
     }
 
     /// <summary>

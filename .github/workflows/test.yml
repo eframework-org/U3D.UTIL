@@ -61,13 +61,13 @@ jobs:
           testMode: ${{ matrix.testMode }}
           artifactsPath: Results
           githubToken: ${{ secrets.GITHUB_TOKEN }}
-          checkName: 测试 ${{ matrix.testMode }} 报告
+          checkName: 测试 ${{ matrix.unityVersion }}.${{ matrix.testMode }} 报告
           useHostNetwork: true
 
       - name: 上传报告
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: Test.${{ matrix.unityVersion }}.${{ matrix.testMode }}.Reports
+          name: Test.${{ matrix.unityVersion }}.${{ matrix.testMode }}.#${{ github.run_number }}.Reports
           path: ${{ steps.tests.outputs.artifactsPath }}
           retention-days: 14
