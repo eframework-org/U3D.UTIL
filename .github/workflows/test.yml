@@ -32,7 +32,7 @@ jobs:
       matrix:
         projectPath:
           - Package
-        unityVersion: [2021.3.30f1, 6000.0.32f1]
+        unityVersion: [2020.3.48f1, 2021.3.30f1, 2021.3.50f1, 2022.3.60f1, 6000.0.32f1]
         testMode: [PlayMode]
     outputs:
       passed: ${{ steps.tests.conclusion == 'success' }}
@@ -68,6 +68,6 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: Test.${{ matrix.unityVersion }}.${{ matrix.testMode }}.#${{ github.run_number }}.Reports
+          name: Test#${{ github.run_number }}.${{ matrix.unityVersion }}.${{ matrix.testMode }}.Reports
           path: ${{ steps.tests.outputs.artifactsPath }}
           retention-days: 14
