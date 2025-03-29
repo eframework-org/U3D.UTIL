@@ -3,11 +3,16 @@ name: 单元测试
 on:
   workflow_dispatch:
     inputs:
-      unity_versions:
-        description: 'Unity版本号，JSON数组格式（如：["2021.3.30f1", "6000.0.32f1"]）'
+      unityVersions:
+        description: 'Unity 版本号'
         required: false
         type: string
         default: '["2021.3.30f1", "2022.3.60f1", "6000.0.32f1"]'
+      playModes:
+        description: '测试模式'
+        required: false
+        type: string
+        default: '["PlayMode"]'
   workflow_call:
     outputs:
       test_passed:
@@ -38,8 +43,8 @@ jobs:
       matrix:
         projectPath:
           - Package
-        unityVersion: ${{ fromJson(github.event.inputs.unity_versions) }}
-        testMode: [PlayMode]
+        unityVersion: ${{ fromJson(github.event.inputs.unityVersions) }}
+        testMode: ${{ fromJson(github.event.inputs.playModes) }}
     outputs:
       passed: ${{ steps.tests.conclusion == 'success' }}
 
