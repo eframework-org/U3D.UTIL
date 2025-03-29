@@ -9,7 +9,7 @@ on:
         type: string
         default: '["2021.3.30f1", "2022.3.60f1", "6000.0.32f1"]'
       playModes:
-        description: '测试模式：EditMode/PlayMode/Standalone'
+        description: '测试模式：EditMode/PlayMode'
         required: false
         type: string
         default: '["PlayMode"]'
