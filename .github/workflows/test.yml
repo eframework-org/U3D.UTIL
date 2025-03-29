@@ -2,6 +2,12 @@ name: 单元测试
 
 on:
   workflow_dispatch:
+    inputs:
+      unity_versions:
+        description: 'Unity版本号，JSON数组格式（如：["2021.3.30f1", "6000.0.32f1"]）'
+        required: false
+        type: string
+        default: '["2021.3.30f1", "2022.3.60f1", "6000.0.32f1"]'
   workflow_call:
     outputs:
       test_passed:
@@ -32,7 +38,7 @@ jobs:
       matrix:
         projectPath:
           - Package
-        unityVersion: [2020.3.48f1, 2021.3.30f1, 2021.3.49f1, 2022.3.60f1, 6000.0.32f1]
+        unityVersion: ${{ fromJson(github.event.inputs.unity_versions) }}
         testMode: [PlayMode]
     outputs:
       passed: ${{ steps.tests.conclusion == 'success' }}
