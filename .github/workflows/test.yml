@@ -23,7 +23,7 @@ permissions:
 
 jobs:
   test:
-    name: 测试 ${{ matrix.testMode }} 环境
+    name: 测试 ${{ matrix.unityVersion }}.${{ matrix.testMode }} 环境
     runs-on: ubuntu-latest
     env:
       TZ: 'Asia/Shanghai'
@@ -68,6 +68,6 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: Test.${{ matrix.testMode }}.Reports
+          name: Test.${{ matrix.unityVersion }}.${{ matrix.testMode }}.Reports
           path: ${{ steps.tests.outputs.artifactsPath }}
           retention-days: 14

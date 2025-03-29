@@ -2,7 +2,6 @@
     "name": "EFramework.Utility.Tests",
     "rootNamespace": "",
     "references": [
-        "UnityEngine.TestRunner",
         "EFramework.Utility"
     ],
     "includePlatforms": [],
@@ -13,5 +12,8 @@
     "autoReferenced": true,
     "defineConstraints": [],
     "versionDefines": [],
-    "noEngineReferences": false
+    "noEngineReferences": false,
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ]
 }
