@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       unityVersions:
-        description: 'Unity 版本号：https://unity.com/releases/editor/archive'
+        description: '引擎版本：https://unity.com/releases/editor/archive'
         required: false
         type: string
         default: '["2021.3.30f1", "2022.3.60f1", "6000.0.32f1"]'
