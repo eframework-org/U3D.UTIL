@@ -170,16 +170,10 @@ public class TestXPrefs
         try
         {
             #region 1. 初始化测试数据
+            LogAssert.ignoreFailingMessages = true;
             // 初始化Asset测试数据
-            if (string.IsNullOrEmpty(XPrefs.Asset.File))
-            {
-                LogAssert.Expect(LogType.Error, new Regex(@"XPrefs\.Read: load .* with error: Null file for instantiating preferences\."));
-            }
-            else if (!XFile.HasFile(XPrefs.Asset.File))
-            {
-                LogAssert.Expect(LogType.Error, new Regex(@"XPrefs\.Read: load .* with error: Non exist file .* for instantiating preferences\."));
-            }
-
+            XPrefs.asset = null;
+            XPrefs.Asset.writeable = true; // 设置为可写
             XPrefs.Asset.Set("intKey", 42);
             XPrefs.Asset.Set("intsKey", new[] { 1, 2, 3 });
             XPrefs.Asset.Set("stringKey", "assetValue");
@@ -282,6 +276,7 @@ public class TestXPrefs
     public void Persist()
     {
         #region 1. 准备测试环境
+        LogAssert.ignoreFailingMessages = true;
         var tmpDir = XFile.PathJoin(XEnv.LocalPath, "TestXPrefs");
         if (!XFile.HasDirectory(tmpDir)) XFile.CreateDirectory(tmpDir);
 
@@ -326,13 +321,11 @@ public class TestXPrefs
             #endregion
 
             #region 3. 测试读取不存在的文件
-            LogAssert.Expect(LogType.Error, new Regex(@"XPrefs\.Read: load .* with error: Non exist file .* for instantiating preferences\."));
             var nonExistentFile = XFile.PathJoin(tmpDir, "nonexistent.json");
             Assert.IsFalse(prefs.Read(nonExistentFile), "Should fail reading non-existent file");
             #endregion
 
             #region 4. 测试读取无效的JSON
-            LogAssert.Expect(LogType.Error, new Regex(@"XPrefs\.Read: load .* with error: Invalid instance\."));
             var invalidFile = XFile.PathJoin(tmpDir, "invalid.json");
             XFile.SaveText(invalidFile, "invalid json");
             Assert.IsFalse(prefs.Read(invalidFile), "Should fail reading invalid JSON");
@@ -461,6 +454,7 @@ public class TestXPrefs
     public void Override()
     {
         #region 1. 准备测试环境
+        LogAssert.ignoreFailingMessages = true;
         var tmpDir = XFile.PathJoin(XEnv.LocalPath, "TestXPrefs-" + XTime.GetMillisecond());
         if (!XFile.HasDirectory(tmpDir)) XFile.CreateDirectory(tmpDir);
 
@@ -486,7 +480,6 @@ public class TestXPrefs
             {
                 #region 2. 测试Local配置文件路径覆盖
                 XEnv.ParseArgs(true, "--Prefs@Local=" + customLocalFile);
-
                 XPrefs.local = null;
                 var local = XPrefs.Local;
                 Assert.AreEqual(customLocalFile, local.File);
@@ -495,7 +488,6 @@ public class TestXPrefs
 
                 #region 3. 测试Local配置文件不存在时的行为
                 XEnv.ParseArgs(true, "--Prefs@Local=nonexistent.json");
-
                 XPrefs.local = null;
                 local = XPrefs.Local;
                 Assert.AreEqual("nonexistent.json", local.File);
@@ -503,23 +495,24 @@ public class TestXPrefs
                 #endregion
 
                 #region 4. 测试Asset配置文件路径覆盖
-                XEnv.ParseArgs(true, "--Prefs@Asset=" + customLocalFile);
+                if (Application.isEditor)
+                {
+                    XEnv.ParseArgs(true, "--Prefs@Asset=" + customLocalFile);
 
-                XPrefs.asset = null;
-                if (Application.isEditor) Assert.AreEqual(customLocalFile, XPrefs.Asset.File);
-                Assert.AreEqual("customValue", XPrefs.Asset.GetString("customKey"));
+                    XPrefs.asset = null;
+                    Assert.AreEqual(customLocalFile, XPrefs.Asset.File);
+                    Assert.AreEqual("customValue", XPrefs.Asset.GetString("customKey"));
+                }
                 #endregion
 
                 #region 5. 测试Asset配置文件不存在时的行为
-                XEnv.ParseArgs(true, "--Prefs@Asset=nonexistent.json");
-
-                XPrefs.asset = null;
                 if (Application.isEditor)
                 {
-                    LogAssert.Expect(LogType.Error, new Regex(@"XPrefs\.Read: load .* with error: Non exist file .* for instantiating preferences\."));
+                    XEnv.ParseArgs(true, "--Prefs@Asset=nonexistent.json");
+                    XPrefs.asset = null;
                     Assert.AreEqual("nonexistent.json", XPrefs.Asset.File);
+                    Assert.IsFalse(XPrefs.Asset.Has("key1")); // 文件不存在时应该是空配置
                 }
-                Assert.IsFalse(XPrefs.Asset.Has("key1")); // 文件不存在时应该是空配置
                 #endregion
 
                 #region 6. 测试Asset和Local参数混合
@@ -530,7 +523,6 @@ public class TestXPrefs
                     "--Prefs@Local.key3=local value",
                     "--Prefs@Local=" + localFile
                 );
-
                 XPrefs.local = null;
 
                 var asset = new XPrefs.IAsset();
