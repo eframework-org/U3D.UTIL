@@ -1,18 +1,8 @@
 {
     "name": "EFramework.Utility.Tests",
-    "rootNamespace": "",
     "references": [
         "EFramework.Utility"
     ],
-    "includePlatforms": [],
-    "excludePlatforms": [],
-    "allowUnsafeCode": true,
-    "overrideReferences": false,
-    "precompiledReferences": [],
-    "autoReferenced": true,
-    "defineConstraints": [],
-    "versionDefines": [],
-    "noEngineReferences": false,
     "optionalUnityReferences": [
         "TestAssemblies"
     ]
