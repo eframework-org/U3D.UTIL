@@ -32,7 +32,7 @@ jobs:
       matrix:
         projectPath:
           - Package
-        unityVersion: [6000.0.32f1]
+        unityVersion: [2021.3.30f1, 6000.0.32f1]
         testMode: [PlayMode]
     outputs:
       passed: ${{ steps.tests.conclusion == 'success' }}
