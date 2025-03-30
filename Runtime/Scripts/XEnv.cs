@@ -106,7 +106,7 @@ namespace EFramework.Utility
             Linux,
 
             /// <summary>macOS 桌面平台</summary>
-            OSX,
+            macOS,
 
             /// <summary>Android 移动平台</summary>
             Android,
@@ -128,7 +128,7 @@ namespace EFramework.Utility
         public static readonly string PlatformLinux = PlatformType.Linux.ToString();
 
         /// <summary>macOS 平台的字符串标识</summary>
-        public static readonly string PlatformOSX = PlatformType.OSX.ToString();
+        public static readonly string PlatformmacOS = PlatformType.macOS.ToString();
 
         /// <summary>Android 平台的字符串标识</summary>
         public static readonly string PlatformAndroid = PlatformType.Android.ToString();
@@ -176,7 +176,7 @@ namespace EFramework.Utility
                     }
                     else if (UnityEditor.EditorUserBuildSettings.activeBuildTarget == UnityEditor.BuildTarget.StandaloneOSX)
                     {
-                        platform = PlatformType.OSX;
+                        platform = PlatformType.macOS;
                     }
                     else if (UnityEditor.EditorUserBuildSettings.activeBuildTarget == UnityEditor.BuildTarget.Android)
                     {
@@ -197,7 +197,7 @@ namespace EFramework.Utility
 #elif UNITY_STANDALONE_LINUX
                 return PlatformType.Linux;
 #elif UNITY_STANDALONE_OSX
-                return PlatformType.OSX;
+                return PlatformType.macOS;
 #elif UNITY_ANDROID
                 return PlatformType.Android;
 #elif UNITY_IPHONE
