@@ -3,7 +3,7 @@
 [![Version](https://img.shields.io/npm/v/org.eframework.u3d.util)](https://www.npmjs.com/package/org.eframework.u3d.util)
 [![Downloads](https://img.shields.io/npm/dm/org.eframework.u3d.util)](https://www.npmjs.com/package/org.eframework.u3d.util)  
 
-XObject 提供了一个对象序列化工具集，实现了结构体与字节数组的转换、对象与 JSON 的互操作，支持自定义编解码器和序列化控制。
+XObject 提供了一个对象序列化工具集，实现了结构体与字节数组的转换、对象的 JSON 序列化等功能。
 
 ## 功能特性
 

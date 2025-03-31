@@ -14,7 +14,7 @@ EFramework Utility for Unity 提供了配置管理、任务调度、日志记录
 - [XLog](Documentation~/XLog.md) 提供了一个遵循 RFC5424 标准的日志系统，支持多级别日志输出、多适配器管理、日志轮转和结构化标签等特性
 - [XLoom](Documentation~/XLoom.md) 提供了一个统一的协程、线程和定时器管理工具，支持多线程任务调度、定时任务执行和协程管理
 - [XMani](Documentation~/XMani.md) 提供了一个文件清单管理工具，支持文件清单的生成、解析、对比和版本管理
-- [XObject](Documentation~/XObject.md) 提供了一个对象序列化工具集，实现了结构体与字节数组的转换、对象与 JSON 的互操作，支持自定义编解码器和序列化控制
+- [XObject](Documentation~/XObject.md) 提供了一个对象序列化工具集，实现了结构体与字节数组的转换、对象的 JSON 序列化等功能
 - [XPool](Documentation~/XPool.md) 提供了一个对象缓存工具集，实现了基础对象池、Unity 游戏对象池和字节流缓冲池
 - [XPrefs](Documentation~/XPrefs.md) 是一个灵活高效的配置系统，实现了多源化配置的读写，支持可视化编辑、变量求值和命令行参数覆盖等功能
 - [XString](Documentation~/XString.md) 是一个高效的字符串工具类，实现了字符串处理、数值转换、加密解密和变量求值等功能
