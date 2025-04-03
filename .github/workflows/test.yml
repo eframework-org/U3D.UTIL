@@ -65,6 +65,10 @@ jobs:
         with:
           lfs: true
           path: Package
+      
+      - name: 检视目录
+        run: |
+          ls -l
 
       - name: 运行测试
         uses: game-ci/unity-test-runner@v4
