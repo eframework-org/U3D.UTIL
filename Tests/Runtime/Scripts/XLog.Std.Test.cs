@@ -60,7 +60,7 @@ public class TestXLogStd
         // 2. 测试带标签的日志
         var tag = XLog.GetTag();
         tag.Set("key", "value");
-        LogAssert.Expect(LogType.Log, new Regex(@"\[\d{2}/\d{2} \d{2}:\d{2}:\d{2}\.\d{3}\] \[I\] \[Tags: key = value\] Tagged message"));
+        LogAssert.Expect(LogType.Log, new Regex(@"\[\d{2}/\d{2} \d{2}:\d{2}:\d{2}\.\d{3}\] \[I\] \[key = value\] Tagged message"));
         adapter.Write(new XLog.LogData { Level = XLog.LevelType.Info, Data = "Tagged message", Tag = tag.Text });
         XLog.PutTag(tag);
 

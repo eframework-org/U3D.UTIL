@@ -326,34 +326,43 @@ namespace EFramework.Utility
 
 #if UNITY_EDITOR
             editorMode = !UnityEditor.EditorApplication.isPlayingOrWillChangePlaymode;
-            UnityEditor.EditorApplication.playModeStateChanged += (mode) =>
+            UnityEditor.EditorApplication.playModeStateChanged += mode =>
             {
-                if (mode == UnityEditor.PlayModeStateChange.ExitingEditMode)
-                {
-                    Flush();
-                    editorMode = false;
-                }
-                else if (mode == UnityEditor.PlayModeStateChange.EnteredEditMode)
-                {
-                    editorMode = true;
-                    Setup(XPrefs.Asset);
-                }
+                Flush();
+                if (mode == UnityEditor.PlayModeStateChange.ExitingEditMode) editorMode = false;
+                else if (mode == UnityEditor.PlayModeStateChange.EnteredEditMode) editorMode = true;
             };
-            UnityEditor.EditorApplication.quitting += Close;
 
-            // 通过-runTests启动editmode测试时，若脚本变更，会触发编译，导致XLog.Close被调用，进而导致测试失败
-            // 正常情况下，监听到正在编译则主动关闭，避免日志文件冲突，编译完成后会自动调用 OnInit，-runTests模式下未调用
-            // 这里又增加了一个 isPlaying 的判断，避免在编辑器模式下，编译时关闭日志
-            static void onUpdate()
-            {
-                if (Application.isPlaying && UnityEditor.EditorApplication.isCompiling)
-                {
-                    Close();
-                    UnityEditor.EditorApplication.update -= onUpdate;
-                }
-            }
-            UnityEditor.EditorApplication.update += onUpdate;
+            // 这里不再切换 PlayMode 的时候重新初始化，避免 IOException: Sharing violation on path xxx
+            // UnityEditor.EditorApplication.playModeStateChanged += (mode) =>
+            // {
+            //     if (mode == UnityEditor.PlayModeStateChange.ExitingEditMode)
+            //     {
+            //         Flush();
+            //         editorMode = false;
+            //     }
+            //     else if (mode == UnityEditor.PlayModeStateChange.EnteredEditMode)
+            //     {
+            //         editorMode = true;
+            //         Setup(XPrefs.Asset);
+            //     }
+            // };
+            // UnityEditor.EditorApplication.quitting += Close;
+
+            // // 通过-runTests启动editmode测试时，若脚本变更，会触发编译，导致XLog.Close被调用，进而导致测试失败
+            // // 正常情况下，监听到正在编译则主动关闭，避免日志文件冲突，编译完成后会自动调用 OnInit，-runTests模式下未调用
+            // // 这里又增加了一个 isPlaying 的判断，避免在编辑器模式下，编译时关闭日志
+            // static void onUpdate()
+            // {
+            //     if (Application.isPlaying && UnityEditor.EditorApplication.isCompiling)
+            //     {
+            //         Close();
+            //         UnityEditor.EditorApplication.update -= onUpdate;
+            //     }
+            // }
+            // UnityEditor.EditorApplication.update += onUpdate;
 #endif
+
             Application.quitting += Close;
             SceneManager.sceneUnloaded += scene => Flush();
             Setup(XPrefs.Asset);
@@ -422,7 +431,7 @@ namespace EFramework.Utility
             // 更新最大日志级别
             levelMax = tempLevel;
 
-            XLog.Notice("XLog.Setup: setup succeed with {0} adapters, max level: {1}.", adapters.Count, levelMax.ToString());
+            Notice("XLog.Setup: performed setup with {0} adapters, max level: {1}.", adapters.Count, levelMax.ToString());
         }
 
         /// <summary>
@@ -434,7 +443,7 @@ namespace EFramework.Utility
             {
                 adapter.Flush();
             }
-            XLog.Notice("XLog.Flush: flush succeed with {0} adapters.", adapters.Count);
+            Notice("XLog.Flush: performed flush with {0} adapters.", adapters.Count);
         }
 
         /// <summary>
@@ -442,7 +451,7 @@ namespace EFramework.Utility
         /// </summary>
         public static void Close()
         {
-            XLog.Notice("XLog.Close: begin to close with {0} adapters.", adapters.Count);
+            Notice("XLog.Close: performed close with {0} adapters.", adapters.Count);
             foreach (var adapter in adapters.Values)
             {
                 adapter.Close();
