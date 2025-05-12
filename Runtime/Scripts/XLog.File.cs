@@ -249,10 +249,6 @@ namespace EFramework.Utility
                         {
                             streamWriter.Flush();
                             streamWriter.Close();
-                            if (streamWriter.BaseStream != null && streamWriter.BaseStream is FileStream fs)
-                            {
-                                fs.Dispose(); // 显式释放底层流
-                            }
                             streamWriter = null;
                         }
                     }
@@ -315,10 +311,7 @@ namespace EFramework.Utility
                     }
                     lock (lockObj) streamWriter?.Flush(); // 确保最后的数据被写入
                 })
-                {
-                    IsBackground = true,
-                    Name = "XLog.FileWriter"
-                };
+                { Name = "XLog.FileAdapter" };
                 writerThread.Start();
             }
 
@@ -348,10 +341,7 @@ namespace EFramework.Utility
                     {
                         streamWriter.Flush();
                         streamWriter.Close();
-                        if (streamWriter.BaseStream != null && streamWriter.BaseStream is FileStream fs)
-                        {
-                            fs.Dispose(); // 显式释放底层流
-                        }
+                        streamWriter = null;
                     }
 
                     var newPath = path;
