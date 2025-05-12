@@ -205,13 +205,13 @@ namespace EFramework.Utility
             }
 
 #if UNITY_EDITOR
-            var ltime = UnityEditor.EditorApplication.timeSinceStartup;
+            var ltime = XTime.GetMillisecond();
             void onEdit()
             {
-                var ntime = UnityEditor.EditorApplication.timeSinceStartup;
+                var ntime = XTime.GetMillisecond();
                 var dtime = ntime - ltime;
                 ltime = ntime;
-                Tick((long)(dtime * 1000));
+                Tick(dtime);
             }
 
             if (UnityEditor.EditorApplication.isPlayingOrWillChangePlaymode) onPlay();
@@ -225,6 +225,7 @@ namespace EFramework.Utility
                 }
                 else if (mode == UnityEditor.PlayModeStateChange.EnteredEditMode)
                 {
+                    ltime = XTime.GetMillisecond(); // 重置记录的最近时间
                     UnityEditor.EditorApplication.update += onEdit;
                 }
             };
@@ -436,7 +437,6 @@ namespace EFramework.Utility
         /// <returns>定时器实例</returns>
         public static Timer SetTimeout(Action callback, long timeout)
         {
-            if (disposed) return null;
             var timer = timerPool.Get();
             timer.Callback = callback;
             timer.Period = timeout;
@@ -452,7 +452,6 @@ namespace EFramework.Utility
         /// <param name="timer">要清除的定时器实例</param>
         public static void ClearTimeout(Timer timer)
         {
-            if (disposed) return;
             lock (allTimers)
             {
                 var idx = allTimers.IndexOf(timer);
@@ -472,7 +471,6 @@ namespace EFramework.Utility
         /// <returns>定时器实例</returns>
         public static Timer SetInterval(Action callback, long interval)
         {
-            if (disposed) return null;
             var timer = timerPool.Get();
             timer.Callback = callback;
             timer.Period = interval;
@@ -488,7 +486,6 @@ namespace EFramework.Utility
         /// <param name="timer">要清除的定时器实例</param>
         public static void ClearInterval(Timer timer)
         {
-            if (disposed) return;
             lock (allTimers)
             {
                 var idx = allTimers.IndexOf(timer);
