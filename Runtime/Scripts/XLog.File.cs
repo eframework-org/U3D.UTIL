@@ -369,14 +369,12 @@ namespace EFramework.Utility
                                 if (!string.IsNullOrEmpty(format))
                                 {
                                     // 按时间轮转
-                                    fName = XFile.PathJoin(dir,
-                                        $"{prefix}.{DateTime.Now.ToString(format)}.{num:000}{suffix}");
+                                    fName = XFile.PathJoin(dir, $"{prefix}.{DateTime.Now.ToString(format)}.{num:000}{suffix}");
                                 }
                                 else
                                 {
                                     // 按行数或大小轮转
-                                    fName = XFile.PathJoin(dir,
-                                        $"{prefix}.{num:000}{suffix}");
+                                    fName = XFile.PathJoin(dir, $"{prefix}.{num:000}{suffix}");
                                 }
                             }
 
@@ -392,13 +390,11 @@ namespace EFramework.Utility
                     {
                         if (string.IsNullOrEmpty(prefix))
                         {
-                            newPath = XFile.PathJoin(dir,
-                                $"{openTime.ToString(format)}.{num:000}{suffix}");
+                            newPath = XFile.PathJoin(dir, $"{openTime.ToString(format)}.{num:000}{suffix}");
                         }
                         else
                         {
-                            newPath = XFile.PathJoin(dir,
-                                $"{prefix}.{openTime.ToString(format)}.{num:000}{suffix}");
+                            newPath = XFile.PathJoin(dir, $"{prefix}.{openTime.ToString(format)}.{num:000}{suffix}");
                         }
                         currentFileNum = num;
                     }
