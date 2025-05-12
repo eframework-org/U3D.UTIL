@@ -220,9 +220,11 @@ namespace EFramework.Utility
             /// </summary>
             public void Flush()
             {
-                if (!isRunning) return;
-
-                lock (lockObj) streamWriter?.Flush();
+                lock (lockObj)
+                {
+                    if (!isRunning) return;
+                    streamWriter?.Flush();
+                }
             }
 
             /// <summary>
@@ -230,15 +232,32 @@ namespace EFramework.Utility
             /// </summary>
             public void Close()
             {
-                if (!isRunning) return;
-                isRunning = false; // 标记停止但继续处理队列
-                writeEvent.Set();  // 唤醒线程处理剩余日志
-                writerThread?.Join();  // 等待线程完成所有写入
                 lock (lockObj)
                 {
-                    streamWriter?.Close();
-                    streamWriter = null;
-                    writeEvent.Reset();
+                    if (!isRunning) return;
+                    isRunning = false; // 标记停止但继续处理队列
+                }
+
+                writeEvent.Set();  // 唤醒线程处理剩余日志
+                writerThread?.Join();  // 等待线程完成所有写入
+
+                lock (lockObj)
+                {
+                    try
+                    {
+                        if (streamWriter != null)
+                        {
+                            streamWriter.Flush();
+                            streamWriter.Close();
+                            if (streamWriter.BaseStream != null && streamWriter.BaseStream is FileStream fs)
+                            {
+                                fs.Dispose(); // 显式释放底层流
+                            }
+                            streamWriter = null;
+                        }
+                    }
+                    catch (Exception e) { Panic(e, "Failed to close writer."); }
+                    finally { writeEvent.Reset(); }
                 }
             }
 
@@ -325,12 +344,19 @@ namespace EFramework.Utility
             {
                 try
                 {
-                    streamWriter.Flush();
-                    streamWriter.Close();
+                    if (streamWriter != null)
+                    {
+                        streamWriter.Flush();
+                        streamWriter.Close();
+                        if (streamWriter.BaseStream != null && streamWriter.BaseStream is FileStream fs)
+                        {
+                            fs.Dispose(); // 显式释放底层流
+                        }
+                    }
 
-                    string newPath = path;
-                    string format = "";
-                    DateTime openTime = DateTime.Now;
+                    var newPath = path;
+                    var format = "";
+                    var openTime = DateTime.Now;
 
                     // 检查原始文件是否存在
                     if (!XFile.HasFile(path))
