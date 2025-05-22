@@ -102,12 +102,13 @@ jobs:
             CHANGELOG="版本 $VERSION 发布"
           fi
           
-          # 将内容保存为输出，用于后续步骤
+          echo "版本 [$VERSION] 的更新记录为："
+          echo "$CHANGELOG"
+
           # 处理多行内容，替换换行符为特殊标记
           CHANGELOG="${CHANGELOG//$'\n'/%0A}"
           echo "changelog=$CHANGELOG" >> $GITHUB_OUTPUT
           
-          echo "版本 [$VERSION] 的更新记录为：$CHANGELOG"
           exit 1
 
   test:
