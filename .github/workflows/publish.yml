@@ -22,7 +22,9 @@ jobs:
     env:
       TZ: 'Asia/Shanghai'
     outputs:
-      next_version: ${{ steps.get_version.outputs.version }}
+      new_version: ${{ steps.get_version.outputs.new_version }}
+      release_title: ${{ steps.parse_changelog.outputs.release_title }}
+      release_content: ${{ steps.parse_changelog.outputs.release_content }}
     steps:
       - name: 验证仓库名称
         if: github.event.inputs.confirm != github.repository
@@ -39,8 +41,8 @@ jobs:
       - name: 获取更新版本
         id: get_version
         run: |
-          if [ -n "${{ github.event.inputs.version }}" ]; then
-            VERSION="${{ github.event.inputs.version }}"
+          if [ -n "${{ github.event.inputs.new_version }}" ]; then
+            VERSION="${{ github.event.inputs.new_version }}"
           else
             # 获取最新tag版本号并加1
             LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
@@ -62,13 +64,13 @@ jobs:
           #   exit 1
           # fi
           
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "new_version=$VERSION" >> $GITHUB_OUTPUT
           echo "将发布版本：v$VERSION"
 
       - name: 获取更新日志
         id: parse_changelog
         run: |
-          VERSION="${{ steps.get_version.outputs.version }}"
+          VERSION="${{ steps.get_version.outputs.new_version }}"
           CHANGELOG_FILE="CHANGELOG.md"
           
           # 检查 CHANGELOG.md 是否存在
@@ -159,7 +161,7 @@ jobs:
 
       # - name: 更新版本号
       #   run: |
-      #     VERSION="${{ needs.prepare.outputs.next_version }}"
+      #     VERSION="${{ needs.prepare.outputs.new_version }}"
       #     CURRENT_VERSION=$(node -p "require('./package.json').version")
           
       #     if [ "$VERSION" != "$CURRENT_VERSION" ]; then
@@ -179,7 +181,7 @@ jobs:
       #   env:
       #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       #   run: |
-      #     VERSION="${{ needs.prepare.outputs.next_version }}"
+      #     VERSION="${{ needs.prepare.outputs.new_version }}"
       #     git config --global user.email "github-actions[bot]@users.noreply.github.com"
       #     git config --global user.name "github-actions[bot]"
 
@@ -204,7 +206,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: v${{ needs.prepare.outputs.next_version }}
+          tag_name: v${{ needs.prepare.outputs.new_version }}
           name: ${{ needs.prepare.outputs.release_title }}
           body: ${{ needs.prepare.outputs.release_content }}
           draft: false
@@ -212,6 +214,6 @@ jobs:
 
       # - name: 发布完成
       #   run: |
-      #     echo "版本: v${{ needs.prepare.outputs.next_version }}"
+      #     echo "版本: v${{ needs.prepare.outputs.new_version }}"
       #     echo "标签: https://github.com/${{ github.repository }}/releases/tag/v${{ needs.prepare.outputs.next_version }}"
       #     echo "注册表: https://www.npmjs.com/package/$(node -p "require('./package.json').name")"
