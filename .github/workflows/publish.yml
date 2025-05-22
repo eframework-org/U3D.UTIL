@@ -116,7 +116,7 @@ jobs:
           
           # 输出变量
           echo "release_title=$RELEASE_TITLE" >> $GITHUB_OUTPUT
-          echo "$RELEASE_CONTENT" > RELEASE.md
+          echo "$RELEASE_CONTENT" > $GITHUB_WORKSPACE/RELEASE.md
 
   test:
     name: 运行单元测试
@@ -204,7 +204,7 @@ jobs:
         with:
           tag_name: v${{ needs.prepare.outputs.new_version }}
           name: ${{ needs.prepare.outputs.release_title }}
-          body_path: RELEASE.md
+          body_path: $GITHUB_WORKSPACE/RELEASE.md
           draft: false
           prerelease: false
 
