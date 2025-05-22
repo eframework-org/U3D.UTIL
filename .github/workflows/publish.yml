@@ -36,7 +36,7 @@ jobs:
           lfs: true
           fetch-depth: 0
 
-      - name: 获取版本号
+      - name: 获取更新版本
         id: get_version
         run: |
           if [ -n "${{ github.event.inputs.version }}" ]; then
@@ -64,6 +64,41 @@ jobs:
           
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "将发布版本：v$VERSION"
+
+      - name: 获取更新日志
+        id: get_changelog
+        run: |
+          VERSION="${{ steps.get_version.outputs.version }}"
+          
+          # 检查 CHANGELOG.md 是否存在
+          if [ ! -f "CHANGELOG.md" ]; then
+            echo "错误：CHANGELOG.md 文件不存在"
+            exit 1
+          fi
+          
+          # 查找版本对应的更新记录
+          VERSION_PATTERN="## \[$VERSION\]"
+          if ! grep -q "$VERSION_PATTERN" CHANGELOG.md; then
+            echo "错误：在 CHANGELOG.md 中未找到版本 [$VERSION] 的更新记录"
+            exit 1
+          fi
+          
+          # 提取版本的更新记录内容
+          NEXT_VERSION_PATTERN="## \["
+          CHANGELOG=$(awk -v ver="$VERSION_PATTERN" -v next="$NEXT_VERSION_PATTERN" '
+            $0 ~ ver {flag=1; next}
+            flag && $0 ~ next {flag=0}
+            flag {content = content $0 "\n"}
+            END {print content}
+          ' CHANGELOG.md)
+          
+          # 将内容保存为输出，用于后续步骤
+          # 处理多行内容，替换换行符为特殊标记
+          CHANGELOG="${CHANGELOG//$'\n'/%0A}"
+          echo "changelog=$CHANGELOG" >> $GITHUB_OUTPUT
+          
+          echo "已找到版本 [$VERSION] 的更新记录"
+          exit 1
 
   test:
     name: 运行单元测试
