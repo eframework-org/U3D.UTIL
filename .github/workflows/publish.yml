@@ -103,12 +103,14 @@ jobs:
           fi
           
           echo "版本 [$VERSION] 的更新记录为："
-          echo "$CHANGELOG"
+          echo "$CHANGELOG" | while IFS= read -r line; do
+            echo "  $line"
+          done
 
           # 处理多行内容，替换换行符为特殊标记
           CHANGELOG="${CHANGELOG//$'\n'/%0A}"
           echo "changelog=$CHANGELOG" >> $GITHUB_OUTPUT
-          
+
           exit 1
 
   test:
