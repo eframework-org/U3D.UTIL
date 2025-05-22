@@ -90,7 +90,7 @@ namespace EFramework.Utility
                         if (count > 0)
                         {
                             var builder = new StringBuilder();
-                            builder.Append("[Tags: ");
+                            builder.Append("[");
                             bool first = true;
                             for (int i = 0; i < count; i++)
                             {

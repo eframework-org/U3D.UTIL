@@ -27,7 +27,7 @@ public class TestXLogTag
             "期望不存在的键返回空字符串");
 
         // 测试文本格式化
-        Assert.AreEqual("[Tags: key1 = value1, key2 = value2]", tag.Text,
+        Assert.AreEqual("[key1 = value1, key2 = value2]", tag.Text,
             "期望标签文本格式正确");
 
         // 测试数据字典

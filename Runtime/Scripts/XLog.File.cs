@@ -220,9 +220,11 @@ namespace EFramework.Utility
             /// </summary>
             public void Flush()
             {
-                if (!isRunning) return;
-
-                lock (lockObj) streamWriter?.Flush();
+                lock (lockObj)
+                {
+                    if (!isRunning) return;
+                    streamWriter?.Flush();
+                }
             }
 
             /// <summary>
@@ -230,15 +232,28 @@ namespace EFramework.Utility
             /// </summary>
             public void Close()
             {
-                if (!isRunning) return;
-                isRunning = false; // 标记停止但继续处理队列
-                writeEvent.Set();  // 唤醒线程处理剩余日志
-                writerThread?.Join();  // 等待线程完成所有写入
                 lock (lockObj)
                 {
-                    streamWriter?.Close();
-                    streamWriter = null;
-                    writeEvent.Reset();
+                    if (!isRunning) return;
+                    isRunning = false; // 标记停止但继续处理队列
+                }
+
+                writeEvent.Set();  // 唤醒线程处理剩余日志
+                writerThread?.Join();  // 等待线程完成所有写入
+
+                lock (lockObj)
+                {
+                    try
+                    {
+                        if (streamWriter != null)
+                        {
+                            streamWriter.Flush();
+                            streamWriter.Close();
+                            streamWriter = null;
+                        }
+                    }
+                    catch (Exception e) { Panic(e, "Failed to close writer."); }
+                    finally { writeEvent.Reset(); }
                 }
             }
 
@@ -296,10 +311,7 @@ namespace EFramework.Utility
                     }
                     lock (lockObj) streamWriter?.Flush(); // 确保最后的数据被写入
                 })
-                {
-                    IsBackground = true,
-                    Name = "XLog.FileWriter"
-                };
+                { Name = "XLog.FileAdapter" };
                 writerThread.Start();
             }
 
@@ -325,12 +337,16 @@ namespace EFramework.Utility
             {
                 try
                 {
-                    streamWriter.Flush();
-                    streamWriter.Close();
+                    if (streamWriter != null)
+                    {
+                        streamWriter.Flush();
+                        streamWriter.Close();
+                        streamWriter = null;
+                    }
 
-                    string newPath = path;
-                    string format = "";
-                    DateTime openTime = DateTime.Now;
+                    var newPath = path;
+                    var format = "";
+                    var openTime = DateTime.Now;
 
                     // 检查原始文件是否存在
                     if (!XFile.HasFile(path))
@@ -369,14 +385,12 @@ namespace EFramework.Utility
                                 if (!string.IsNullOrEmpty(format))
                                 {
                                     // 按时间轮转
-                                    fName = XFile.PathJoin(dir,
-                                        $"{prefix}.{DateTime.Now.ToString(format)}.{num:000}{suffix}");
+                                    fName = XFile.PathJoin(dir, $"{prefix}.{DateTime.Now.ToString(format)}.{num:000}{suffix}");
                                 }
                                 else
                                 {
                                     // 按行数或大小轮转
-                                    fName = XFile.PathJoin(dir,
-                                        $"{prefix}.{num:000}{suffix}");
+                                    fName = XFile.PathJoin(dir, $"{prefix}.{num:000}{suffix}");
                                 }
                             }
 
@@ -392,13 +406,11 @@ namespace EFramework.Utility
                     {
                         if (string.IsNullOrEmpty(prefix))
                         {
-                            newPath = XFile.PathJoin(dir,
-                                $"{openTime.ToString(format)}.{num:000}{suffix}");
+                            newPath = XFile.PathJoin(dir, $"{openTime.ToString(format)}.{num:000}{suffix}");
                         }
                         else
                         {
-                            newPath = XFile.PathJoin(dir,
-                                $"{prefix}.{openTime.ToString(format)}.{num:000}{suffix}");
+                            newPath = XFile.PathJoin(dir, $"{prefix}.{openTime.ToString(format)}.{num:000}{suffix}");
                         }
                         currentFileNum = num;
                     }

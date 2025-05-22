@@ -577,7 +577,11 @@ namespace EFramework.Utility
                             if (callback == null) callbacks.RemoveAt(i);
                             else
                             {
-                                if (Onces.ContainsKey(callback)) callbacks.RemoveAt(i);
+                                if (Onces.ContainsKey(callback))
+                                {
+                                    Onces.Remove(callback);
+                                    callbacks.RemoveAt(i);
+                                }
                                 else i++;
                                 Batches.Add(callback);
                             }

@@ -238,7 +238,7 @@ public class TestXLog
                     tag.Set("source", "test1");
                     XLog.Debug("Debug message", tag);
                 }),
-                expected = "[Tags: source = test1] Debug message"
+                expected = "[source = test1] Debug message"
             },
             new
             {
@@ -252,7 +252,7 @@ public class TestXLog
                     XLog.Debug("Context debug message");
                     XLog.Defer();
                 }),
-                expected = "[Tags: context = test2] Context debug message"
+                expected = "[context = test2] Context debug message"
             },
             new
             {
@@ -264,7 +264,7 @@ public class TestXLog
                     tag.Set("key2", "value2");
                     XLog.Info("Multi tag message", tag);
                 }),
-                expected = "[Tags: key1 = value1, key2 = value2] Multi tag message"
+                expected = "[key1 = value1, key2 = value2] Multi tag message"
             },
             new
             {
@@ -275,7 +275,7 @@ public class TestXLog
                     tag.Set("format", "test");
                     XLog.Info("Count: {0}", tag, 42);
                 }),
-                expected = "[Tags: format = test] Count: 42"
+                expected = "[format = test] Count: 42"
             }
         };
 
