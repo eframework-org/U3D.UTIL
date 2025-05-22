@@ -56,11 +56,11 @@ jobs:
             exit 1
           fi
           
-          # 检查版本号是否已存在
-          if git rev-parse "v$VERSION" >/dev/null 2>&1; then
-            echo "错误：版本 v$VERSION 已存在"
-            exit 1
-          fi
+          # # 检查版本号是否已存在
+          # if git rev-parse "v$VERSION" >/dev/null 2>&1; then
+          #   echo "错误：版本 v$VERSION 已存在"
+          #   exit 1
+          # fi
           
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "将发布版本：v$VERSION"
