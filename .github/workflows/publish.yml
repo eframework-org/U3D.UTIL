@@ -120,8 +120,6 @@ jobs:
           echo "release_title=$RELEASE_TITLE" >> $GITHUB_OUTPUT
           echo "release_content=$RELEASE_CONTENT" >> $GITHUB_OUTPUT
 
-          exit 1
-
   test:
     name: 运行单元测试
     needs: prepare
@@ -153,56 +151,67 @@ jobs:
         with:
           lfs: true
 
-      - name: 设置 Node.js 环境
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20'
-          registry-url: 'https://registry.npmjs.com'
+      # - name: 设置 Node.js 环境
+      #   uses: actions/setup-node@v3
+      #   with:
+      #     node-version: '20'
+      #     registry-url: 'https://registry.npmjs.com'
 
-      - name: 更新版本号
-        run: |
-          VERSION="${{ needs.prepare.outputs.next_version }}"
-          CURRENT_VERSION=$(node -p "require('./package.json').version")
+      # - name: 更新版本号
+      #   run: |
+      #     VERSION="${{ needs.prepare.outputs.next_version }}"
+      #     CURRENT_VERSION=$(node -p "require('./package.json').version")
           
-          if [ "$VERSION" != "$CURRENT_VERSION" ]; then
-            echo "更新版本号: $CURRENT_VERSION -> $VERSION"
-            npm version $VERSION --no-git-tag-version
-          else
-            echo "版本号未变更，保持 $VERSION"
-          fi
+      #     if [ "$VERSION" != "$CURRENT_VERSION" ]; then
+      #       echo "更新版本号: $CURRENT_VERSION -> $VERSION"
+      #       npm version $VERSION --no-git-tag-version
+      #     else
+      #       echo "版本号未变更，保持 $VERSION"
+      #     fi
       
-      - name: 发布至注册表
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH }}
-        run: npm publish --access public
+      # - name: 发布至注册表
+      #   env:
+      #     NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH }}
+      #   run: npm publish --access public
 
-      - name: 提交版本标签
-        shell: bash
+      # - name: 提交版本标签
+      #   shell: bash
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   run: |
+      #     VERSION="${{ needs.prepare.outputs.next_version }}"
+      #     git config --global user.email "github-actions[bot]@users.noreply.github.com"
+      #     git config --global user.name "github-actions[bot]"
+
+      #     # 提交版本
+      #     git add package.json
+      #     if [ -f "package-lock.json" ]; then
+      #       git add package-lock.json
+      #     fi
+      #     git commit -m "chore: 发布 v$VERSION" || true
+          
+      #     # 创建标签
+      #     git tag -a "v$VERSION" -m "chore: 发布 v$VERSION"
+          
+      #     # 拉取提交
+      #     git pull origin
+
+      #     # 推送版本
+      #     git push origin --follow-tags
+
+      - name: 创建 GitHub Release
+        uses: softprops/action-gh-release@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          VERSION="${{ needs.prepare.outputs.next_version }}"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git config --global user.name "github-actions[bot]"
+        with:
+          tag_name: v${{ needs.prepare.outputs.next_version }}
+          name: ${{ needs.prepare.outputs.release_title }}
+          body: ${{ needs.prepare.outputs.release_content }}
+          draft: false
+          prerelease: false
 
-          # 提交版本
-          git add package.json
-          if [ -f "package-lock.json" ]; then
-            git add package-lock.json
-          fi
-          git commit -m "chore: 发布 v$VERSION" || true
-          
-          # 创建标签
-          git tag -a "v$VERSION" -m "chore: 发布 v$VERSION"
-          
-          # 拉取提交
-          git pull origin
-
-          # 推送版本
-          git push origin --follow-tags
-          
-      - name: 发布完成
-        run: |
-          echo "版本: v${{ needs.prepare.outputs.next_version }}"
-          echo "标签: https://github.com/${{ github.repository }}/releases/tag/v${{ needs.prepare.outputs.next_version }}"
-          echo "注册表: https://www.npmjs.com/package/$(node -p "require('./package.json').name")"
+      # - name: 发布完成
+      #   run: |
+      #     echo "版本: v${{ needs.prepare.outputs.next_version }}"
+      #     echo "标签: https://github.com/${{ github.repository }}/releases/tag/v${{ needs.prepare.outputs.next_version }}"
+      #     echo "注册表: https://www.npmjs.com/package/$(node -p "require('./package.json').name")"
