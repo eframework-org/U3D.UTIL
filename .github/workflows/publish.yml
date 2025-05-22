@@ -69,57 +69,62 @@ jobs:
         id: get_changelog
         run: |
           VERSION="${{ steps.get_version.outputs.version }}"
+          CHANGELOG_FILE="CHANGELOG.md"
           
           # 检查 CHANGELOG.md 是否存在
-          if [ ! -f "CHANGELOG.md" ]; then
-            echo "错误：CHANGELOG.md 文件不存在"
+          if [ ! -f "$CHANGELOG_FILE" ]; then
+            echo "错误：$CHANGELOG_FILE 文件不存在"
             exit 1
           fi
           
-          # 查找版本对应的更新记录
-          VERSION_PATTERN="## [$VERSION]" 
-          if ! grep -F -q "$VERSION_PATTERN" CHANGELOG.md; then 
-            echo "错误：在 CHANGELOG.md 中未找到版本 [$VERSION] 的更新记录" 
+          # 提取标题行
+          TITLE_LINE=$(grep -n "## \[$VERSION\]" "$CHANGELOG_FILE" | cut -d ":" -f 1)
+          
+          if [ -z "$TITLE_LINE" ]; then
+            echo "错误：在 $CHANGELOG_FILE 中未找到版本 [$VERSION] 的更新记录" 
             exit 1 
           fi
           
-          # 提取版本的更新记录内容
-          TEMP_FILE=$(mktemp)
+          # 提取标题并去除 ## 前缀和前后空格
+          TITLE=$(sed -n "${TITLE_LINE}p" "$CHANGELOG_FILE" | sed 's/^##\s*//g' | sed 's/^\s*//;s/\s*$//')
+          echo "提取的版本标题：$TITLE"
           
-          # 提取版本行的行号
-          START_LINE=$(grep -F -n "$VERSION_PATTERN" CHANGELOG.md | cut -d: -f1)
+          # 计算内容的起始行和结束行
+          START_LINE=$((TITLE_LINE + 1))
+          END_LINE=$(grep -n "^## " "$CHANGELOG_FILE" | cut -d ":" -f 1 | awk -v start="$START_LINE" '$1 > start' | head -1)
           
-          # 提取下一个版本行的行号（如果有）
-          NEXT_VERSION_LINE=$(grep -F -n "## [" CHANGELOG.md | awk -v start="$START_LINE" '$1 > start {print $1; exit}')
-          
-          if [ -z "$NEXT_VERSION_LINE" ]; then
-            # 如果没有下一个版本，提取到文件末尾
-            tail -n +$((START_LINE+1)) CHANGELOG.md > "$TEMP_FILE"
+          # 如果没有找到下一个版本标题，则使用文件末尾
+          if [ -z "$END_LINE" ]; then
+              END_LINE=$(wc -l < "$CHANGELOG_FILE")
+              CONTENT_END_LINE=$END_LINE
           else
-            # 否则提取到下一个版本的前一行
-            sed -n "$((START_LINE+1)),$((NEXT_VERSION_LINE-1))p" CHANGELOG.md > "$TEMP_FILE"
+              # 如果找到了下一个版本标题，则内容结束行为下一个版本标题的前一行
+              CONTENT_END_LINE=$((END_LINE - 1))
           fi
           
-          # 显示提取的内容
-          echo "版本 [$VERSION] 的更新记录为："
-          cat "$TEMP_FILE"
-          
-          # 将内容读入变量
-          CHANGELOG=$(cat "$TEMP_FILE")
+          # 提取内容
+          CONTENT=$(sed -n "${START_LINE},${CONTENT_END_LINE}p" "$CHANGELOG_FILE" | grep -v "^$")
           
           # 检查提取的内容是否为空
-          if [ -z "$CHANGELOG" ]; then
-            echo "警告：提取的更新记录内容为空，请检查 CHANGELOG.md 格式"
+          if [ -z "$CONTENT" ]; then
+            echo "警告：提取的更新记录内容为空，请检查 $CHANGELOG_FILE 格式"
             # 设置一个默认内容
-            CHANGELOG="版本 $VERSION 发布"
+            CONTENT="版本 $VERSION 发布"
           fi
           
-          # 处理多行内容，替换换行符为特殊标记
-          CHANGELOG_ESCAPED="${CHANGELOG//$'\n'/%0A}"
-          echo "changelog=$CHANGELOG_ESCAPED" >> $GITHUB_OUTPUT
+          # 打印完整信息
+          echo "版本标题："
+          echo "$TITLE"
+          echo -e "\n版本内容："
+          echo "$CONTENT"
           
-          # 清理临时文件
-          rm -f "$TEMP_FILE"
+          # 处理多行内容，替换换行符为特殊标记
+          TITLE_ESCAPED="${TITLE//$'\n'/%0A}"
+          CONTENT_ESCAPED="${CONTENT//$'\n'/%0A}"
+          
+          # 输出变量
+          echo "release_title=$TITLE_ESCAPED" >> $GITHUB_OUTPUT
+          echo "release_content=$CONTENT_ESCAPED" >> $GITHUB_OUTPUT
 
           exit 1
 
