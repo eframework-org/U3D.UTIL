@@ -84,16 +84,28 @@ jobs:
           fi
           
           # 提取版本的更新记录内容
-          START_LINE=$(grep -F -n "$VERSION_PATTERN" CHANGELOG.md | cut -d: -f1)
-          NEXT_LINE=$(grep -F -n "## [" CHANGELOG.md | awk -v start="$START_LINE" '$1 > start {print $1; exit}' | cut -d: -f1)
+          TEMP_FILE=$(mktemp)
           
-          if [ -z "$NEXT_LINE" ]; then
-            # 如果没有下一个版本，则提取到文件末尾
-            CHANGELOG=$(sed -n "$((START_LINE+1)),\$p" CHANGELOG.md)
+          # 提取版本行的行号
+          START_LINE=$(grep -F -n "$VERSION_PATTERN" CHANGELOG.md | cut -d: -f1)
+          
+          # 提取下一个版本行的行号（如果有）
+          NEXT_VERSION_LINE=$(grep -F -n "## [" CHANGELOG.md | awk -v start="$START_LINE" '$1 > start {print $1; exit}')
+          
+          if [ -z "$NEXT_VERSION_LINE" ]; then
+            # 如果没有下一个版本，提取到文件末尾
+            tail -n +$((START_LINE+1)) CHANGELOG.md > "$TEMP_FILE"
           else
             # 否则提取到下一个版本的前一行
-            CHANGELOG=$(sed -n "$((START_LINE+1)),$((NEXT_LINE-1))p" CHANGELOG.md)
+            sed -n "$((START_LINE+1)),$((NEXT_VERSION_LINE-1))p" CHANGELOG.md > "$TEMP_FILE"
           fi
+          
+          # 显示提取的内容
+          echo "版本 [$VERSION] 的更新记录为："
+          cat "$TEMP_FILE"
+          
+          # 将内容读入变量
+          CHANGELOG=$(cat "$TEMP_FILE")
           
           # 检查提取的内容是否为空
           if [ -z "$CHANGELOG" ]; then
@@ -102,14 +114,12 @@ jobs:
             CHANGELOG="版本 $VERSION 发布"
           fi
           
-          echo "版本 [$VERSION] 的更新记录为："
-          echo "$CHANGELOG" | while IFS= read -r line; do
-            echo "  $line"
-          done
-
           # 处理多行内容，替换换行符为特殊标记
-          CHANGELOG="${CHANGELOG//$'\n'/%0A}"
-          echo "changelog=$CHANGELOG" >> $GITHUB_OUTPUT
+          CHANGELOG_ESCAPED="${CHANGELOG//$'\n'/%0A}"
+          echo "changelog=$CHANGELOG_ESCAPED" >> $GITHUB_OUTPUT
+          
+          # 清理临时文件
+          rm -f "$TEMP_FILE"
 
           exit 1
 
