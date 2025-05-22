@@ -84,14 +84,23 @@ jobs:
           fi
           
           # 提取版本的更新记录内容
-          NEXT_VERSION_PATTERN="## ["
-          CHANGELOG=$(awk -v ver="$VERSION_PATTERN" -v nextver="$NEXT_VERSION_PATTERN" '
-            BEGIN { flag=0; content=""; }
-            $0 ~ ver { flag=1; }
-            flag == 1 && $0 ~ nextver && $0 !~ ver { flag=0; }
-            flag == 1 && $0 !~ ver { content = content $0 "\n"; }
-            END { print content; }
-          ' CHANGELOG.md)
+          START_LINE=$(grep -F -n "$VERSION_PATTERN" CHANGELOG.md | cut -d: -f1)
+          NEXT_LINE=$(grep -F -n "## [" CHANGELOG.md | awk -v start="$START_LINE" '$1 > start {print $1; exit}' | cut -d: -f1)
+          
+          if [ -z "$NEXT_LINE" ]; then
+            # 如果没有下一个版本，则提取到文件末尾
+            CHANGELOG=$(sed -n "$((START_LINE+1)),\$p" CHANGELOG.md)
+          else
+            # 否则提取到下一个版本的前一行
+            CHANGELOG=$(sed -n "$((START_LINE+1)),$((NEXT_LINE-1))p" CHANGELOG.md)
+          fi
+          
+          # 检查提取的内容是否为空
+          if [ -z "$CHANGELOG" ]; then
+            echo "警告：提取的更新记录内容为空，请检查 CHANGELOG.md 格式"
+            # 设置一个默认内容
+            CHANGELOG="版本 $VERSION 发布"
+          fi
           
           # 将内容保存为输出，用于后续步骤
           # 处理多行内容，替换换行符为特殊标记
