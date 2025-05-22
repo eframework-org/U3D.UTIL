@@ -114,9 +114,9 @@ jobs:
           echo "版本内容："
           echo "$RELEASE_CONTENT"
           
-          # 处理多行内容，替换换行符为特殊标记
-          RELEASE_TITLE="${RELEASE_TITLE//$'\n'/%0A}"
-          RELEASE_CONTENT="${RELEASE_CONTENT//$'\n'/%0A}"
+          # # 处理多行内容，替换换行符为特殊标记
+          # RELEASE_TITLE="${RELEASE_TITLE//$'\n'/%0A}"
+          # RELEASE_CONTENT="${RELEASE_CONTENT//$'\n'/%0A}"
           
           # 输出变量
           echo "release_title=$RELEASE_TITLE" >> $GITHUB_OUTPUT
