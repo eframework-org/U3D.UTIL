@@ -3,7 +3,7 @@ name: 版本发布
 on:
   workflow_dispatch:
     inputs:
-      version:
+      new_version:
         description: '发布版本（如：1.0.0，默认递增）'
         required: false
       skip_test:
