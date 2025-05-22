@@ -77,10 +77,10 @@ jobs:
           fi
           
           # 查找版本对应的更新记录
-          VERSION_PATTERN="## [$VERSION]"
-          if ! grep -q "$VERSION_PATTERN" CHANGELOG.md; then
-            echo "错误：在 CHANGELOG.md 中未找到版本 [$VERSION] 的更新记录"
-            exit 1
+          VERSION_PATTERN="## [$VERSION]" 
+          if ! grep -F -q "$VERSION_PATTERN" CHANGELOG.md; then 
+            echo "错误：在 CHANGELOG.md 中未找到版本 [$VERSION] 的更新记录" 
+            exit 1 
           fi
           
           # 提取版本的更新记录内容
