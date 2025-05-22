@@ -114,13 +114,9 @@ jobs:
           echo "版本内容："
           echo "$RELEASE_CONTENT"
           
-          # # 处理多行内容，替换换行符为特殊标记
-          # RELEASE_TITLE="${RELEASE_TITLE//$'\n'/%0A}"
-          # RELEASE_CONTENT="${RELEASE_CONTENT//$'\n'/%0A}"
-          
           # 输出变量
           echo "release_title=$RELEASE_TITLE" >> $GITHUB_OUTPUT
-          echo "release_content=$RELEASE_CONTENT" >> $GITHUB_OUTPUT
+          echo "$RELEASE_CONTENT" > RELEASE.md
 
   test:
     name: 运行单元测试
@@ -208,7 +204,7 @@ jobs:
         with:
           tag_name: v${{ needs.prepare.outputs.new_version }}
           name: ${{ needs.prepare.outputs.release_title }}
-          body: ${{ needs.prepare.outputs.release_content }}
+          body_path: RELEASE.md
           draft: false
           prerelease: false
 
