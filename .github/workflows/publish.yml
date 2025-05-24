@@ -32,7 +32,7 @@ jobs:
           echo "仓库名称不匹配，输入: ${{ github.event.inputs.confirm }}，期望: ${{ github.repository }}"
           exit 1
 
-      - name: 检出代码
+      - name: 检出仓库代码
         uses: actions/checkout@v4
         with:
           lfs: true
@@ -58,11 +58,11 @@ jobs:
             exit 1
           fi
           
-          # # 检查版本号是否已存在
-          # if git rev-parse "v$VERSION" >/dev/null 2>&1; then
-          #   echo "错误：版本 v$VERSION 已存在"
-          #   exit 1
-          # fi
+          # 检查版本号是否已存在
+          if git rev-parse "v$VERSION" >/dev/null 2>&1; then
+            echo "错误：版本 v$VERSION 已存在"
+            exit 1
+          fi
           
           echo "new_version=$VERSION" >> $GITHUB_OUTPUT
           echo "将发布版本：v$VERSION"
@@ -79,14 +79,12 @@ jobs:
             exit 1
           fi
           
-          # 提取标题行
+          # 提取标题
           TITLE_LINE=$(grep -n "## \[$VERSION\]" "$CHANGELOG_FILE" | cut -d ":" -f 1)
           if [ -z "$TITLE_LINE" ]; then
             echo "错误：在 $CHANGELOG_FILE 中未找到版本 [$VERSION] 的更新记录" 
             exit 1 
           fi
-          
-          # 提取标题并去除 ## 前缀和前后空格
           RELEASE_TITLE=$(sed -n "${TITLE_LINE}p" "$CHANGELOG_FILE" | sed 's/^##\s*//g' | sed 's/^\s*//;s/\s*$//')
           echo "版本标题：$RELEASE_TITLE"
           
@@ -102,13 +100,13 @@ jobs:
               # 如果找到了下一个版本标题，则内容结束行为下一个版本标题的前一行
               CONTENT_END_LINE=$((END_LINE - 1))
           fi
-          
+
           # 提取内容
           RELEASE_CONTENT=$(sed -n "${START_LINE},${CONTENT_END_LINE}p" "$CHANGELOG_FILE" | grep -v "^$")
           
           # 检查提取的内容是否为空
           if [ -z "$RELEASE_CONTENT" ]; then
-            echo "错误：提取的更新记录内容为空，请检查 $CHANGELOG_FILE 格式"
+            echo "错误：更新记录内容为空，请检查 $CHANGELOG_FILE 格式"
             exit 1
           fi
           echo "版本内容："
@@ -151,53 +149,53 @@ jobs:
         with:
           lfs: true
 
-      # - name: 设置 Node.js 环境
-      #   uses: actions/setup-node@v3
-      #   with:
-      #     node-version: '20'
-      #     registry-url: 'https://registry.npmjs.com'
+      - name: 设置 Node.js 环境
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.com'
 
-      # - name: 更新版本号
-      #   run: |
-      #     VERSION="${{ needs.prepare.outputs.new_version }}"
-      #     CURRENT_VERSION=$(node -p "require('./package.json').version")
+      - name: 更新版本号
+        run: |
+          VERSION="${{ needs.prepare.outputs.new_version }}"
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
           
-      #     if [ "$VERSION" != "$CURRENT_VERSION" ]; then
-      #       echo "更新版本号: $CURRENT_VERSION -> $VERSION"
-      #       npm version $VERSION --no-git-tag-version
-      #     else
-      #       echo "版本号未变更，保持 $VERSION"
-      #     fi
+          if [ "$VERSION" != "$CURRENT_VERSION" ]; then
+            echo "更新版本号: $CURRENT_VERSION -> $VERSION"
+            npm version $VERSION --no-git-tag-version
+          else
+            echo "版本号未变更，保持 $VERSION"
+          fi
       
-      # - name: 发布至注册表
-      #   env:
-      #     NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH }}
-      #   run: npm publish --access public
+      - name: 发布至注册表
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH }}
+        run: npm publish --access public
 
-      # - name: 提交版本标签
-      #   shell: bash
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #   run: |
-      #     VERSION="${{ needs.prepare.outputs.new_version }}"
-      #     git config --global user.email "github-actions[bot]@users.noreply.github.com"
-      #     git config --global user.name "github-actions[bot]"
+      - name: 提交版本标签
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION="${{ needs.prepare.outputs.new_version }}"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
 
-      #     # 提交版本
-      #     git add package.json
-      #     if [ -f "package-lock.json" ]; then
-      #       git add package-lock.json
-      #     fi
-      #     git commit -m "chore: 发布 v$VERSION" || true
+          # 提交版本
+          git add package.json
+          if [ -f "package-lock.json" ]; then
+            git add package-lock.json
+          fi
+          git commit -m "chore: 发布 v$VERSION" || true
           
-      #     # 创建标签
-      #     git tag -a "v$VERSION" -m "chore: 发布 v$VERSION"
+          # 创建标签
+          git tag -a "v$VERSION" -m "chore: 发布 v$VERSION"
           
-      #     # 拉取提交
-      #     git pull origin
+          # 拉取提交
+          git pull origin
 
-      #     # 推送版本
-      #     git push origin --follow-tags
+          # 推送版本
+          git push origin --follow-tags
 
       - name: 创建 GitHub Release
         uses: softprops/action-gh-release@v2
@@ -210,8 +208,8 @@ jobs:
           draft: false
           prerelease: false
 
-      # - name: 发布完成
-      #   run: |
-      #     echo "版本: v${{ needs.prepare.outputs.new_version }}"
-      #     echo "标签: https://github.com/${{ github.repository }}/releases/tag/v${{ needs.prepare.outputs.next_version }}"
-      #     echo "注册表: https://www.npmjs.com/package/$(node -p "require('./package.json').name")"
+      - name: 发布完成
+        run: |
+          echo "版本: v${{ needs.prepare.outputs.new_version }}"
+          echo "标签: https://github.com/${{ github.repository }}/releases/tag/v${{ needs.prepare.outputs.next_version }}"
+          echo "注册表: https://www.npmjs.com/package/$(node -p "require('./package.json').name")"
