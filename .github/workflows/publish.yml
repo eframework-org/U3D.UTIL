@@ -144,7 +144,7 @@ jobs:
       contents: write
       
     steps:
-      - name: 检出代码
+      - name: 检出仓库代码
         uses: actions/checkout@v4
         with:
           lfs: true
@@ -208,7 +208,7 @@ jobs:
           draft: false
           prerelease: false
 
-      - name: 发布完成
+      - name: 版本发布完成
         run: |
           echo "版本: v${{ needs.prepare.outputs.new_version }}"
           echo "标签: https://github.com/${{ github.repository }}/releases/tag/v${{ needs.prepare.outputs.next_version }}"
