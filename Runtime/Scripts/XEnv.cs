@@ -278,11 +278,10 @@ namespace EFramework.Utility
 
         internal static string projectPath;
         /// <summary>
-        /// 获取项目根目录路径
+        /// ProjectPath 获取项目根目录路径。
         /// </summary>
         /// <remarks>
-        /// 在编辑器中为Assets的父目录
-        /// 在运行时为应用程序的根目录
+        /// 这个函数是线程安全的，可以多线程访问。
         /// </remarks>
         public static string ProjectPath
         {
@@ -290,7 +289,7 @@ namespace EFramework.Utility
             {
                 if (string.IsNullOrEmpty(projectPath))
                 {
-                    projectPath = XFile.NormalizePath(Directory.GetParent(Application.dataPath).ToString());
+                    projectPath = XFile.NormalizePath(Directory.GetCurrentDirectory());
                 }
                 return projectPath;
             }
@@ -298,12 +297,10 @@ namespace EFramework.Utility
 
         internal static string localPath;
         /// <summary>
-        /// 获取数据存储目录路径
+        /// LocalPath 获取数据存储目录路径。
         /// </summary>
         /// <remarks>
-        /// 在编辑器中为Local目录
-        /// 在Windows平台为Local目录
-        /// 在其他平台为persistentDataPath
+        /// 这个函数是线程不安全的，只能在主线程访问。
         /// </remarks>
         public static string LocalPath
         {
@@ -353,11 +350,10 @@ namespace EFramework.Utility
 
         internal static string assetPath;
         /// <summary>
-        /// 获取只读资源目录路径
+        /// AssetPath 获取只读资源目录路径。
         /// </summary>
         /// <remarks>
-        /// 对应Unity的StreamingAssets目录
-        /// 用于存放只读的资源文件
+        /// 这个函数是线程不安全的，只能在主线程访问。
         /// </remarks>
         public static string AssetPath
         {
@@ -773,7 +769,7 @@ namespace EFramework.Utility
         internal static bool bSecret = false;
         internal static string secret = "";
         /// <summary>
-        /// 获取密钥。
+        /// 获取应用密钥。
         /// </summary>
         /// <remarks>
         /// 从配置中获取，支持环境变量解析。
@@ -1019,6 +1015,7 @@ namespace EFramework.Utility
                             "Version" => Version,
                             "Author" => Author,
                             "Secret" => Secret,
+                            "NumCPU" => SystemInfo.processorCount.ToString(),
                             _ => GetArg(key)
                         };
 

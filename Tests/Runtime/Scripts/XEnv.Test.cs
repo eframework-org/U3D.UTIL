@@ -265,29 +265,64 @@ public class TestXEnv
         {
             var testVar = $"TEST_VAR_{XTime.GetMillisecond()}";
 
-            // 测试命令行参数解析
-            XEnv.ParseArgs(true, "-test", "value");
-            var result1 = "prefix ${Env.test} suffix".Eval(XEnv.Vars);
-            Assert.AreEqual("prefix value suffix", result1, "应正确解析命令行参数的环境变量引用");
+            #region 测试命令行参数解析
+            {
+                XEnv.ParseArgs(true, "-test", "value");
+                var result1 = "prefix ${Env.test} suffix".Eval(XEnv.Vars);
+                Assert.AreEqual("prefix value suffix", result1, "应正确解析命令行参数的环境变量引用");
+            }
+            #endregion
 
-            // 测试系统环境变量解析
-            Environment.SetEnvironmentVariable(testVar, "env_value");
-            var result2 = ("prefix ${Env." + testVar + "} suffix").Eval(XEnv.Vars);
-            Assert.AreEqual("prefix env_value suffix", result2, "应正确解析系统环境变量引用");
+            #region 测试系统环境变量解析
+            {
+                Environment.SetEnvironmentVariable(testVar, "env_value");
+                var result2 = ("prefix ${Env." + testVar + "} suffix").Eval(XEnv.Vars);
+                Assert.AreEqual("prefix env_value suffix", result2, "应正确解析系统环境变量引用");
+            }
+            #endregion
 
-            // 测试参数优先级
-            XEnv.ParseArgs(true, $"-{testVar}", "arg_value");
-            var result3 = ("${Env." + testVar + "}").Eval(XEnv.Vars);
-            Assert.AreEqual("arg_value", result3, "命令行参数应优先于系统环境变量");
+            #region 测试内置变量解析
+            {
+                Assert.AreEqual("${Env.LocalPath}".Eval(XEnv.Vars), XEnv.LocalPath, "${Env.LocalPath} 解析后应当和 XEnv.LocalPath 相等。");
+                Assert.AreEqual("${Env.ProjectPath}".Eval(XEnv.Vars), XEnv.ProjectPath, "${Env.ProjectPath} 解析后应当和 XEnv.ProjectPath 相等。");
+                Assert.AreEqual("${Env.AssetPath}".Eval(XEnv.Vars), XEnv.AssetPath, "${Env.AssetPath} 解析后应当和 XEnv.AssetPath 相等。");
+                Assert.AreEqual("${Env.UserName}".Eval(XEnv.Vars), Environment.UserName, "${Env.UserName} 解析后应当和 Environment.UserName 相等。");
+                Assert.AreEqual("${Env.Platform}".Eval(XEnv.Vars), XEnv.Platform.ToString(), "${Env.Platform} 解析后应当和 XEnv.Platform 相等。");
+                Assert.AreEqual("${Env.App}".Eval(XEnv.Vars), XEnv.App.ToString(), "${Env.App} 解析后应当和 XEnv.App 相等。");
+                Assert.AreEqual("${Env.Mode}".Eval(XEnv.Vars), XEnv.Mode.ToString(), "${Env.Mode} 解析后应当和 XEnv.Mode 相等。");
+                Assert.AreEqual("${Env.Solution}".Eval(XEnv.Vars), XEnv.Solution, "${Env.Solution} 解析后应当和 XEnv.Solution 相等。");
+                Assert.AreEqual("${Env.Project}".Eval(XEnv.Vars), XEnv.Project, "${Env.Project} 解析后应当和 XEnv.Project 相等。");
+                Assert.AreEqual("${Env.Product}".Eval(XEnv.Vars), XEnv.Product, "${Env.Product} 解析后应当和 XEnv.Product 相等。");
+                Assert.AreEqual("${Env.Channel}".Eval(XEnv.Vars), XEnv.Channel, "${Env.Channel} 解析后应当和 XEnv.Channel 相等。");
+                Assert.AreEqual("${Env.Version}".Eval(XEnv.Vars), XEnv.Version, "${Env.Version} 解析后应当和 XEnv.Version 相等。");
+                Assert.AreEqual("${Env.Author}".Eval(XEnv.Vars), XEnv.Author, "${Env.Author} 解析后应当和 XEnv.Author 相等。");
+                Assert.AreEqual("${Env.Secret}".Eval(XEnv.Vars), XEnv.Secret, "${Env.Secret} 解析后应当和 XEnv.Secret 相等。");
+                Assert.AreEqual("${Env.NumCPU}".Eval(XEnv.Vars), SystemInfo.processorCount.ToString(), "${Env.NumCPU} 解析后应当和 SystemInfo.processorCount 相等。");
+            }
+            #endregion
 
-            // 测试缺失变量处理
-            XEnv.ParseArgs(true);
-            var result4 = "hello ${Env.missing}".Eval(XEnv.Vars);
-            Assert.IsTrue(result4.Contains("(Unknown)"), "未定义的环境变量应标记为未知");
+            #region 测试参数优先级
+            {
+                XEnv.ParseArgs(true, $"-{testVar}", "arg_value");
+                var result3 = ("${Env." + testVar + "}").Eval(XEnv.Vars);
+                Assert.AreEqual("arg_value", result3, "命令行参数应优先于系统环境变量");
+            }
+            #endregion
 
-            // 测试嵌套变量处理
-            var result5 = "nested ${Env.outer${Env.inner}}".Eval(XEnv.Vars);
-            Assert.IsTrue(result5.Contains("(Nested)"), "嵌套的环境变量引用应标记为嵌套");
+            #region 测试缺失变量处理
+            {
+                XEnv.ParseArgs(true);
+                var result4 = "hello ${Env.missing}".Eval(XEnv.Vars);
+                Assert.IsTrue(result4.Contains("(Unknown)"), "未定义的环境变量应标记为未知");
+            }
+            #endregion
+
+            #region 测试嵌套变量处理
+            {
+                var result5 = "nested ${Env.outer${Env.inner}}".Eval(XEnv.Vars);
+                Assert.IsTrue(result5.Contains("(Nested)"), "嵌套的环境变量引用应标记为嵌套");
+            }
+            #endregion
         }
         finally
         {

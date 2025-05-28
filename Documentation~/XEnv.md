@@ -140,6 +140,25 @@ var text = "Hello ${Env.UserName}!";
 var result = text.Eval(XEnv.Vars);
 ```
 
+#### 6.2 内置变量列表
+
+| 名称 | 说明 |
+| :-: | :-: |
+| LocalPath | 存储目录 |
+| ProjectPath | 项目目录 |
+| UserName | 系统用户 |
+| Platform | 运行平台 |
+| App | 应用类型 |
+| Mode | 运行模式 |
+| Solution | 解决方案 |
+| Project | 项目名称 |
+| Product | 产品名称 |
+| Channel | 发布渠道 |
+| Version | 应用版本 |
+| Author | 作者信息 |
+| Secret | 应用密钥 |
+| NumCPU | CPU 核心数 |
+
 ## 常见问题
 
 ### 1. 路径获取问题
