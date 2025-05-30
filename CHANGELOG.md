@@ -5,7 +5,7 @@
 - 修复多线程环境下访问 XEnv.ProjectPath 引发的异常
 
 ### 新增
-- 新增 ${XEnv.NumCPU} 变量用于引用求值并完善了 XEnv.Eval 的单元测试
+- 新增 ${Env.NumCPU} 变量用于引用求值并完善了 XEnv.Eval 的单元测试
 
 ## [0.0.5] - 2025-05-13
 ### 修复
