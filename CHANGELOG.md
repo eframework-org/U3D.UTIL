@@ -1,5 +1,16 @@
 # 更新记录
 
+## [0.0.7] - 2025-06-05
+### 变更
+- 优化 XPool.GObject 的单元测试
+
+### 修复
+- 修复 XFile.FileMD5 潜在的资源占用及释放问题
+- 修复 XLoom.Timeout/Interval 的 Tick 精度及错误的单元测试
+
+### 新增
+- 新增 XPool.GObject.OnSet 钩子函数用于自定义缓存逻辑
+
 ## [0.0.6] - 2025-05-28
 ### 修复
 - 修复多线程环境下访问 XEnv.ProjectPath 引发的异常
