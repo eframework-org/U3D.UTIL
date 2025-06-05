@@ -106,14 +106,14 @@ namespace EFramework.Utility
         public class Timer
         {
             /// <summary>
-            /// 原始时长（毫秒）
+            /// 原始时长
             /// </summary>
-            public long Period;
+            public float Period;
 
             /// <summary>
-            /// 剩余时长（毫秒）
+            /// 剩余时长
             /// </summary>
-            public long Tick;
+            public float Tick;
 
             /// <summary>
             /// 是否重复执行
@@ -174,7 +174,7 @@ namespace EFramework.Utility
         /// <summary>
         /// 更新定时器状态。
         /// </summary>
-        internal void Update() { Tick((long)(Time.deltaTime * 1000)); }
+        internal void Update() { Tick(Time.deltaTime); }
 
         /// <summary>
         /// 清理 XLoom 实例。
@@ -211,7 +211,7 @@ namespace EFramework.Utility
                 var ntime = XTime.GetMillisecond();
                 var dtime = ntime - ltime;
                 ltime = ntime;
-                Tick(dtime);
+                Tick(dtime / 1000f);
             }
 
             if (UnityEditor.EditorApplication.isPlayingOrWillChangePlaymode) onPlay();
@@ -237,8 +237,8 @@ namespace EFramework.Utility
         /// <summary>
         /// 更新定时器和任务状态。
         /// </summary>
-        /// <param name="delta">时间增量（毫秒）</param>
-        internal static void Tick(long delta)
+        /// <param name="delta">时间增量</param>
+        internal static void Tick(float delta)
         {
             // 处理任务队列
             lock (allTasks)
@@ -439,8 +439,8 @@ namespace EFramework.Utility
         {
             var timer = timerPool.Get();
             timer.Callback = callback;
-            timer.Period = timeout;
-            timer.Tick = timeout;
+            timer.Period = timeout / 1000f;
+            timer.Tick = timer.Period;
             timer.Repeat = false;
             lock (allTimers) allTimers.Add(timer);
             return timer;
@@ -473,8 +473,8 @@ namespace EFramework.Utility
         {
             var timer = timerPool.Get();
             timer.Callback = callback;
-            timer.Period = interval;
-            timer.Tick = interval;
+            timer.Period = interval / 1000f;
+            timer.Tick = timer.Period;
             timer.Repeat = true;
             lock (allTimers) allTimers.Add(timer);
             return timer;

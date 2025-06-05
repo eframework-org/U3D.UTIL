@@ -12,83 +12,74 @@ using UnityEngine.TestTools;
 
 public class TestXLoom : MonoBehaviour
 {
-    [Test]
-    public void SetTimeout()
+    [UnityTest]
+    public IEnumerator Timeout()
     {
         // Arrange
-        bool called = false;
-        Action callback = () => called = true;
-
-        // Act
-        var timer = XLoom.SetTimeout(callback, 100);
-        XLoom.Tick(50);
-        Assert.IsFalse(called, "定时器在未到达指定时间时不应触发回调");
-        XLoom.Tick(50);
-
-        // Assert
-        Assert.IsTrue(called, "定时器应在到达指定时间后触发回调");
-        XLoom.ClearTimeout(timer); // 清理定时器
-    }
-
-    [Test]
-    public void ClearTimeout()
-    {
-        // Arrange
-        bool called = false;
-        Action callback = () => called = true;
-        var timer = XLoom.SetTimeout(callback, 100);
-
-        // Act
-        XLoom.ClearTimeout(timer);
-        XLoom.Tick(200);
-
-        // Assert
-        Assert.IsFalse(called, "已清除的定时器不应触发回调");
-    }
-
-    [Test]
-    public void SetInterval()
-    {
-        // Arrange
-        int callCount = 0;
-        Action callback = () =>
+        var called = false;
+        var startTime = XTime.GetMillisecond();
+        long deltaTime = 0;
+        void callback()
         {
-            callCount++;
-        };
+            called = true;
+            deltaTime = XTime.GetMillisecond() - startTime;
+        }
 
         // Act
-        var timer = XLoom.SetInterval(callback, 100);
-        XLoom.Tick(100);
-        XLoom.Tick(100);
-        XLoom.Tick(100);
+        XLoom.SetTimeout(callback, 200);
+        yield return new WaitForSeconds(0.5f);
+        Assert.IsTrue(called, "Timeout 定时器应在到达指定时间后触发回调");
+        var offset = Time.fixedDeltaTime * 1000;
+        Assert.That(deltaTime, Is.InRange(200 - offset, 200 + offset), "Timeout 定时器应当在指定时间范围内回调");
 
         // Assert
-        Assert.Greater(callCount, 2, "重复定时器应多次触发回调");
-        XLoom.ClearInterval(timer); // 清理定时器
+        called = false;
+        var timer = XLoom.SetTimeout(callback, 200);
+        XLoom.ClearTimeout(timer); // 清理定时器
+        yield return new WaitForSeconds(0.5f);
+        Assert.IsFalse(called, "被清除的 Timeout 定时器不应当被回调");
     }
 
-    [Test]
-    public void ClearInterval()
+    [UnityTest]
+    public IEnumerator Interval()
     {
         // Arrange
-        int callCount = 0;
-        Action callback = () => callCount++;
-        var timer = XLoom.SetInterval(callback, 100);
+        var called = false;
+        var startTime = XTime.GetMillisecond();
+        long deltaTime = 0;
+        void callback()
+        {
+            called = true;
+            if (deltaTime == 0)
+            {
+                deltaTime = XTime.GetMillisecond() - startTime;
+            }
+        }
 
         // Act
-        XLoom.ClearInterval(timer);
-        XLoom.Tick(200);
+        var timer = XLoom.SetInterval(callback, 200);
+        yield return new WaitForSeconds(0.5f);
+        Assert.IsTrue(called, "Interval 定时器应在到达指定时间后触发回调");
+        var offset = Time.fixedDeltaTime * 1000;
+        Assert.That(deltaTime, Is.InRange(200 - offset, 200 + offset), "Interval 定时器应当在指定时间范围内回调");
+
+        called = false;
+        yield return new WaitForSeconds(0.5f);
+        Assert.IsTrue(called, "Interval 定时器应在到达指定时间后再次触发回调");
 
         // Assert
-        Assert.AreEqual(0, callCount, "已清除的重复定时器不应触发任何回调");
+        called = false;
+        XLoom.ClearInterval(timer); // 清理定时器
+        yield return new WaitForSeconds(0.5f);
+        Assert.IsFalse(called, "被清除的 Interval 定时器不应当被回调");
     }
 
     [Test]
     public void RunInMain()
     {
         // Arrange
-        bool called = false;
-        Action callback = () => called = true;
+        var called = false;
+        void callback() => called = true;
 
         // Act
         XLoom.RunInMain(callback);
@@ -101,8 +92,8 @@ public class TestXLoom : MonoBehaviour
     public IEnumerator RunInNext()
     {
         // Arrange
-        bool called = false;
-        Action callback = () => called = true;
+        var called = false;
+        void callback() => called = true;
 
         // Act
         XLoom.RunInNext(callback);
@@ -117,8 +108,8 @@ public class TestXLoom : MonoBehaviour
     public IEnumerator RunAsync()
     {
         // Arrange
-        bool called = false;
-        Action callback = () => called = true;
+        var called = false;
+        void callback() => called = true;
 
         // Act
         var task = XLoom.RunAsync(callback);
@@ -132,7 +123,7 @@ public class TestXLoom : MonoBehaviour
     public IEnumerator StartCR()
     {
         // Arrange
-        bool called = false;
+        var called = false;
         IEnumerator coroutine = TestCoroutine(() => called = true);
 
         // Act
@@ -154,7 +145,7 @@ public class TestXLoom : MonoBehaviour
     public IEnumerator StopCR()
     {
         // Arrange
-        bool called = false;
+        var called = false;
         IEnumerator coroutine = TestCoroutine(() => called = true);
         Coroutine cr = XLoom.StartCR(coroutine);
 
