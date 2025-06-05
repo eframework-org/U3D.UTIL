@@ -438,22 +438,31 @@ namespace EFramework.Utility
             }
 
             /// <summary>
+            /// OnSet 是 Set 的钩子函数。
+            /// 可以在该函数处理自定义的缓存逻辑，如加载 GameObject 对象，持有 AssetBundle 引用等。
+            /// 返回的对象将作为缓存源实例。
+            /// </summary>
+            public static Func<string, GameObject, CacheType, GameObject> OnSet;
+
+            /// <summary>
             /// 注册预制体到对象池。
             /// </summary>
             /// <param name="key">预制体标识</param>
             /// <param name="origin">预制体对象</param>
             /// <param name="cache">缓存类型</param>
             /// <returns>是否注册成功</returns>
-            public static bool Set(string key, GameObject origin, CacheType cache = CacheType.Scene)
+            public static bool Set(string key, GameObject origin = null, CacheType cache = CacheType.Scene)
             {
                 if (disposed) return false;
                 if (instance == null) throw new Exception("XPool instance is null.");
                 if (string.IsNullOrEmpty(key)) { XLog.Error("XPool.GObject.Set: key is null."); return false; }
-                if (origin == null) { XLog.Error("XPool.GObject.Set: origin is null."); return false; }
+                if (OnSet != null) origin = OnSet(key, origin, cache);
 
                 if (Has(key)) { XLog.Warn("XPool.GObject.Set: key exists: {0}", key); return false; }
                 else
                 {
+                    if (origin == null) { XLog.Warn("XPool.GObject.Set: origin is null."); return false; }
+
                     var handler = SObject<CacheHandler>.Get();
                     handler.Path = key;
                     handler.Origin = origin;
