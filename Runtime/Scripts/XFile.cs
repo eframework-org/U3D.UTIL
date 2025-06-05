@@ -167,7 +167,7 @@ namespace EFramework.Utility
             }
             if (File.Exists(file) == false) return -1;
             try { return new FileInfo(file).Length; }
-            catch (Exception e) { XLog.Panic(e); return -1; }
+            catch (Exception e) { XLog.Panic(e, file); return -1; }
         }
 
         /// <summary>
@@ -237,7 +237,7 @@ namespace EFramework.Utility
                     return bytes;
                 }
             }
-            catch (Exception e) { XLog.Panic(e); }
+            catch (Exception e) { XLog.Panic(e, path); }
             return bytes;
         }
 
@@ -346,7 +346,7 @@ namespace EFramework.Utility
                 }
                 result = true;
             }
-            catch (Exception e) { XLog.Panic(e); }
+            catch (Exception e) { XLog.Panic(e, path); }
             return result;
         }
 
@@ -671,7 +671,7 @@ namespace EFramework.Utility
                     }
                     catch (Exception e)
                     {
-                        Debug.LogException(e);
+                        XLog.Panic(e);
                         onError?.Invoke(e.Message);
                     }
                 });
@@ -689,22 +689,20 @@ namespace EFramework.Utility
         /// </remarks>
         public static string FileMD5(string path)
         {
-            if (File.Exists(path) == false) return string.Empty;
+            if (!File.Exists(path)) return string.Empty;
             try
             {
-                var fs = new FileStream(path, FileMode.Open);
-                var md5 = new MD5CryptoServiceProvider();
-                var retVal = md5.ComputeHash(fs);
-                fs.Close();
-
+                using var fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+                using var md5 = MD5.Create();
+                var hash = md5.ComputeHash(fs);
                 var sb = new StringBuilder();
-                for (int i = 0; i < retVal.Length; i++)
+                foreach (var b in hash)
                 {
-                    sb.Append(retVal[i].ToString("x2"));
+                    sb.Append(b.ToString("x2"));
                 }
                 return sb.ToString();
             }
-            catch { return string.Empty; }
+            catch (Exception e) { XLog.Panic(e, path); return string.Empty; }
         }
     }
 }
