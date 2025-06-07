@@ -64,7 +64,7 @@ if (string.IsNullOrEmpty(manifest.Error))
 #### 2.2 远程文件读取
 ```csharp
 // 从远程 URL 读取清单，设置 10 秒超时
-var handler = manifest.Read("http://example.com/Manifest.md5", 10);
+var handler = manifest.Read("http://example.com/Manifest.db", 10);
 while (!handler()) { } // 等待读取完成
 
 if (string.IsNullOrEmpty(manifest.Error))

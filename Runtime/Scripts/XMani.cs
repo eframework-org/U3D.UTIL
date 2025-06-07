@@ -60,7 +60,7 @@ namespace EFramework.Utility
     /// 
     /// 2.2 远程文件读取
     ///     // 从远程 URL 读取清单，设置 10 秒超时
-    ///     var handler = manifest.Read("http://example.com/Manifest.md5", 10);
+    ///     var handler = manifest.Read("http://example.com/Manifest.db", 10);
     ///     while (!handler()) { } // 等待读取完成
     /// 
     /// 3. 清单对比
@@ -91,9 +91,9 @@ namespace EFramework.Utility
     public class XMani
     {
         /// <summary>
-        /// 默认清单文件名
+        /// 默认清单文件名。
         /// </summary>
-        public const string Default = "Manifest.md5";
+        public static string Default = "Manifest.db";
 
         /// <summary>
         /// 文件信息类，用于存储单个文件的元数据。
