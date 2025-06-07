@@ -48,6 +48,14 @@ pool.Put(obj);
 
 #### 2.1 设置预制体
 ```csharp
+
+// 设置钩子函数处理自定义的缓存逻辑，如加载 GameObject 对象，持有 AssetBundle 引用等
+XPool.GObject.OnSet = new System.Func<string, GameObject, XPool.GObject.CacheType, GameObject>((key, origin, cache) =>
+{
+    if(origin == null) origin = Resources.Load<GameObject>(key); // 示例：若 origin 不存在，则使用 key 加载
+    return origin;
+});
+
 // 注册预制体（场景级）
 var prefab = new GameObject("TestPrefab");
 XPool.GObject.Set("test_prefab", prefab);

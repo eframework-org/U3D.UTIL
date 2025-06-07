@@ -42,7 +42,7 @@ namespace EFramework.Utility
     ///     var pool = new XPool.SObject(typeof(List&lt;int&gt;));
     ///     
     ///     // 使用委托创建对象池
-    ///     var pool2 = new XPool.SObject(() => new List&lt;int&gt;());
+    ///     var pool2 = new XPool.SObject(() =&lt; new List&lt;int&gt;());
     ///     
     ///     // 获取和回收对象
     ///     var obj = pool.Get();
@@ -51,6 +51,13 @@ namespace EFramework.Utility
     /// 2. 游戏对象缓存
     /// 
     /// 2.1 设置预制体
+    ///     // 设置钩子函数处理自定义的缓存逻辑，如加载 GameObject 对象，持有 AssetBundle 引用等
+    ///     XPool.GObject.OnSet = new System.Func&lt;string, GameObject, XPool.GObject.CacheType, GameObject&gt;((key, origin, cache) =&lt;
+    ///     {
+    ///         if(origin == null) origin = Resources.Load&lt;GameObject&gt;(key); // 示例：若 origin 不存在，则使用 key 加载
+    ///         return origin;
+    ///     });
+    /// 
     ///     // 注册预制体（场景级）
     ///     var prefab = new GameObject("TestPrefab");
     ///     XPool.GObject.Set("test_prefab", prefab);
