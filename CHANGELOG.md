@@ -1,5 +1,11 @@
 # 更新记录
 
+## [0.0.8] - 2025-06-07
+### 变更
+- 重构 XMani.Default 的值为 Manifest.db
+- 公开 XMani.Default 字段，使得业务层可以自定义文件名
+- 完善 XPool.GObject 模块的说明文档
+
 ## [0.0.7] - 2025-06-05
 ### 变更
 - 优化 XPool.GObject 的单元测试
