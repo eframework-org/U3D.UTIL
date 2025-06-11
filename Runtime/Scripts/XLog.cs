@@ -313,7 +313,8 @@ namespace EFramework.Utility
         /// <summary>
         /// 日志适配器映射表
         /// </summary>
-        internal static readonly Dictionary<string, IAdapter> adapters = new();
+        internal static readonly Dictionary<string, IAdapter> adapters = new()
+            { { "Std", new StdAdapter() { level = LevelType.Debug, colored = true } } }; // 设置默认的输出适配器，避免在 OnInit 之前调用 XLog.* 无法输出
 
 #if UNITY_EDITOR
         [UnityEditor.InitializeOnLoadMethod]
@@ -407,15 +408,14 @@ namespace EFramework.Utility
 
             if (adapters.Count == 0)
             {
-                var std = new StdAdapter();
-                tempLevel = std.Init(new XPrefs.IBase());
-                adapters["Std"] = std;
+                // 设置默认的输出适配器，避免调用 XLog.* 无法输出
+                adapters["Std"] = new StdAdapter() { level = LevelType.Debug, colored = true };
             }
 
             // 更新最大日志级别
             levelMax = tempLevel;
 
-            Notice("XLog.Setup: performed setup with {0} adapters, max level is {1}.", adapters.Count, levelMax.ToString());
+            Print(level: LevelType.Notice, force: true, tag: null, data: "XLog.Setup: performed setup with {0} adapter(s), max level is {1}.", adapters.Count, levelMax.ToString());
         }
 
         /// <summary>
@@ -423,11 +423,8 @@ namespace EFramework.Utility
         /// </summary>
         public static void Flush()
         {
-            foreach (var adapter in adapters.Values)
-            {
-                adapter.Flush();
-            }
-            Notice("XLog.Flush: performed flush with {0} adapters.", adapters.Count);
+            foreach (var adapter in adapters.Values) adapter.Flush();
+            Print(level: LevelType.Notice, force: true, tag: null, data: "XLog.Flush: performed flush with {0} adapter(s).", adapters.Count);
         }
 
         /// <summary>
@@ -435,11 +432,8 @@ namespace EFramework.Utility
         /// </summary>
         public static void Close()
         {
-            Notice("XLog.Close: performed close with {0} adapters.", adapters.Count);
-            foreach (var adapter in adapters.Values)
-            {
-                adapter.Close();
-            }
+            Print(level: LevelType.Notice, force: true, tag: null, data: "XLog.Close: performed close with {0} adapter(s).", adapters.Count);
+            foreach (var adapter in adapters.Values) adapter.Close();
             adapters.Clear();
         }
 

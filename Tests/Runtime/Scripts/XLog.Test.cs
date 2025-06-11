@@ -83,13 +83,11 @@ public class TestXLog
         XLog.Close();
 
         // 验证日志文件存在
-        Assert.That(XFile.HasFile(logPath), Is.True,
-            $"期望日志文件存在于路径 {logPath}");
+        Assert.That(XFile.HasFile(logPath), Is.True, $"期望日志文件存在于路径 {logPath}");
 
         // 验证日志内容
         var content = XFile.OpenText(logPath);
-        Assert.That(content, Does.Contain(message),
-            $"期望日志内容包含消息 '{message}'");
+        Assert.That(content, Does.Contain(message), $"期望日志内容包含消息 '{message}'");
     }
 
     /// <summary>
@@ -184,8 +182,7 @@ public class TestXLog
         var content = XFile.OpenText(logPath);
         foreach (var test in tests)
         {
-            Assert.That(content, Does.Contain(test.message),
-                $"未找到期望的日志消息: {test.message}");
+            Assert.That(content, Does.Contain(test.message), $"未找到期望的日志消息: {test.message}");
         }
     }
 
