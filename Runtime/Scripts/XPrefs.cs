@@ -1155,7 +1155,7 @@ namespace EFramework.Utility
 
                 bool OnRetry(IRemote prefs, int count, out float wait);
 
-                void OnSucceed(IRemote prefs);
+                void OnSucceeded(IRemote prefs);
 
                 void OnFailed(IRemote prefs);
             }
@@ -1183,7 +1183,7 @@ namespace EFramework.Utility
                         {
                             if (Parse(req.downloadHandler.text, out var perror) == false)
                             {
-                                Error = XString.Format("Request preferences succeed but parse with error: {0}, content: {1}", perror, req.downloadHandler.text);
+                                Error = XString.Format("Request preferences succeeded, but parsing failed: {0}, content: {1}", perror, req.downloadHandler.text);
                             }
                         }
                         else Error = XString.Format("Request preferences response: {0}, error: {1}", req.responseCode, req.error);
@@ -1203,8 +1203,8 @@ namespace EFramework.Utility
                         }
                         else
                         {
-                            XLog.Notice("XPrefs.IRemote.Read: request and parse preferences succeed.");
-                            handler.OnSucceed(this);
+                            XLog.Notice("XPrefs.IRemote.Read: request and parse preferences succeeded.");
+                            handler.OnSucceeded(this);
                             break;
                         }
                     }

@@ -281,7 +281,7 @@ namespace EFramework.Utility
                                         {
                                             if (Parse(req.downloadHandler.data, out var perror) == false)
                                             {
-                                                Error = "Request manifest succeed but parse with error: {0}, content: {1}".Format(perror, req.downloadHandler.text);
+                                                Error = "Request manifest succeeded, but parsing failed: {0}, content: {1}".Format(perror, req.downloadHandler.text);
                                             }
                                         }
                                         else
@@ -291,7 +291,7 @@ namespace EFramework.Utility
 
                                         try { req.Dispose(); } catch (Exception e) { XLog.Panic(e); }
 
-                                        if (string.IsNullOrEmpty(Error)) XLog.Notice("XMani.Manifest.Read: request and parse manifest succeed.");
+                                        if (string.IsNullOrEmpty(Error)) XLog.Notice("XMani.Manifest.Read: request and parse manifest succeeded.");
                                         else XLog.Error("XMani.Manifest.Read: request and parse failed with error: {0}", Error);
                                     }
                                 }
@@ -316,7 +316,7 @@ namespace EFramework.Utility
                     else if (!XFile.HasFile(uri)) Error = $"Non exist file {uri} for reading mainfest.";
                     else if (!Parse(XFile.OpenFile(uri), out var perror)) Error = perror;
 
-                    if (string.IsNullOrEmpty(Error)) XLog.Notice("XMani.Manifest.Read: load and parse manifest succeed.");
+                    if (string.IsNullOrEmpty(Error)) XLog.Notice("XMani.Manifest.Read: load and parse manifest succeeded.");
                     else XLog.Error("XMani.Manifest.Read: load and parse failed with error: {0}", Error);
                 }
 
