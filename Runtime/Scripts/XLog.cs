@@ -409,6 +409,7 @@ namespace EFramework.Utility
             if (adapters.Count == 0)
             {
                 // 设置默认的输出适配器，避免调用 XLog.* 无法输出
+                tempLevel = LevelType.Debug;
                 adapters["Std"] = new StdAdapter() { level = LevelType.Debug, colored = true };
             }
 
