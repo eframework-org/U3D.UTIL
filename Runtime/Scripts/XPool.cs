@@ -376,42 +376,39 @@ namespace EFramework.Utility
                     {
                         if (!disposed && instance)
                         {
-                            lock (instance)
+                            keysToRemove.Clear();
+                            foreach (var kvp in usings)
                             {
-                                keysToRemove.Clear();
-                                foreach (var kvp in usings)
+                                if (kvp.Value.Type == CacheType.Scene) keysToRemove.Add(kvp.Key);
+                            }
+                            foreach (var go in keysToRemove)
+                            {
+                                usings.Remove(go);
+                                try { DestroyImmediate(go); }
+                                catch (Exception e) { XLog.Panic(e); }
+                                finally { objects.Remove(go); }
+                            }
+                            keysToRemove.Clear();
+
+                            keysToRemove2.Clear();
+                            foreach (var kvp in pools)
+                            {
+                                if (kvp.Value.Type == CacheType.Scene) keysToRemove2.Add(kvp.Key);
+                            }
+                            foreach (var key in keysToRemove2)
+                            {
+                                var handler = pools[key];
+                                pools.Remove(key);
+                                objects.Remove(handler.Origin);
+                                while (handler.Pool.Count > 0)
                                 {
-                                    if (kvp.Value.Type == CacheType.Scene) keysToRemove.Add(kvp.Key);
-                                }
-                                foreach (var go in keysToRemove)
-                                {
-                                    usings.Remove(go);
-                                    try { Destroy(go); }
+                                    var go = handler.Pool.Dequeue();
+                                    try { DestroyImmediate(go); }
                                     catch (Exception e) { XLog.Panic(e); }
                                     finally { objects.Remove(go); }
                                 }
-                                keysToRemove.Clear();
-
-                                keysToRemove2.Clear();
-                                foreach (var kvp in pools)
-                                {
-                                    if (kvp.Value.Type == CacheType.Scene) keysToRemove2.Add(kvp.Key);
-                                }
-                                foreach (var key in keysToRemove2)
-                                {
-                                    var handler = pools[key];
-                                    pools.Remove(key);
-                                    objects.Remove(handler.Origin);
-                                    while (handler.Pool.Count > 0)
-                                    {
-                                        var go = handler.Pool.Dequeue();
-                                        try { Destroy(go); }
-                                        catch (Exception e) { XLog.Panic(e); }
-                                        finally { objects.Remove(go); }
-                                    }
-                                }
-                                keysToRemove2.Clear();
                             }
+                            keysToRemove2.Clear();
                         }
                     }
                 };
@@ -441,7 +438,7 @@ namespace EFramework.Utility
                 if (disposed) return false;
                 if (instance == null) throw new Exception("XPool instance is null.");
                 if (string.IsNullOrEmpty(key)) { XLog.Error("XPool.GObject.Has: key is null."); return false; }
-                lock (instance) return pools.ContainsKey(key);
+                return pools.ContainsKey(key);
             }
 
             /// <summary>
@@ -474,11 +471,8 @@ namespace EFramework.Utility
                     handler.Path = key;
                     handler.Origin = origin;
                     handler.Type = cache;
-                    lock (instance)
-                    {
-                        pools[key] = handler;
-                        if (!objects.ContainsKey(origin)) objects.Add(origin, 0);
-                    }
+                    pools[key] = handler;
+                    if (!objects.ContainsKey(origin)) objects.Add(origin, 0);
                     return true;
                 }
             }
@@ -497,24 +491,21 @@ namespace EFramework.Utility
                 if (Has(key) == false) return false;
                 else
                 {
-                    lock (instance)
+                    pools.TryGetValue(key, out var handler);
+                    pools.Remove(key);
+
+                    objects.Remove(handler.Origin);
+                    foreach (var v in handler.Pool) objects.Remove(v);
+
+                    keysToRemove.Clear();
+                    foreach (var kvp in usings)
                     {
-                        pools.TryGetValue(key, out var handler);
-                        pools.Remove(key);
-
-                        objects.Remove(handler.Origin);
-                        foreach (var v in handler.Pool) objects.Remove(v);
-
-                        keysToRemove.Clear();
-                        foreach (var kvp in usings)
-                        {
-                            if (kvp.Value == handler) keysToRemove.Add(kvp.Key);
-                        }
-                        foreach (var k in keysToRemove)
-                        {
-                            usings.Remove(k);
-                            objects.Remove(k);
-                        }
+                        if (kvp.Value == handler) keysToRemove.Add(kvp.Key);
+                    }
+                    foreach (var k in keysToRemove)
+                    {
+                        usings.Remove(k);
+                        objects.Remove(k);
                     }
 
                     var sig = keysToRemove.Count > 0;
@@ -539,26 +530,23 @@ namespace EFramework.Utility
                 if (instance == null) throw new Exception("XPool instance is null.");
                 if (string.IsNullOrEmpty(key)) { XLog.Error("XPool.GObject.Get: key is null."); return null; }
 
-                lock (instance)
+                if (pools.TryGetValue(key, out var handler))
                 {
-                    if (pools.TryGetValue(key, out var handler))
+                    GameObject go;
+                    if (handler.Pool.Count > 0) go = handler.Pool.Dequeue();
+                    else
                     {
-                        GameObject go;
-                        if (handler.Pool.Count > 0) go = handler.Pool.Dequeue();
-                        else
-                        {
-                            go = Instantiate(handler.Origin);
-                            go.name = handler.Origin.name;
-                            objects.Add(go, 0);
-                        }
-                        go.SetActive(active);
-                        if (position != default) go.transform.position = position;
-                        if (rotation != default) go.transform.rotation = rotation;
-                        if (scale != default) go.transform.localScale = scale;
-                        usings[go] = handler;
-                        if (life > 0) XLoom.SetTimeout(() => Put(go), life);
-                        return go;
+                        go = Instantiate(handler.Origin);
+                        go.name = handler.Origin.name;
+                        objects.Add(go, 0);
                     }
+                    go.SetActive(active);
+                    if (position != default) go.transform.position = position;
+                    if (rotation != default) go.transform.rotation = rotation;
+                    if (scale != default) go.transform.localScale = scale;
+                    usings[go] = handler;
+                    if (life > 0) XLoom.SetTimeout(() => Put(go), life);
+                    return go;
                 }
                 return null;
             }
@@ -582,21 +570,18 @@ namespace EFramework.Utility
             {
                 if (!disposed && instance && go) // 在延迟的生命周期里可能被删除了
                 {
-                    lock (instance)
+                    if (usings.TryGetValue(go, out var handler))
                     {
-                        if (usings.TryGetValue(go, out var handler))
+                        go.transform.parent = instance.transform;
+                        go.SetActive(false);
+                        handler.Pool.Enqueue(go);
+                        usings.Remove(go);
+                    }
+                    else
+                    {
+                        if (!objects.ContainsKey(go)) // 避免多次回收
                         {
-                            go.transform.parent = instance.transform;
-                            go.SetActive(false);
-                            handler.Pool.Enqueue(go);
-                            usings.Remove(go);
-                        }
-                        else
-                        {
-                            if (!objects.ContainsKey(go)) // 避免多次回收
-                            {
-                                Destroy(go);
-                            }
+                            DestroyImmediate(go);
                         }
                     }
                 }

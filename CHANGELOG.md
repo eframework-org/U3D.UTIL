@@ -1,5 +1,10 @@
 # 更新记录
 
+## [0.1.0] - 2025-06-12
+### 变更
+- 移除 XPool.GObject 不必要的 lock (instance)
+- 修改 XPool.GObject 删除游戏对象为立即执行（DestroyImmediate）
+
 ## [0.0.9] - 2025-06-11
 ### 修复
 - 修复 XLog 在未初始化时调用 XLog.* 函数 Std 适配器无法输出的问题
