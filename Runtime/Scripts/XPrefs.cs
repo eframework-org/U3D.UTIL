@@ -291,6 +291,7 @@ namespace EFramework.Utility
             {
                 Error = string.Empty;
                 File = file;
+                for (var i = Count - 1; i >= 0; i--) Remove(i);
                 if (string.IsNullOrEmpty(File)) Error = "Null file for instantiating preferences.";
                 else if (!XFile.HasFile(File)) Error = $"Non exist file {File} for instantiating preferences.";
                 else if (!Parse(encrypt ? XString.Decrypt(XFile.OpenText(File)) : XFile.OpenText(File), out var perror)) Error = perror;
