@@ -266,7 +266,12 @@ namespace EFramework.Utility
             public virtual string Json(bool pretty = true)
             {
                 var jobj = Encode();
-                return pretty ? jobj.ToString(4) : jobj.ToString();
+                var keys = new List<string>();
+                foreach (var kvp in jobj) keys.Add(kvp.Key);
+                keys.Sort(); // 按照字母表排序，保证键值的顺序，提高文本可读性
+                var njobj = new JSONObject();
+                foreach (var key in keys) njobj[key] = jobj[key];
+                return pretty ? njobj.ToString(4) : njobj.ToString();
             }
 
             /// <summary>
