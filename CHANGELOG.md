@@ -4,6 +4,10 @@
 ### 变更
 - 移除 XPool.GObject 不必要的 lock (instance)
 - 修改 XPool.GObject 删除游戏对象为立即执行（DestroyImmediate）
+- 优化 XPrefs 保存的键值对顺序，按照字母表排序，提高文本可读性
+
+### 修复
+- 修复 XPrefs.Read 多次调用时未清空旧的键值对的问题
 
 ## [0.0.9] - 2025-06-11
 ### 修复
