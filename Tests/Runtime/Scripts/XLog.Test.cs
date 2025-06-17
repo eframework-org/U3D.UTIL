@@ -235,7 +235,7 @@ public class TestXLog
                     tag.Set("source", "test1");
                     XLog.Debug("Debug message", tag);
                 }),
-                expected = "[source = test1] Debug message"
+                expected = "[source=test1] Debug message"
             },
             new
             {
@@ -249,7 +249,7 @@ public class TestXLog
                     XLog.Debug("Context debug message");
                     XLog.Defer();
                 }),
-                expected = "[context = test2] Context debug message"
+                expected = "[context=test2] Context debug message"
             },
             new
             {
@@ -261,7 +261,7 @@ public class TestXLog
                     tag.Set("key2", "value2");
                     XLog.Info("Multi tag message", tag);
                 }),
-                expected = "[key1 = value1, key2 = value2] Multi tag message"
+                expected = "[key1=value1, key2=value2] Multi tag message"
             },
             new
             {
@@ -272,7 +272,7 @@ public class TestXLog
                     tag.Set("format", "test");
                     XLog.Info("Count: {0}", tag, 42);
                 }),
-                expected = "[format = test] Count: 42"
+                expected = "[format=test] Count: 42"
             }
         };
 
@@ -394,16 +394,13 @@ public class TestXLog
         // 验证每个线程的日志都被正确写入
         for (int i = 0; i < numThreads; i++)
         {
-            Assert.That(threadCounts[i], Is.GreaterThan(0),
-                $"线程 {i} 的日志未被写入");
-            Assert.That(threadCounts[i], Is.LessThanOrEqualTo(numLogs),
-                $"线程 {i} 写入的日志数量超出预期");
+            Assert.That(threadCounts[i], Is.GreaterThan(0), $"线程 {i} 的日志未被写入");
+            Assert.That(threadCounts[i], Is.LessThanOrEqualTo(numLogs), $"线程 {i} 写入的日志数量超出预期");
         }
 
         // 验证总日志数量在合理范围内
         var totalLogs = threadCounts.Sum();
-        Assert.That(totalLogs, Is.InRange(numThreads * numLogs * 0.5, numThreads * numLogs * 1.5),
-            $"总日志数量 {totalLogs} 不在预期范围内");
+        Assert.That(totalLogs, Is.InRange(numThreads * numLogs * 0.5, numThreads * numLogs * 1.5), $"总日志数量 {totalLogs} 不在预期范围内");
     }
 }
 #endif

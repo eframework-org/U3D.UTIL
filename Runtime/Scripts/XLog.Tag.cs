@@ -102,7 +102,7 @@ namespace EFramework.Utility
                                 {
                                     first = false;
                                 }
-                                builder.AppendFormat("{0} = {1}", keys[i], values[i]);
+                                builder.AppendFormat("{0}={1}", keys[i], values[i]);
                             }
                             builder.Append("]");
                             text = builder.ToString();

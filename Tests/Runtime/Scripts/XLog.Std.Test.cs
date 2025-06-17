@@ -33,18 +33,15 @@ public class TestXLogStd
     public void Init()
     {
         // 测试默认配置
-        Assert.AreEqual(XLog.LevelType.Info, adapter.Init(prefs),
-            "期望默认日志级别为 Info");
+        Assert.AreEqual(XLog.LevelType.Info, adapter.Init(prefs), "期望默认日志级别为 Info");
 
         // 测试自定义日志级别
         prefs.Set(XLog.StdAdapter.Prefs.Level, XLog.LevelType.Debug.ToString());
-        Assert.AreEqual(XLog.LevelType.Debug, adapter.Init(prefs),
-            "期望自定义日志级别设置为 Debug");
+        Assert.AreEqual(XLog.LevelType.Debug, adapter.Init(prefs), "期望自定义日志级别设置为 Debug");
 
         // 测试无效日志级别
         prefs.Set(XLog.StdAdapter.Prefs.Level, "InvalidLevel");
-        Assert.AreEqual(XLog.LevelType.Undefined, adapter.Init(prefs),
-            "期望无效日志级别返回 Undefined");
+        Assert.AreEqual(XLog.LevelType.Undefined, adapter.Init(prefs), "期望无效日志级别返回 Undefined");
     }
 
     [Test]
@@ -60,7 +57,7 @@ public class TestXLogStd
         // 2. 测试带标签的日志
         var tag = XLog.GetTag();
         tag.Set("key", "value");
-        LogAssert.Expect(LogType.Log, new Regex(@"\[\d{2}/\d{2} \d{2}:\d{2}:\d{2}\.\d{3}\] \[I\] \[key = value\] Tagged message"));
+        LogAssert.Expect(LogType.Log, new Regex(@"\[\d{2}/\d{2} \d{2}:\d{2}:\d{2}\.\d{3}\] \[I\] \[key=value\] Tagged message"));
         adapter.Write(new XLog.LogData { Level = XLog.LevelType.Info, Data = "Tagged message", Tag = tag.Text });
         XLog.PutTag(tag);
 
