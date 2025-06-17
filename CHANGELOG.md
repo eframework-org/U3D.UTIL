@@ -1,5 +1,11 @@
 # 更新记录
 
+## [0.1.1] - 2025-06-17
+### 变更
+- 抑制 XPool.SObject 调试日志的输出
+- 修改 XLog 日志标签的格式为紧凑型
+- 修改 XPrefs.ILocal 在 Dev/Test 模式下不进行加密
+
 ## [0.1.0] - 2025-06-12
 ### 变更
 - 移除 XPool.GObject 不必要的 lock (instance)
