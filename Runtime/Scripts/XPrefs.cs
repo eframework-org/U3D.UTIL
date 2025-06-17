@@ -1069,7 +1069,7 @@ namespace EFramework.Utility
                 }
             }
 
-            internal ILocal() : base(writeable: true, encrypt: !Application.isEditor) { }
+            internal ILocal() : base(writeable: true, encrypt: !(Application.isEditor || XEnv.Mode <= XEnv.ModeType.Test)) { }
 
             public override bool Parse(string text, out string error)
             {
