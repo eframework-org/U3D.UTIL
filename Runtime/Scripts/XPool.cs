@@ -169,11 +169,7 @@ namespace EFramework.Utility
                         }
                     }
                 }
-                if (ret == null)
-                {
-                    XLog.Debug($"XPool.SObject({typeof(T).FullName}): new instance.");
-                    ret = Activator.CreateInstance<T>();
-                }
+                ret ??= Activator.CreateInstance<T>();
                 return ret;
             }
 
@@ -249,15 +245,7 @@ namespace EFramework.Utility
                         }
                     }
                 }
-                if (ret == null)
-                {
-                    if (XLog.Able(XLog.LevelType.Debug))
-                    {
-                        var str = type != null ? type.FullName : activator != null ? activator.Method.DeclaringType.FullName : "null";
-                        XLog.Debug($"XPool.SObject({str}): new instance.");
-                    }
-                    ret = activator != null ? activator.Invoke() : Activator.CreateInstance(type);
-                }
+                ret ??= activator != null ? activator.Invoke() : Activator.CreateInstance(type);
                 return ret;
             }
 
