@@ -320,10 +320,9 @@ namespace EFramework.Utility
         /// <exception cref="Exception">当应用未在运行或实例未初始化时抛出</exception>
         public static Coroutine StartCR(IEnumerator cr)
         {
+            if (cr == null) return null;
             if (!Application.isPlaying) throw new Exception("Application is not playing.");
             if (instance == null) throw new Exception("XLoom instance is null.");
-            if (cr == null) return null;
-            if (disposed) return null;
             return instance.StartCoroutine(cr);
         }
 
@@ -337,9 +336,8 @@ namespace EFramework.Utility
         /// <exception cref="Exception">当应用未在运行或实例未初始化时抛出</exception>
         public static void StopCR(Coroutine cr)
         {
-            if (!Application.isPlaying) throw new Exception("Application is not playing.");
-            if (instance == null) throw new Exception("XLoom instance is null.");
             if (cr == null) return;
+            if (!Application.isPlaying) throw new Exception("Application is not playing.");
             if (disposed) return;
             instance.StopCoroutine(cr);
         }
@@ -354,9 +352,8 @@ namespace EFramework.Utility
         /// <exception cref="Exception">当应用未在运行或实例未初始化时抛出</exception>
         public static void StopCR(IEnumerator cr)
         {
-            if (!Application.isPlaying) throw new Exception("Application is not playing.");
-            if (instance == null) throw new Exception("XLoom instance is null.");
             if (cr == null) return;
+            if (!Application.isPlaying) throw new Exception("Application is not playing.");
             if (disposed) return;
             instance.StopCoroutine(cr);
         }
