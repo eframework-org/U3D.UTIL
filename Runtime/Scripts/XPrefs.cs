@@ -368,7 +368,7 @@ namespace EFramework.Utility
                             {
                                 this[path] = value;
                             }
-                            XLog.Notice($"XPrefs.Base.Parse: override {path} = {value}");
+                            XLog.Notice($"XPrefs.Base.Parse: override {path} = {value}.");
                         }
                     }
                 }
@@ -990,35 +990,42 @@ namespace EFramework.Utility
             public override bool Parse(string text, out string error)
             {
                 var ret = base.Parse(text, out error);
-                var args = XEnv.GetArgs();
-                foreach (var pair in args)
+
+                // 仅编辑器或 Dev/Test 模式支持变量覆盖
+                var mode = GetString(XEnv.Prefs.Mode, "");
+                if (Application.isEditor || mode == XEnv.ModeDev || mode == XEnv.ModeTest)
                 {
-                    if (pair.Key.StartsWith("Prefs@Asset."))
+                    var args = XEnv.GetArgs();
+                    foreach (var pair in args)
                     {
-                        var path = pair.Key["Prefs@Asset.".Length..];
-                        var value = pair.Value.Trim('"');
-                        if (path.Contains('.'))
+                        if (pair.Key.StartsWith("Prefs@Asset."))
                         {
-                            var paths = path.Split('.');
-                            var parent = this as JSONObject;
-                            for (int i = 0; i < paths.Length - 1; i++)
+                            var path = pair.Key["Prefs@Asset.".Length..];
+                            var value = pair.Value.Trim('"');
+                            if (path.Contains('.'))
                             {
-                                var part = paths[i];
-                                if (!parent.HasKey(part))
+                                var paths = path.Split('.');
+                                var parent = this as JSONObject;
+                                for (int i = 0; i < paths.Length - 1; i++)
                                 {
-                                    parent[part] = new JSONObject();
+                                    var part = paths[i];
+                                    if (!parent.HasKey(part))
+                                    {
+                                        parent[part] = new JSONObject();
+                                    }
+                                    parent = parent[part].AsObject;
                                 }
-                                parent = parent[part].AsObject;
+                                parent[paths[^1]] = value;
                             }
-                            parent[paths[^1]] = value;
+                            else
+                            {
+                                this[path] = value;
+                            }
+                            XLog.Notice($"XPrefs.Asset.Parse: override {path} = {value}.");
                         }
-                        else
-                        {
-                            this[path] = value;
-                        }
-                        XLog.Notice($"XPrefs.Asset.Parse: override {path} = {value}");
                     }
                 }
+
                 return ret;
             }
         }
@@ -1074,35 +1081,41 @@ namespace EFramework.Utility
             public override bool Parse(string text, out string error)
             {
                 var ret = base.Parse(text, out error);
-                var args = XEnv.GetArgs();
-                foreach (var pair in args)
+
+                // 仅编辑器或 Dev/Test 模式支持变量覆盖
+                if (Application.isEditor || XEnv.Mode <= XEnv.ModeType.Test)
                 {
-                    if (pair.Key.StartsWith("Prefs@Local."))
+                    var args = XEnv.GetArgs();
+                    foreach (var pair in args)
                     {
-                        var path = pair.Key["Prefs@Local.".Length..];
-                        var value = pair.Value.Trim('"');
-                        if (path.Contains('.'))
+                        if (pair.Key.StartsWith("Prefs@Local."))
                         {
-                            var paths = path.Split('.');
-                            var parent = this as JSONObject;
-                            for (int i = 0; i < paths.Length - 1; i++)
+                            var path = pair.Key["Prefs@Local.".Length..];
+                            var value = pair.Value.Trim('"');
+                            if (path.Contains('.'))
                             {
-                                var part = paths[i];
-                                if (!parent.HasKey(part))
+                                var paths = path.Split('.');
+                                var parent = this as JSONObject;
+                                for (int i = 0; i < paths.Length - 1; i++)
                                 {
-                                    parent[part] = new JSONObject();
+                                    var part = paths[i];
+                                    if (!parent.HasKey(part))
+                                    {
+                                        parent[part] = new JSONObject();
+                                    }
+                                    parent = parent[part].AsObject;
                                 }
-                                parent = parent[part].AsObject;
+                                parent[paths[^1]] = value;
                             }
-                            parent[paths[^1]] = value;
+                            else
+                            {
+                                this[path] = value;
+                            }
+                            XLog.Notice($"XPrefs.Local.Parse: override {path} = {value}.");
                         }
-                        else
-                        {
-                            this[path] = value;
-                        }
-                        XLog.Notice($"XPrefs.Local.Parse: override {path} = {value}");
                     }
                 }
+
                 return ret;
             }
         }
