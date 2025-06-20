@@ -286,7 +286,7 @@ namespace EFramework.Utility
                                         }
                                         else
                                         {
-                                            Error = "Request preferences response: {0}, error: {1}".Format(req.responseCode, req.error);
+                                            Error = "Request manifest response: {0}, error: {1}".Format(req.responseCode, req.error);
                                         }
 
                                         try { req.Dispose(); } catch (Exception e) { XLog.Panic(e); }
