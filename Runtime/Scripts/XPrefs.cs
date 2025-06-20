@@ -82,7 +82,7 @@ namespace EFramework.Utility
     ///             wait = 1.0f;
     ///             return count < 3;
     ///         }
-    ///         public void OnSucceed(XPrefs.IRemote prefs) { }
+    ///         public void OnSucceeded(XPrefs.IRemote prefs) { }
     ///         public void OnFailed(XPrefs.IRemote prefs) { }
     ///     }
     /// 
