@@ -92,7 +92,7 @@ namespace EFramework.Utility
     public partial class XLog
     {
         /// <summary>
-        /// 日志等级。
+        /// LevelType 是日志的等级类型。
         /// RFC5424 日志标准，包括结构化数据格式。
         /// 规定了八个日志消息的严重性级别，用于表示被记录事件的严重程度或紧急程度。
         /// </summary>
@@ -145,7 +145,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 日志数据类，用于封装单条日志的所有相关信息。
+        /// LogData 是日志的数据类，用于封装单条日志的所有相关信息。
         /// </summary>
         /// <remarks>
         /// 该类使用对象池管理，以减少内存分配和垃圾回收。
@@ -153,42 +153,42 @@ namespace EFramework.Utility
         internal class LogData
         {
             /// <summary>
-            /// 标记对象是否已被池化
+            /// pooled 表示标记对象是否已被池化。
             /// </summary>
             private bool pooled;
 
             /// <summary>
-            /// 日志级别
+            /// Level 是日志的级别。
             /// </summary>
             public LevelType Level;
 
             /// <summary>
-            /// 是否强制输出，忽略日志级别限制
+            /// Force 表示是否强制输出，忽略日志级别限制。
             /// </summary>
             public bool Force;
 
             /// <summary>
-            /// 日志内容
+            /// Data 是日志的内容。
             /// </summary>
             public object Data;
 
             /// <summary>
-            /// 格式化参数
+            /// Args 是格式化的参数。
             /// </summary>
             public object[] Args;
 
             /// <summary>
-            /// 日志标签文本
+            /// Tag 是日志的标签文本。
             /// </summary>
             public string Tag;
 
             /// <summary>
-            /// 日志时间戳（毫秒）
+            /// Time 是日志的时间戳，单位：毫秒。
             /// </summary>
             public long Time;
 
             /// <summary>
-            /// 格式化日志文本。
+            /// Text 是格式化的日志文本。
             /// </summary>
             /// <param name="tag">是否包含标签信息</param>
             /// <returns>格式化后的日志文本</returns>
@@ -200,7 +200,7 @@ namespace EFramework.Utility
             }
 
             /// <summary>
-            /// 重置日志数据的所有字段为默认值。
+            /// Reset 重置日志数据的所有字段为默认值。
             /// </summary>
             public void Reset()
             {
@@ -213,12 +213,12 @@ namespace EFramework.Utility
             }
 
             /// <summary>
-            /// 日志数据对象池
+            /// pool 是日志数据的对象池。
             /// </summary>
             private static readonly ObjectPool<LogData> pool = new(() => new LogData(), null, null, null);
 
             /// <summary>
-            /// 从对象池获取一个日志数据对象。
+            /// Get 从对象池获取一个日志数据对象。
             /// </summary>
             /// <returns>日志数据对象</returns>
             public static LogData Get()
@@ -232,7 +232,7 @@ namespace EFramework.Utility
             }
 
             /// <summary>
-            /// 将日志数据对象返回到对象池。
+            /// Put 将日志数据对象返回到对象池。
             /// </summary>
             /// <param name="data">要返回的日志数据对象</param>
             public static void Put(LogData data)
@@ -253,36 +253,36 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 日志适配器接口，定义了日志输出的基本操作。
+        /// IAdapter 是日志适配器的接口，定义了日志输出的基本操作。
         /// </summary>
         internal interface IAdapter
         {
             /// <summary>
-            /// 初始化日志适配器
+            /// Init 初始化日志适配器。
             /// </summary>
             /// <param name="prefs">配置参数</param>
             /// <returns>日志输出级别</returns>
             LevelType Init(XPrefs.IBase prefs);
 
             /// <summary>
-            /// 写入日志数据
+            /// Write 写入日志数据。
             /// </summary>
             /// <param name="data">日志数据</param>
             void Write(LogData data);
 
             /// <summary>
-            /// 刷新日志缓冲区
+            /// Flush 刷新日志缓冲区。
             /// </summary>
             void Flush();
 
             /// <summary>
-            /// 关闭日志适配器
+            /// Close 关闭日志适配器。
             /// </summary>
             void Close();
         }
 
         /// <summary>
-        /// 日志标签数组，用于标识不同级别的日志
+        /// logLabels 是日志的标签数组，用于标识不同级别的日志。
         /// </summary>
         internal static readonly string[] logLabels = new string[] {
             "[M]", // Emergency
@@ -296,22 +296,22 @@ namespace EFramework.Utility
         };
 
         /// <summary>
-        /// 是否在批处理模式下运行
+        /// batchMode 表示是否在批处理模式下运行。
         /// </summary>
         internal static bool batchMode;
 
         /// <summary>
-        /// 是否在编辑器模式下运行
+        /// editorMode 表示是否在编辑器模式下运行。
         /// </summary>
         internal static bool editorMode;
 
         /// <summary>
-        /// 当前最高日志级别
+        /// levelMax 是当前最高的日志级别。
         /// </summary>
         internal static LevelType levelMax = LevelType.Undefined;
 
         /// <summary>
-        /// 日志适配器映射表
+        /// adapters 是日志适配器的映射表。
         /// </summary>
         internal static readonly Dictionary<string, IAdapter> adapters = new()
             { { "Std", new StdAdapter() { level = LevelType.Debug, colored = true } } }; // 设置默认的输出适配器，避免在 OnInit 之前调用 XLog.* 无法输出
@@ -323,6 +323,7 @@ namespace EFramework.Utility
 #endif
         internal static void OnInit()
         {
+            UnityEngine.Debug.unityLogger.logHandler = Handler;
             batchMode = Application.isBatchMode;
 
 #if UNITY_EDITOR
@@ -406,7 +407,7 @@ namespace EFramework.Utility
                 }
             }
 
-            if (adapters.Count == 0)
+            if (adapters.Count == 0 || (Application.isEditor && !adapters.ContainsKey("Std")))
             {
                 // 设置默认的输出适配器，避免调用 XLog.* 无法输出
                 tempLevel = LevelType.Debug;
@@ -416,7 +417,7 @@ namespace EFramework.Utility
             // 更新最大日志级别
             levelMax = tempLevel;
 
-            Print(level: LevelType.Notice, force: true, tag: null, data: "XLog.Setup: performed setup with {0} adapter(s), max level is {1}.", adapters.Count, levelMax.ToString());
+            Print(level: LevelType.Notice, force: true, tag: null, data: "XLog.Setup: performed setup with {0} adapter(s), max level is {1}.", adapters.Count, levelMax);
         }
 
         /// <summary>
@@ -424,8 +425,11 @@ namespace EFramework.Utility
         /// </summary>
         public static void Flush()
         {
-            foreach (var adapter in adapters.Values) adapter.Flush();
-            Print(level: LevelType.Notice, force: true, tag: null, data: "XLog.Flush: performed flush with {0} adapter(s).", adapters.Count);
+            if (adapters.Count > 0)
+            {
+                foreach (var adapter in adapters.Values) adapter.Flush();
+                Print(level: LevelType.Notice, force: true, tag: null, data: "XLog.Flush: performed flush with {0} adapter(s).", adapters.Count);
+            }
         }
 
         /// <summary>
@@ -433,9 +437,12 @@ namespace EFramework.Utility
         /// </summary>
         public static void Close()
         {
-            Print(level: LevelType.Notice, force: true, tag: null, data: "XLog.Close: performed close with {0} adapter(s).", adapters.Count);
-            foreach (var adapter in adapters.Values) adapter.Close();
-            adapters.Clear();
+            if (adapters.Count > 0)
+            {
+                Print(level: LevelType.Notice, force: true, tag: null, data: "XLog.Close: performed close with {0} adapter(s).", adapters.Count);
+                foreach (var adapter in adapters.Values) adapter.Close();
+                adapters.Clear();
+            }
         }
 
         /// <summary>
@@ -655,19 +662,105 @@ namespace EFramework.Utility
         /// <param name="args">格式化参数</param>
         public static void Print(LevelType level, bool force, LogTag tag, object data, params object[] args)
         {
-            if (data is bool || data == null) return;
+            if (data == null) return;
 
-            foreach (var adapter in adapters.Values)
+            var log = LogData.Get();
+            log.Level = level;
+            log.Force = force;
+            log.Data = data;
+            log.Args = args;
+            log.Time = XTime.GetMillisecond();
+            log.Tag = tag?.Text ?? string.Empty;
+
+            if (level <= LevelType.Error) UnityEngine.Debug.LogErrorFormat(string.Empty, log);
+            else UnityEngine.Debug.LogFormat(string.Empty, log);
+            LogData.Put(log);
+        }
+    }
+
+    public partial class XLog
+    {
+        /// <summary>
+        /// Handler 是全局的日志处理器。
+        /// </summary>
+        public static readonly LogHandler Handler = new();
+
+        /// <summary>
+        /// LogHandler 是日志的处理器，用于控制适配器输出。
+        /// </summary>
+        public class LogHandler : ILogHandler
+        {
+            /// <summary>
+            /// Default 是 Unity 默认的日志处理器。
+            /// </summary>
+            public readonly ILogHandler Default = UnityEngine.Debug.unityLogger.logHandler;
+
+            /// <summary>
+            /// LogFormat 用于处理并打印日志信息。
+            /// </summary>
+            /// <param name="logType"></param>
+            /// <param name="context"></param>
+            /// <param name="format"></param>
+            /// <param name="args"></param>
+            public void LogFormat(LogType logType, UnityEngine.Object context, string format, params object[] args)
             {
-                var log = LogData.Get();
-                log.Level = level;
-                log.Force = force;
-                log.Data = data;
-                log.Args = args;
-                log.Time = XTime.GetMillisecond();
-                log.Tag = tag?.Text ?? string.Empty;
+                if (args != null && args.Length > 0 && args[0] is LogData rawLog)
+                {
+                    if (adapters.Count == 0) Default.LogFormat(logType, context, rawLog.Text(true));
+                    else
+                    {
+                        foreach (var adapter in adapters.Values)
+                        {
+                            var log = LogData.Get();
+                            log.Level = rawLog.Level;
+                            log.Force = rawLog.Force;
+                            log.Data = rawLog.Data;
+                            log.Args = rawLog.Args;
+                            log.Time = rawLog.Time;
+                            log.Tag = rawLog.Tag;
+                            adapter.Write(log);
+                        }
+                    }
+                }
+                else
+                {
+                    if (adapters.Count == 0) Default.LogFormat(logType, context, format, args);
+                    else
+                    {
+                        foreach (var adapter in adapters.Values)
+                        {
+                            var log = LogData.Get();
+                            log.Level = logType == LogType.Error ? LevelType.Error : (logType == LogType.Warning ? LevelType.Warn : LevelType.Info);
+                            log.Force = false;
+                            log.Data = format;
+                            log.Args = args;
+                            log.Time = XTime.GetMillisecond();
+                            adapter.Write(log);
+                        }
+                    }
+                }
+            }
 
-                adapter.Write(log);
+            /// <summary>
+            /// LogException 用于处理并打印异常信息。
+            /// </summary>
+            /// <param name="exception"></param>
+            /// <param name="context"></param>
+            public void LogException(Exception exception, UnityEngine.Object context)
+            {
+                if (adapters.Count == 0) Default.LogException(exception, context);
+                else
+                {
+                    foreach (var adapter in adapters.Values)
+                    {
+                        var log = LogData.Get();
+                        log.Level = LevelType.Emergency;
+                        log.Force = true;
+                        log.Data = exception;
+                        log.Time = XTime.GetMillisecond();
+                        adapter.Write(log);
+                    }
+                }
             }
         }
     }

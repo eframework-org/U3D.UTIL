@@ -89,8 +89,9 @@ namespace EFramework.Utility
                     var timeStr = XTime.Format(data.Time, "MM/dd HH:mm:ss.fff");
                     var fullText = $"[{timeStr}] {text}";
 
-                    if (data.Level <= LevelType.Error) UnityEngine.Debug.LogError(fullText);
-                    else UnityEngine.Debug.Log(fullText);
+                    if (data.Level == LevelType.Emergency) Handler.Default.LogFormat(LogType.Exception, null, fullText);
+                    else if (data.Level <= LevelType.Error) Handler.Default.LogFormat(LogType.Error, null, fullText);
+                    else Handler.Default.LogFormat(LogType.Log, null, fullText);
                 }
                 catch (Exception e) { Panic(e); }
                 finally { LogData.Put(data); }

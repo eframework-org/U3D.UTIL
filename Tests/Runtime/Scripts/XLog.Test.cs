@@ -16,12 +16,6 @@ using System.Linq;
 
 /// <summary>
 /// XLog模块的单元测试类。
-/// 测试日志系统的核心功能，包括：
-/// 1. 初始化和配置
-/// 2. 不同日志级别的处理
-/// 3. 日志打印功能
-/// 4. 异常处理
-/// 5. 日志标签系统
 /// </summary>
 public class TestXLog
 {
@@ -54,11 +48,7 @@ public class TestXLog
     }
 
     /// <summary>
-    /// 测试日志系统的初始化功能
-    /// 验证：
-    /// 1. 配置文件的正确加载
-    /// 2. 日志文件的创建
-    /// 3. 基本日志写入功能
+    /// 测试日志系统的初始化功能。
     /// </summary>
     [Test]
     public void Init()
@@ -91,11 +81,7 @@ public class TestXLog
     }
 
     /// <summary>
-    /// 测试日志级别系统
-    /// 验证：
-    /// 1. 所有有效日志级别的处理
-    /// 2. 无效日志级别的处理
-    /// 3. 日志级别过滤功能
+    /// 测试日志级别系统。
     /// </summary>
     [Test]
     public void Levels()
@@ -133,15 +119,12 @@ public class TestXLog
     }
 
     /// <summary>
-    /// 测试日志打印功能
-    /// 验证：
-    /// 1. 所有日志级别的消息写入
-    /// 2. 日志格式的正确性
-    /// 3. 异步写入的可靠性
+    /// 测试日志打印功能。
     /// </summary>
     [Test]
     public void Prints()
     {
+
         // 创建配置
         var prefs = new XPrefs.IBase();
         var fileConf = new XPrefs.IBase();
@@ -167,10 +150,9 @@ public class TestXLog
         };
 
         // 写入所有测试消息
-        foreach (var test in tests)
-        {
-            test.action();
-        }
+        LogAssert.ignoreFailingMessages = true;
+        foreach (var test in tests) test.action();
+        LogAssert.ignoreFailingMessages = false;
 
         // 确保所有日志都被写入
         XLog.Close();
@@ -187,10 +169,7 @@ public class TestXLog
     }
 
     /// <summary>
-    /// 测试异常处理功能
-    /// 验证：
-    /// 1. 异常日志的正确输出
-    /// 2. 异常信息的格式化
+    /// 测试异常处理功能。
     /// </summary>
     [Test]
     public void Panic()
@@ -201,12 +180,7 @@ public class TestXLog
     }
 
     /// <summary>
-    /// 测试日志标签系统
-    /// 验证：
-    /// 1. 标签的设置和使用
-    /// 2. 上下文标签的控制
-    /// 3. 多值标签的处理
-    /// 4. 带格式化的标签消息
+    /// 测试日志标签系统。
     /// </summary>
     [Test]
     public void Tags()
@@ -295,12 +269,7 @@ public class TestXLog
     }
 
     /// <summary>
-    /// 测试并发日志写入功能
-    /// 验证：
-    /// 1. 多线程并发写入的正确性
-    /// 2. 日志内容的完整性
-    /// 3. 异常处理机制
-    /// 4. 线程安全性
+    /// 测试并发日志写入功能。
     /// </summary>
     [Test]
     public void Concurrent()
