@@ -313,8 +313,7 @@ namespace EFramework.Utility
         /// <summary>
         /// adapters 是日志适配器的映射表。
         /// </summary>
-        internal static readonly Dictionary<string, IAdapter> adapters = new()
-            { { "Std", new StdAdapter() { level = LevelType.Debug, colored = true } } }; // 设置默认的输出适配器，避免在 OnInit 之前调用 XLog.* 无法输出
+        internal static readonly Dictionary<string, IAdapter> adapters = new();
 
 #if UNITY_EDITOR
         [UnityEditor.InitializeOnLoadMethod]
@@ -345,12 +344,13 @@ namespace EFramework.Utility
             };
             UnityEditor.EditorApplication.quitting += () => Close();
 
-            // 程序集重载之前（如：编译脚本）主动关闭日志系统，避免 IOException: Sharing violation on path xxx
-            UnityEditor.AssemblyReloadEvents.beforeAssemblyReload += () => Close();
+            // 编译之前主动关闭日志系统，避免 IOException: Sharing violation on path xxx
+            UnityEditor.Compilation.CompilationPipeline.compilationStarted += _ => Close();
 #endif
 
             Application.quitting += Close;
             SceneManager.sceneUnloaded += scene => Flush();
+
             Setup(XPrefs.Asset);
         }
 
@@ -407,7 +407,7 @@ namespace EFramework.Utility
                 }
             }
 
-            if (adapters.Count == 0 || (Application.isEditor && !adapters.ContainsKey("Std")))
+            if (adapters == null || adapters.Count == 0 || (Application.isEditor && !adapters.ContainsKey("Std")))
             {
                 // 设置默认的输出适配器，避免调用 XLog.* 无法输出
                 tempLevel = LevelType.Debug;
@@ -672,8 +672,17 @@ namespace EFramework.Utility
             log.Time = XTime.GetMillisecond();
             log.Tag = tag?.Text ?? string.Empty;
 
-            if (level <= LevelType.Error) UnityEngine.Debug.LogErrorFormat(string.Empty, log);
-            else UnityEngine.Debug.LogFormat(string.Empty, log);
+            if (adapters == null || adapters.Count == 0)
+            {
+                if (level <= LevelType.Error) Handler.Default.LogFormat(LogType.Error, null, log.Text(true));
+                else Handler.Default.LogFormat(LogType.Log, null, log.Text(true));
+            }
+            else
+            {
+                if (level <= LevelType.Error) UnityEngine.Debug.LogErrorFormat(string.Empty, log);
+                else UnityEngine.Debug.LogFormat(string.Empty, log);
+            }
+
             LogData.Put(log);
         }
     }
@@ -706,7 +715,7 @@ namespace EFramework.Utility
             {
                 if (args != null && args.Length > 0 && args[0] is LogData rawLog)
                 {
-                    if (adapters.Count == 0) Default.LogFormat(logType, context, rawLog.Text(true));
+                    if (adapters == null || adapters.Count == 0) Default.LogFormat(logType, context, rawLog.Text(true));
                     else
                     {
                         foreach (var adapter in adapters.Values)
@@ -724,7 +733,7 @@ namespace EFramework.Utility
                 }
                 else
                 {
-                    if (adapters.Count == 0) Default.LogFormat(logType, context, format, args);
+                    if (adapters == null || adapters.Count == 0) Default.LogFormat(logType, context, format, args);
                     else
                     {
                         foreach (var adapter in adapters.Values)
@@ -748,7 +757,7 @@ namespace EFramework.Utility
             /// <param name="context"></param>
             public void LogException(Exception exception, UnityEngine.Object context)
             {
-                if (adapters.Count == 0) Default.LogException(exception, context);
+                if (adapters == null || adapters.Count == 0) Default.LogException(exception, context);
                 else
                 {
                     foreach (var adapter in adapters.Values)

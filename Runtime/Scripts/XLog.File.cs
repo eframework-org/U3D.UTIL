@@ -6,6 +6,7 @@ using System;
 using System.IO;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Collections.Concurrent;
 using UnityEngine;
 using System.Linq;
@@ -28,11 +29,6 @@ namespace EFramework.Utility
         /// </remarks>
         internal partial class FileAdapter : IAdapter
         {
-            /// <summary>
-            /// lockObj 是用于同步的锁对象。
-            /// </summary>
-            internal readonly object lockObj = new();
-
             /// <summary>
             /// level 是日志输出的级别。
             /// </summary>
@@ -124,24 +120,39 @@ namespace EFramework.Utility
             internal readonly ConcurrentQueue<LogData> logQueue = new();
 
             /// <summary>
-            /// writeEvent 是写入线程的同步事件。
+            /// setupReqEvent 是写入线程初始化的请求信号。
             /// </summary>
-            internal readonly AutoResetEvent writeEvent = new(false);
+            internal readonly AutoResetEvent setupReqEvent = new(false);
+
+            /// <summary>
+            /// setupRespEvent 是写入线程初始化的响应信号。
+            /// </summary>
+            internal readonly AutoResetEvent setupRespEvent = new(false);
+
+            /// <summary>
+            /// flushReqEvent 是写入线程刷新的请求信号。
+            /// </summary>
+            internal readonly AutoResetEvent flushReqEvent = new(false);
+
+            /// <summary>
+            /// flushRespEvent 是写入线程刷新的响应信号。
+            /// </summary>
+            internal readonly AutoResetEvent flushRespEvent = new(false);
+
+            /// <summary>
+            /// closeReqEvent 是写入线程关闭的请求信号。
+            /// </summary>
+            internal readonly AutoResetEvent closeReqEvent = new(false);
+
+            /// <summary>
+            /// closeRespEvent 是写入线程关闭的响应信号。
+            /// </summary>
+            internal readonly AutoResetEvent closeRespEvent = new(false);
 
             /// <summary>
             /// isRunning 表示写入线程的运行状态。
             /// </summary>
             internal bool isRunning;
-
-            /// <summary>
-            /// streamWriter 是日志的写入流。
-            /// </summary>
-            internal StreamWriter streamWriter;
-
-            /// <summary>
-            /// writerThread 是日志的写入线程。
-            /// </summary>
-            internal Thread writerThread;
 
             /// <summary>
             /// Init 初始化文件日志适配器。
@@ -198,7 +209,10 @@ namespace EFramework.Utility
 
                 currentFileNum = 0;
 
-                AsyncWrite();
+                Task.Run(AsyncWrite);
+                setupRespEvent.Reset();
+                setupReqEvent.Set();
+                setupRespEvent.WaitOne();
 
                 return level;
             }
@@ -213,7 +227,16 @@ namespace EFramework.Utility
                 if (data.Level > level && !data.Force) return;
 
                 logQueue.Enqueue(data);
-                writeEvent.Set();
+
+                // 这里主动触发一次 Flush 事件，避免内存过高
+                // 尤其在 Update 循环中发生异常时，日志会瞬间增多
+                // 使用近似值判断是否需要 Flush，完整的轮转逻辑由 NeedRotate 负责
+                var count = logQueue.Count;
+                if ((maxLine > 0 && count >= maxLine) ||
+                    (maxSize > 0 && count * 10 >= maxSize))
+                {
+                    flushReqEvent.Set();
+                }
             }
 
             /// <summary>
@@ -223,10 +246,9 @@ namespace EFramework.Utility
             {
                 if (!isRunning) return;
 
-                lock (lockObj)
-                {
-                    if (isRunning) streamWriter?.Flush();
-                }
+                flushRespEvent.Reset();
+                flushReqEvent.Set();
+                flushRespEvent.WaitOne();
             }
 
             /// <summary>
@@ -236,18 +258,9 @@ namespace EFramework.Utility
             {
                 if (!isRunning) return;
 
-                lock (lockObj)
-                {
-                    if (!isRunning) return;
-                    isRunning = false; // 标记停止但继续处理队列
-                }
-
-                writeEvent.Set();  // 唤醒线程处理剩余日志
-                if (writerThread != null && writerThread.IsAlive)
-                {
-                    writerThread.Join();  // 等待线程完成所有写入
-                }
-                writeEvent.Reset();
+                closeRespEvent.Reset();
+                closeReqEvent.Set();
+                closeRespEvent.WaitOne();
             }
 
             /// <summary>
@@ -255,55 +268,75 @@ namespace EFramework.Utility
             /// </summary>
             internal void AsyncWrite()
             {
-                isRunning = true;
-                writerThread = new Thread(() =>
+                if (setupReqEvent.WaitOne())
                 {
-                    NewWriter();
+                    NewWriter(); // 初始化 path 等信息
+                    isRunning = true;
+                    setupRespEvent.Set();
+                }
 
-                    while (isRunning || !logQueue.IsEmpty)
+                var sb = new StringBuilder();
+                var signals = new WaitHandle[] { flushReqEvent, closeReqEvent };
+
+                while (true)
+                {
+                    var signal = WaitHandle.WaitAny(signals);
+
+                    if (signal >= 0) // Flush/Close 事件
                     {
-                        if (logQueue.IsEmpty)
+                        if (isRunning)
                         {
-                            writeEvent.WaitOne();
-                            continue;
-                        }
-                        while (logQueue.TryDequeue(out var data))
-                        {
-                            lock (lockObj)
+                            try
                             {
-                                try
+                                sb.Clear();
+                                while (logQueue.TryDequeue(out var data))
                                 {
-                                    if (NeedRotate()) DoRotate();
-
-                                    var timeStr = XTime.Format(data.Time, "MM/dd HH:mm:ss.fff");
-                                    var text = $"[{timeStr}] {data.Text(true)}\n";
-                                    streamWriter.Write(text);
-
+                                    var line = $"[{XTime.Format(data.Time, "MM/dd HH:mm:ss.fff")}] {data.Text(true)}\n";
+                                    sb.Append(line);
                                     currentLines++;
-                                    currentSize += text.Length;
+                                    LogData.Put(data);
+
+                                    if (NeedRotate())
+                                    {
+                                        using var writer = new StreamWriter(path, append: true, Encoding.UTF8);
+                                        writer.Write(sb);
+                                        writer.Close();
+                                        sb.Clear();
+
+                                        currentSize = new FileInfo(path).Length; // 只在 Flush 时计算大小，提升性能，但是统计会滞后
+
+                                        DoRotate();
+                                    }
                                 }
-                                catch (Exception e) { Panic(e, "Failed to write log."); }
-                                finally { LogData.Put(data); }
+
+                                if (sb.Length > 0)
+                                {
+                                    using var writer = new StreamWriter(path, append: true, Encoding.UTF8);
+                                    writer.Write(sb);
+                                    writer.Close();
+                                    sb.Clear();
+
+                                    currentSize = new FileInfo(path).Length; // 只在 Flush 时计算大小，提升性能，但是统计会滞后
+                                }
                             }
-                        }
-                    }
-                    lock (lockObj)
-                    {
-                        // 确保最后的数据被写入
-                        try
-                        {
-                            if (streamWriter != null)
+                            catch (Exception e)
                             {
-                                streamWriter.Flush();
-                                streamWriter.Close();
-                                streamWriter = null;
+                                Panic(e, "Failed to write log.");
+                                isRunning = false;
                             }
                         }
-                        catch (Exception e) { Panic(e, "Failed to close writer."); }
+                        else logQueue.Clear();
+
+                        if (signal == 0) flushRespEvent.Set();
+                        else if (signal == 1) // Close 事件
+                        {
+                            isRunning = false;
+                            closeRespEvent.Set();
+                        }
                     }
-                })
-                { Name = "XLog.FileAdapter" };
-                writerThread.Start();
+
+                    if (!isRunning) break;
+                }
             }
 
             /// <summary>
@@ -336,7 +369,6 @@ namespace EFramework.Utility
                         currentLines = 0;
                         currentSize = 0;
                     }
-                    streamWriter = new StreamWriter(path, true, Encoding.UTF8);
                     return true;
                 }
                 catch (Exception e)
@@ -368,13 +400,6 @@ namespace EFramework.Utility
             {
                 try
                 {
-                    if (streamWriter != null)
-                    {
-                        streamWriter.Flush();
-                        streamWriter.Close();
-                        streamWriter = null;
-                    }
-
                     var newPath = path;
                     var format = "";
                     var openTime = DateTime.Now;
