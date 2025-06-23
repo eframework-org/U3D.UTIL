@@ -8,13 +8,14 @@ using System.Text;
 using System.Threading;
 using System.Collections.Concurrent;
 using UnityEngine;
+using System.Linq;
 
 namespace EFramework.Utility
 {
     public partial class XLog
     {
         /// <summary>
-        /// 文件日志适配器，实现日志的文件存储功能。
+        /// FileAdapter 是日志文件适配器，实现日志的文件存储功能。
         /// 支持日志轮转、按时间分割和自动清理等特性。
         /// </summary>
         /// <remarks>
@@ -28,27 +29,27 @@ namespace EFramework.Utility
         internal partial class FileAdapter : IAdapter
         {
             /// <summary>
-            /// 用于同步的锁对象
+            /// lockObj 是用于同步的锁对象。
             /// </summary>
             internal readonly object lockObj = new();
 
             /// <summary>
-            /// 日志输出级别
+            /// level 是日志输出的级别。
             /// </summary>
             internal LevelType level;
 
             /// <summary>
-            /// 是否启用日志轮转
+            /// rotate 表示是否启用日志轮转。
             /// </summary>
             internal bool rotate;
 
             /// <summary>
-            /// 是否按天分割日志
+            /// daily 表示是否按天分割日志。
             /// </summary>
             internal bool daily;
 
             /// <summary>
-            /// 日志保留最大天数
+            /// maxDay 是日志保留的最大天数。
             /// </summary>
             internal int maxDay;
 
@@ -58,92 +59,92 @@ namespace EFramework.Utility
             internal bool hourly;
 
             /// <summary>
-            /// 日志保留最大小时数
+            /// maxHour 是日志保留的最大小时数。
             /// </summary>
             internal int maxHour;
 
             /// <summary>
-            /// 日志文件路径
+            /// path 是日志文件的路径。
             /// </summary>
             internal string path;
 
             /// <summary>
-            /// 最大日志文件数
+            /// maxFile 是最大日志的文件数。
             /// </summary>
             internal int maxFile;
 
             /// <summary>
-            /// 单个日志文件最大行数
+            /// maxLine 是单个日志文件的最大行数。
             /// </summary>
             internal int maxLine;
 
             /// <summary>
-            /// 单个日志文件最大大小(字节)
+            /// maxSize 是单个日志文件的最大大小，单位：字节。
             /// </summary>
             internal int maxSize;
 
             /// <summary>
-            /// 当前日志文件的行数
+            /// currentLines 是当前日志文件的行数。
             /// </summary>
             internal int currentLines;
 
             /// <summary>
-            /// 当前日志文件序号
+            /// currentFileNum 是当前日志文件的序号。
             /// </summary>
             internal int currentFileNum;
 
             /// <summary>
-            /// 当前日志文件大小(字节)
+            /// currentSize 是当前日志文件的大小，单位：字节。
             /// </summary>
             internal long currentSize;
 
             /// <summary>
-            /// 当前日志文件的创建时间(按天)
+            /// dailyOpenTime 是当前日志文件的创建时间（按天）。
             /// </summary>
             internal DateTime dailyOpenTime;
 
             /// <summary>
-            /// 当前日志文件的创建时间(按小时)
+            /// hourlyOpenTime 是当前日志文件的创建时间（按小时）。
             /// </summary>
             internal DateTime hourlyOpenTime;
 
             /// <summary>
-            /// 日志文件名前缀
+            /// prefix 是日志文件名的前缀。
             /// </summary>
             internal string prefix;
 
             /// <summary>
-            /// 日志文件扩展名
+            /// suffix 是日志文件的扩展名。
             /// </summary>
             internal string suffix;
 
             /// <summary>
-            /// 日志写入队列
+            /// logQueue 是日志写入的队列，线程安全。
             /// </summary>
             internal readonly ConcurrentQueue<LogData> logQueue = new();
 
             /// <summary>
-            /// 写入线程同步事件
+            /// writeEvent 是写入线程的同步事件。
             /// </summary>
             internal readonly AutoResetEvent writeEvent = new(false);
 
             /// <summary>
-            /// 写入线程运行状态
+            /// isRunning 表示写入线程的运行状态。
             /// </summary>
             internal bool isRunning;
 
             /// <summary>
-            /// 日志写入流
+            /// streamWriter 是日志的写入流。
             /// </summary>
             internal StreamWriter streamWriter;
 
             /// <summary>
-            /// 日志写入线程
+            /// writerThread 是日志的写入线程。
             /// </summary>
             internal Thread writerThread;
 
             /// <summary>
-            /// 初始化文件日志适配器
+            /// Init 初始化文件日志适配器。
             /// </summary>
             /// <param name="prefs">配置参数</param>
             /// <returns>日志输出级别</returns>
@@ -197,13 +198,13 @@ namespace EFramework.Utility
 
                 currentFileNum = 0;
 
-                if (NewWriter()) AsyncWrite();
+                AsyncWrite();
 
                 return level;
             }
 
             /// <summary>
-            /// 写入日志数据
+            /// Write 写入日志数据。
             /// </summary>
             /// <param name="data">日志数据</param>
             public void Write(LogData data)
@@ -216,22 +217,25 @@ namespace EFramework.Utility
             }
 
             /// <summary>
-            /// 刷新日志缓冲区
+            /// Flush 刷新日志缓冲区。
             /// </summary>
             public void Flush()
             {
+                if (!isRunning) return;
+
                 lock (lockObj)
                 {
-                    if (!isRunning) return;
-                    streamWriter?.Flush();
+                    if (isRunning) streamWriter?.Flush();
                 }
             }
 
             /// <summary>
-            /// 关闭日志适配器
+            /// Close 关闭日志适配器。
             /// </summary>
             public void Close()
             {
+                if (!isRunning) return;
+
                 lock (lockObj)
                 {
                     if (!isRunning) return;
@@ -239,49 +243,23 @@ namespace EFramework.Utility
                 }
 
                 writeEvent.Set();  // 唤醒线程处理剩余日志
-                writerThread?.Join();  // 等待线程完成所有写入
-
-                lock (lockObj)
+                if (writerThread != null && writerThread.IsAlive)
                 {
-                    try
-                    {
-                        if (streamWriter != null)
-                        {
-                            streamWriter.Flush();
-                            streamWriter.Close();
-                            streamWriter = null;
-                        }
-                    }
-                    catch (Exception e) { Panic(e, "Failed to close writer."); }
-                    finally { writeEvent.Reset(); }
+                    writerThread.Join();  // 等待线程完成所有写入
                 }
+                writeEvent.Reset();
             }
 
             /// <summary>
-            /// 创建新的日志写入流
-            /// </summary>
-            /// <returns>是否创建成功</returns>
-            internal bool NewWriter()
-            {
-                try
-                {
-                    dailyOpenTime = DateTime.Now;
-                    hourlyOpenTime = DateTime.Now;
-                    XFile.CreateDirectory(Path.GetDirectoryName(path));
-                    streamWriter = new StreamWriter(path, true, Encoding.UTF8);
-                    return true;
-                }
-                catch (Exception e) { Panic(e, "Failed to new writer."); return false; }
-            }
-
-            /// <summary>
-            /// 启动异步写入线程
+            /// AsyncWrite 启动异步写入线程。
             /// </summary>
             internal void AsyncWrite()
             {
                 isRunning = true;
                 writerThread = new Thread(() =>
                 {
+                    NewWriter();
+
                     while (isRunning || !logQueue.IsEmpty)
                     {
                         if (logQueue.IsEmpty)
@@ -309,14 +287,67 @@ namespace EFramework.Utility
                             }
                         }
                     }
-                    lock (lockObj) streamWriter?.Flush(); // 确保最后的数据被写入
+                    lock (lockObj)
+                    {
+                        // 确保最后的数据被写入
+                        try
+                        {
+                            if (streamWriter != null)
+                            {
+                                streamWriter.Flush();
+                                streamWriter.Close();
+                                streamWriter = null;
+                            }
+                        }
+                        catch (Exception e) { Panic(e, "Failed to close writer."); }
+                    }
                 })
                 { Name = "XLog.FileAdapter" };
                 writerThread.Start();
             }
 
             /// <summary>
-            /// 检查是否需要轮转日志
+            /// NewWriter 创建新的日志写入流。
+            /// </summary>
+            /// <returns>是否创建成功</returns>
+            internal bool NewWriter()
+            {
+                try
+                {
+                    dailyOpenTime = DateTime.Now;
+                    hourlyOpenTime = DateTime.Now;
+                    XFile.CreateDirectory(Path.GetDirectoryName(path));
+                    if (XFile.HasFile(path))
+                    {
+                        try
+                        {
+                            currentSize = new FileInfo(path).Length;
+                            currentLines = File.ReadLines(path).Count();
+                        }
+                        catch (Exception e)
+                        {
+                            Panic(e, $"Failed to readout initial file info: {path}.");
+                            currentLines = 0;
+                            currentSize = 0;
+                        }
+                    }
+                    else
+                    {
+                        currentLines = 0;
+                        currentSize = 0;
+                    }
+                    streamWriter = new StreamWriter(path, true, Encoding.UTF8);
+                    return true;
+                }
+                catch (Exception e)
+                {
+                    Panic(e, $"Failed to new writer: {path}.");
+                    return false;
+                }
+            }
+
+            /// <summary>
+            /// NeedRotate 检查是否需要轮转日志。
             /// </summary>
             /// <returns>是否需要轮转</returns>
             internal bool NeedRotate()
@@ -331,7 +362,7 @@ namespace EFramework.Utility
             }
 
             /// <summary>
-            /// 执行日志轮转
+            /// DoRotate 执行日志轮转。
             /// </summary>
             internal void DoRotate()
             {
@@ -420,16 +451,13 @@ namespace EFramework.Utility
 
 RESTART_LOGGER:
                     NewWriter();
-                    currentLines = 0;
-                    currentSize = 0;
-
                     DeleteOld();
                 }
                 catch (Exception e) { Panic(e, "Failed to rotate log."); }
             }
 
             /// <summary>
-            /// 清理过期的日志文件
+            /// DeleteOld 清理过期的日志文件。
             /// </summary>
             internal void DeleteOld()
             {

@@ -10,7 +10,7 @@ namespace EFramework.Utility
     public partial class XLog
     {
         /// <summary>
-        /// 标准输出适配器，实现日志的控制台输出功能。
+        /// StdAdapter 是日志标准输出适配器，实现日志的控制台输出功能。
         /// 支持日志着色和级别过滤等特性。
         /// </summary>
         /// <remarks>
@@ -22,14 +22,14 @@ namespace EFramework.Utility
         internal partial class StdAdapter : IAdapter
         {
             /// <summary>
-            /// 日志着色器，用于生成带颜色的日志文本。
+            /// logBrush 是日志的着色器，用于生成带颜色的日志文本。
             /// </summary>
             /// <param name="color">颜色值</param>
             /// <returns>着色函数</returns>
             internal static Func<string, string> logBrush(string color) { return (text) => $"<color={color}><b>{text}</b></color>"; }
 
             /// <summary>
-            /// 日志级别对应的着色函数数组
+            /// logBrushes 是日志级别对应的着色函数数组。
             /// </summary>
             internal static readonly Func<string, string>[] logBrushes = new Func<string, string>[] {
                 logBrush("black"), // Emergency
@@ -43,17 +43,17 @@ namespace EFramework.Utility
             };
 
             /// <summary>
-            /// 日志输出级别
+            /// level 是日志输出的级别。
             /// </summary>
             internal LevelType level;
 
             /// <summary>
-            /// 是否启用日志着色
+            /// colored 表示是否启用日志着色。
             /// </summary>
             internal bool colored;
 
             /// <summary>
-            /// 初始化标准输出适配器
+            /// Init 初始化标准输出适配器。
             /// </summary>
             /// <param name="prefs">配置参数</param>
             /// <returns>日志输出级别</returns>
@@ -69,7 +69,7 @@ namespace EFramework.Utility
             }
 
             /// <summary>
-            /// 写入日志数据
+            /// Write 写入日志数据。
             /// </summary>
             /// <param name="data">日志数据</param>
             public void Write(LogData data)
@@ -98,12 +98,12 @@ namespace EFramework.Utility
             }
 
             /// <summary>
-            /// 刷新日志缓冲区
+            /// Flush 刷新日志缓冲区。
             /// </summary>
             public void Flush() { }
 
             /// <summary>
-            /// 关闭日志适配器
+            /// Close 关闭日志适配器。
             /// </summary>
             public void Close() { }
         }
