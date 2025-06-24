@@ -28,7 +28,7 @@ namespace EFramework.Utility
     /// 1.1 日志级别
     ///     // 不同级别的日志记录（按严重程度从高到低排序）
     ///     XLog.Emergency("系统崩溃");    // 级别 0：系统不可用
-    ///     XLog.Alert("需要立即处理");     // 级别 1：必须立即采取措施
+    ///     XLog.Alert("需要立即处理");    // 级别 1：必须立即采取措施
     ///     XLog.Critical("严重错误");     // 级别 2：严重条件
     ///     XLog.Error("操作失败");        // 级别 3：错误条件
     ///     XLog.Warn("潜在问题");         // 级别 4：警告条件
@@ -99,47 +99,47 @@ namespace EFramework.Utility
         public enum LevelType : short
         {
             /// <summary>
-            /// 未定义
+            /// Undefined 表示未定义的日志类型。
             /// </summary>
             Undefined = -1,
 
             /// <summary>
-            /// 紧急（0）：系统不可用，通常用于灾难性故障
+            /// Emergency 表示紧急（0）的日志类型，系统不可用，通常用于灾难性故障。
             /// </summary>
             Emergency = 0,
 
             /// <summary>
-            /// 警报（1）：必须立即采取行动，指示需要立即注意的情况
+            /// Alert 表示警报（1）的日志类型，必须立即采取行动，指示需要立即注意的情况。
             /// </summary>
             Alert = 1,
 
             /// <summary>
-            /// 严重（2）：严重条件，指示需要立即注意的严重故障
+            /// Critical 表示严重（2）的日志类型，指示需要立即注意的严重故障。
             /// </summary>
             Critical = 2,
 
             /// <summary>
-            /// 错误（3）：错误条件，指示应该解决的错误
+            /// Error 表示错误（3）的日志类型，指示应该解决的错误。
             /// </summary>
             Error = 3,
 
             /// <summary>
-            /// 警告（4）：警告条件，指示潜在问题，如果不解决可能会导致错误
+            /// Warn 表示警告（4）的日志类型，指示潜在问题，如果不解决可能会导致错误。
             /// </summary>
             Warn = 4,
 
             /// <summary>
-            /// 通知（5）：正常但重要的情况，指示值得注意但不一定有问题的事件
+            /// Notice 表示通知（5）的日志类型，指示值得注意但不一定有问题的事件。
             /// </summary>
             Notice = 5,
 
             /// <summary>
-            /// 信息（6）：信息消息，用于系统操作的一般信息
+            /// Info 表示信息（6）的日志类型，用于系统操作的一般信息。
             /// </summary>
             Info = 6,
 
             /// <summary>
-            /// 调试（7）：调试级别的消息，用于调试和故障排除目的的消息
+            /// Debug 表示调试（7）的日志类型，用于调试和故障排除目的的消息
             /// </summary>
             Debug = 7,
         }
@@ -147,9 +147,6 @@ namespace EFramework.Utility
         /// <summary>
         /// LogData 是日志的数据类，用于封装单条日志的所有相关信息。
         /// </summary>
-        /// <remarks>
-        /// 该类使用对象池管理，以减少内存分配和垃圾回收。
-        /// </remarks>
         internal class LogData
         {
             /// <summary>
@@ -315,6 +312,11 @@ namespace EFramework.Utility
         /// </summary>
         internal static readonly Dictionary<string, IAdapter> adapters = new();
 
+        /// <summary>
+        /// usingDefault 表示是否使用内置的适配器输出。
+        /// </summary>
+        internal static bool usingDefault = true;
+
 #if UNITY_EDITOR
         [UnityEditor.InitializeOnLoadMethod]
 #else
@@ -344,8 +346,8 @@ namespace EFramework.Utility
             };
             UnityEditor.EditorApplication.quitting += () => Close();
 
-            // 编译之前主动关闭日志系统，避免 IOException: Sharing violation on path xxx
-            UnityEditor.Compilation.CompilationPipeline.compilationStarted += _ => Close();
+            // 程序集重载之前（如：编译脚本）主动关闭日志系统，避免 IOException: Sharing violation on path xxx
+            UnityEditor.AssemblyReloadEvents.beforeAssemblyReload += () => Close();
 #endif
 
             Application.quitting += Close;
@@ -355,25 +357,8 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 设置日志系统的配置。
+        /// Setup 设置日志系统的配置。
         /// </summary>
-        /// <remarks>
-        /// 支持以下配置项：
-        /// - Log/Std：标准输出适配器配置
-        ///   - Level：日志级别
-        ///   - Color：是否启用彩色输出
-        /// - Log/File：文件输出适配器配置
-        ///   - Level：日志级别
-        ///   - Path：日志文件路径
-        ///   - Rotate：是否启用日志轮转
-        ///   - Daily：是否按天轮转
-        ///   - MaxDay：日志文件保留天数
-        ///   - Hourly：是否按小时轮转
-        ///   - MaxHour：日志文件保留小时数
-        ///   - MaxFile：最大文件数量
-        ///   - MaxLine：单文件最大行数
-        ///   - MaxSize：单文件最大体积
-        /// </remarks>
         /// <param name="prefs">配置参数</param>
         public static void Setup(XPrefs.IBase prefs)
         {
@@ -407,7 +392,7 @@ namespace EFramework.Utility
                 }
             }
 
-            if (adapters == null || adapters.Count == 0 || (Application.isEditor && !adapters.ContainsKey("Std")))
+            if (adapters.Count == 0 || (Application.isEditor && !adapters.ContainsKey("Std")))
             {
                 // 设置默认的输出适配器，避免调用 XLog.* 无法输出
                 tempLevel = LevelType.Debug;
@@ -416,12 +401,13 @@ namespace EFramework.Utility
 
             // 更新最大日志级别
             levelMax = tempLevel;
+            usingDefault = false;
 
             Print(level: LevelType.Notice, force: true, tag: null, data: "XLog.Setup: performed setup with {0} adapter(s), max level is {1}.", adapters.Count, levelMax);
         }
 
         /// <summary>
-        /// 将所有缓冲的日志条目写入到目标位置
+        /// Flush 将所有缓冲的日志条目写入到目标位置。
         /// </summary>
         public static void Flush()
         {
@@ -433,7 +419,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 刷新并关闭日志系统
+        /// Close 刷新并关闭日志系统。
         /// </summary>
         public static void Close()
         {
@@ -446,13 +432,13 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 获取当前日志最大级别
+        /// Level 获取当前日志最大级别。
         /// </summary>
         /// <returns>当前日志最大级别</returns>
         public static LevelType Level() { return levelMax; }
 
         /// <summary>
-        /// 检查给定的日志级别是否可以根据配置的最大级别输出
+        /// Able 检查给定的日志级别是否可以根据配置的最大级别输出。
         /// </summary>
         /// <param name="level">需要检查的日志级别</param>
         /// <returns>是否可以输出</returns>
@@ -463,7 +449,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 检查给定的日志级别是否可以根据配置的最大级别输出。
+        /// Condition 检查给定的日志级别是否可以根据配置的最大级别输出。
         /// </summary>
         /// <param name="level">需要检查的日志级别</param>
         /// <param name="args">格式参数</param>
@@ -471,13 +457,6 @@ namespace EFramework.Utility
         /// <param name="force">是否强制输出</param>
         /// <param name="tag">日志标签</param>
         /// <param name="nargs">处理后的格式参数</param>
-        /// <remarks>
-        /// 该方法会处理以下情况：
-        /// 1. 检查日志级别是否满足输出条件
-        /// 2. 处理标签参数
-        /// 3. 处理编辑器模式下的特殊情况
-        /// 4. 优化参数数组的处理
-        /// </remarks>
         internal static void Condition(LevelType level, object[] args, out bool able, out bool force, out LogTag tag, out object[] nargs)
         {
             // 优化1: 提前处理 null 或空数组的情况
@@ -547,7 +526,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 异常输出。
+        /// Panic 输出异常的日志。
         /// </summary>
         /// <param name="exception">异常信息</param>
         /// <param name="extras">附加信息</param>
@@ -558,7 +537,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 紧急（0）：系统不可用，通常用于灾难性故障。
+        /// Emergency 输出紧急（0）级别的日志，系统不可用，通常用于灾难性故障。
         /// </summary>
         /// <param name="data">日志内容</param>
         /// <param name="args">格式参数</param>
@@ -569,7 +548,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 警报（1）：必须立即采取行动，指示需要立即注意的情况。
+        /// Alert 输出警报（1）级别的日志，必须立即采取行动，指示需要立即注意的情况。
         /// </summary>
         /// <param name="data">日志内容</param>
         /// <param name="args">格式参数</param>
@@ -580,7 +559,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 严重（2）：严重条件，指示需要立即注意的严重故障。
+        /// Critical 输出严重（2）级别的日志，指示需要立即注意的严重故障。
         /// </summary>
         /// <param name="data">日志内容</param>
         /// <param name="args">格式参数</param>
@@ -591,7 +570,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 错误（3）：错误条件，指示应该解决的错误。
+        /// Error 输出错误（3）级别的日志，指示应该解决的错误。
         /// </summary>
         /// <param name="data">日志内容</param>
         /// <param name="args">格式参数</param>
@@ -602,7 +581,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 警告（4）：警告条件，指示潜在问题，如果不解决可能会导致错误。
+        /// Warn 输出警告（4）级别的日志，指示潜在问题，如果不解决可能会导致错误。
         /// </summary>
         /// <param name="data">日志内容</param>
         /// <param name="args">格式参数</param>
@@ -613,7 +592,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 通知（5）：正常但重要的情况，指示值得注意但不一定有问题的事件。
+        /// Notice 输出通知（5）级别的日志：正常但重要的情况，指示值得注意但不一定有问题的事件。
         /// </summary>
         /// <param name="data">日志内容</param>
         /// <param name="args">格式参数</param>
@@ -624,7 +603,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 信息（6）：信息消息，用于系统操作的一般信息。
+        /// Info 输出信息（6）级别的日志，用于系统操作的一般信息。
         /// </summary>
         /// <param name="data">日志内容</param>
         /// <param name="args">格式参数</param>
@@ -635,7 +614,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 调试（7）：调试级别的消息，用于调试和故障排除目的的消息。
+        /// Debug 输出调试（7）级别的日志：调试级别的消息，用于调试和故障排除目的的消息。
         /// </summary>
         /// <param name="data">日志内容</param>
         /// <param name="args">格式参数</param>
@@ -646,15 +625,8 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 格式化输出日志。
+        /// Print 格式化并输出日志。
         /// </summary>
-        /// <remarks>
-        /// 该方法会：
-        /// 1. 创建日志数据对象
-        /// 2. 设置日志级别、内容、时间等信息
-        /// 3. 将日志发送给所有已注册的适配器
-        /// 4. 自动管理日志数据对象的生命周期
-        /// </remarks>
         /// <param name="level">日志等级</param>
         /// <param name="force">强制输出</param>
         /// <param name="tag">日志标签</param>
@@ -672,7 +644,7 @@ namespace EFramework.Utility
             log.Time = XTime.GetMillisecond();
             log.Tag = tag?.Text ?? string.Empty;
 
-            if (adapters == null || adapters.Count == 0)
+            if (usingDefault)
             {
                 if (level <= LevelType.Error) Handler.Default.LogFormat(LogType.Error, null, "{0}", log.Text(true));
                 else Handler.Default.LogFormat(LogType.Log, null, "{0}", log.Text(true));
@@ -715,7 +687,7 @@ namespace EFramework.Utility
             {
                 if (args != null && args.Length > 0 && args[0] is LogData rawLog)
                 {
-                    if (adapters == null || adapters.Count == 0) Default.LogFormat(logType, context, rawLog.Text(true));
+                    if (usingDefault) Default.LogFormat(logType, context, rawLog.Text(true));
                     else
                     {
                         foreach (var adapter in adapters.Values)
@@ -733,7 +705,7 @@ namespace EFramework.Utility
                 }
                 else
                 {
-                    if (adapters == null || adapters.Count == 0) Default.LogFormat(logType, context, format, args);
+                    if (usingDefault) Default.LogFormat(logType, context, format, args);
                     else
                     {
                         foreach (var adapter in adapters.Values)
@@ -757,7 +729,7 @@ namespace EFramework.Utility
             /// <param name="context"></param>
             public void LogException(Exception exception, UnityEngine.Object context)
             {
-                if (adapters == null || adapters.Count == 0) Default.LogException(exception, context);
+                if (usingDefault) Default.LogException(exception, context);
                 else
                 {
                     foreach (var adapter in adapters.Values)

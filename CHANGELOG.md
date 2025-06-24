@@ -1,5 +1,9 @@
 # 更新记录
 
+## [0.1.5] - 
+### 变更
+- 修改 XLog 在编辑器环境下调用 Close 的时机：compilationStarted -> beforeAssemblyReload
+
 ## [0.1.4] - 2025-06-24
 ### 修复
 - 修复 XLog 调用 Unity 内置的 LogFormat 时格式化参数异常问题
