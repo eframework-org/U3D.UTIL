@@ -674,8 +674,8 @@ namespace EFramework.Utility
 
             if (adapters == null || adapters.Count == 0)
             {
-                if (level <= LevelType.Error) Handler.Default.LogFormat(LogType.Error, null, log.Text(true));
-                else Handler.Default.LogFormat(LogType.Log, null, log.Text(true));
+                if (level <= LevelType.Error) Handler.Default.LogFormat(LogType.Error, null, "{0}", log.Text(true));
+                else Handler.Default.LogFormat(LogType.Log, null, "{0}", log.Text(true));
             }
             else
             {

@@ -89,9 +89,9 @@ namespace EFramework.Utility
                     var timeStr = XTime.Format(data.Time, "MM/dd HH:mm:ss.fff");
                     var fullText = $"[{timeStr}] {text}";
 
-                    if (data.Level == LevelType.Emergency) Handler.Default.LogFormat(LogType.Exception, null, fullText);
-                    else if (data.Level <= LevelType.Error) Handler.Default.LogFormat(LogType.Error, null, fullText);
-                    else Handler.Default.LogFormat(LogType.Log, null, fullText);
+                    if (data.Level == LevelType.Emergency) Handler.Default.LogFormat(LogType.Exception, null, "{0}", fullText);
+                    else if (data.Level <= LevelType.Error) Handler.Default.LogFormat(LogType.Error, null, "{0}", fullText);
+                    else Handler.Default.LogFormat(LogType.Log, null, "{0}", fullText);
                 }
                 catch (Exception e) { Panic(e); }
                 finally { LogData.Put(data); }
