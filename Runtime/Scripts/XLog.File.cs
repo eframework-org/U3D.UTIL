@@ -275,8 +275,8 @@ namespace EFramework.Utility
                     setupRespEvent.Set();
                 }
 
-                var sb = new StringBuilder();
                 var signals = new WaitHandle[] { flushReqEvent, closeReqEvent };
+                var builder = new StringBuilder();
 
                 while (true)
                 {
@@ -288,40 +288,42 @@ namespace EFramework.Utility
                         {
                             try
                             {
-                                sb.Clear();
+                                builder.Clear();
+                                // rotateError 用于控制当本批次 Rotate 发生错误时，则不进行后续的 Rotate。
+                                var rotateError = false;
                                 while (logQueue.TryDequeue(out var data))
                                 {
                                     var line = $"[{XTime.Format(data.Time, "MM/dd HH:mm:ss.fff")}] {data.Text(true)}\n";
-                                    sb.Append(line);
+                                    builder.Append(line);
                                     currentLines++;
                                     LogData.Put(data);
 
-                                    if (NeedRotate())
+                                    if (!rotateError && NeedRotate())
                                     {
                                         using var writer = new StreamWriter(path, append: true, Encoding.UTF8);
-                                        writer.Write(sb);
+                                        writer.Write(builder);
                                         writer.Close();
-                                        sb.Clear();
+                                        builder.Clear();
 
                                         currentSize = new FileInfo(path).Length; // 只在 Flush 时计算大小，提升性能，但是统计会滞后
 
-                                        DoRotate();
+                                        rotateError = !DoRotate();
                                     }
                                 }
 
-                                if (sb.Length > 0)
+                                if (builder.Length > 0)
                                 {
                                     using var writer = new StreamWriter(path, append: true, Encoding.UTF8);
-                                    writer.Write(sb);
+                                    writer.Write(builder);
                                     writer.Close();
-                                    sb.Clear();
+                                    builder.Clear();
 
                                     currentSize = new FileInfo(path).Length; // 只在 Flush 时计算大小，提升性能，但是统计会滞后
                                 }
                             }
                             catch (Exception e)
                             {
-                                Panic(e, "Failed to write log.");
+                                Handler.Default.LogException(new Exception("write log error.", e), null);
                                 isRunning = false;
                             }
                         }
@@ -359,7 +361,7 @@ namespace EFramework.Utility
                         }
                         catch (Exception e)
                         {
-                            Panic(e, $"Failed to readout initial file info: {path}.");
+                            Handler.Default.LogException(new Exception($"failed to readout initial file info: {path}.", e), null);
                             currentLines = 0;
                             currentSize = 0;
                         }
@@ -373,7 +375,7 @@ namespace EFramework.Utility
                 }
                 catch (Exception e)
                 {
-                    Panic(e, $"Failed to new writer: {path}.");
+                    Handler.Default.LogException(new Exception($"failed to new writer: {path}.", e), null);
                     return false;
                 }
             }
@@ -396,8 +398,9 @@ namespace EFramework.Utility
             /// <summary>
             /// DoRotate 执行日志轮转。
             /// </summary>
-            internal void DoRotate()
+            internal bool DoRotate()
             {
+                var succeeded = false;
                 try
                 {
                     var newPath = path;
@@ -472,13 +475,17 @@ namespace EFramework.Utility
                     }
 
                     newPath = XFile.NormalizePath(newPath);
-                    File.Move(path, newPath);
+                    succeeded = newPath != path;
+                    if (succeeded) File.Move(path, newPath);
+                    else throw new Exception($"no free log number to rename, max file count is {maxFile}.");
+                }
+                catch (Exception e) { Handler.Default.LogException(e, null); }
 
 RESTART_LOGGER:
-                    NewWriter();
-                    DeleteOld();
-                }
-                catch (Exception e) { Panic(e, "Failed to rotate log."); }
+                NewWriter();
+                DeleteOld();
+
+                return succeeded;
             }
 
             /// <summary>
@@ -526,10 +533,10 @@ RESTART_LOGGER:
                                 XFile.DeleteFile(file);
                             }
                         }
-                        catch (Exception e) { Panic(e, $"Failed to process log file {file}."); }
+                        catch (Exception e) { Handler.Default.LogException(new Exception($"failed to delete log file {file}.", e), null); }
                     }
                 }
-                catch (Exception e) { Panic(e, "Failed to delete old log file(s)."); }
+                catch (Exception e) { Handler.Default.LogException(new Exception("failed to delete log file(s).", e), null); }
             }
         }
 

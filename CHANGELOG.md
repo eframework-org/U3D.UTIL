@@ -1,6 +1,9 @@
 # 更新记录
 
-## [0.1.5] - 
+## [0.1.5] - 2025-06-25
+### 修复
+- 修复 XLog 文件适配器潜在的轮转异常问题
+
 ### 变更
 - 修改 XLog 在编辑器环境下调用 Close 的时机：compilationStarted -> beforeAssemblyReload
 

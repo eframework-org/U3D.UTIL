@@ -93,7 +93,7 @@ namespace EFramework.Utility
                     else if (data.Level <= LevelType.Error) Handler.Default.LogFormat(LogType.Error, null, "{0}", fullText);
                     else Handler.Default.LogFormat(LogType.Log, null, "{0}", fullText);
                 }
-                catch (Exception e) { Panic(e); }
+                catch (Exception e) { Handler.Default.LogException(e, null); }
                 finally { LogData.Put(data); }
             }
 
