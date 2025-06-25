@@ -111,10 +111,8 @@ public class TestXLogFile
 
             adapter.Init(prefs);
 
-            Assert.AreEqual(tc.Expected.Prefix, adapter.prefix,
-                $"Case {tc.Name}: 期望文件名前缀为 {tc.Expected.Prefix}，实际为 {adapter.prefix}");
-            Assert.AreEqual(tc.Expected.Suffix, adapter.suffix,
-                $"Case {tc.Name}: 期望文件扩展名为 {tc.Expected.Suffix}，实际为 {adapter.suffix}");
+            Assert.AreEqual(tc.Expected.Prefix, adapter.prefix, $"Case {tc.Name}: 期望文件名前缀为 {tc.Expected.Prefix}，实际为 {adapter.prefix}。");
+            Assert.AreEqual(tc.Expected.Suffix, adapter.suffix, $"Case {tc.Name}: 期望文件扩展名为 {tc.Expected.Suffix}，实际为 {adapter.suffix}。");
         }
     }
 
@@ -187,8 +185,7 @@ public class TestXLogFile
             adapter.Close();
 
             // 检查原始日志文件是否存在
-            Assert.IsTrue(File.Exists(adapter.path),
-                $"期望日志文件存在于路径 {adapter.path}");
+            Assert.IsTrue(File.Exists(adapter.path), $"期望日志文件存在于路径 {adapter.path}。");
 
             if (tc.CheckRotated)
             {
@@ -203,7 +200,7 @@ public class TestXLogFile
                 var expectedFiles = tc.MaxFile + 1; // 包括当前文件
                 Assert.GreaterOrEqual(files.Count, expectedFiles,
                     $"Case {tc.Name}: 期望至少存在 {expectedFiles} 个日志文件，实际找到 {files.Count} 个。" +
-                    $"找到的文件: {string.Join(", ", files.Select(Path.GetFileName))}");
+                    $"找到的文件: {string.Join(", ", files.Select(Path.GetFileName))}。");
             }
         }
     }
@@ -281,8 +278,7 @@ public class TestXLogFile
                 // 验证文件是否被删除
                 foreach (var file in oldFiles)
                 {
-                    Assert.IsFalse(File.Exists(file),
-                        $"Case {tc.Name}: 期望过期日志文件 {file} 已被删除");
+                    Assert.IsFalse(File.Exists(file), $"Case {tc.Name}: 期望过期日志文件 {file} 已被删除。");
                 }
             }
         }
