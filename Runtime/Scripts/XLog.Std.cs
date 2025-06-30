@@ -78,20 +78,26 @@ namespace EFramework.Utility
                 {
                     if (data == null) return;
                     if (data.Level > level && !data.Force) return;
-
-                    var text = data.Text(true);
-                    if (colored && !batchMode)
+                    if (data.Level == LevelType.Emergency && data.Data is Exception exception)
                     {
-                        var idx = (int)data.Level;
-                        text = text.Replace(logLabels[idx], logBrushes[idx](logLabels[idx]));
+                        Handler.Default.LogException(exception, null);
                     }
+                    else
+                    {
+                        var text = data.Text(true);
+                        if (colored && !batchMode)
+                        {
+                            var idx = (int)data.Level;
+                            text = text.Replace(logLabels[idx], logBrushes[idx](logLabels[idx]));
+                        }
 
-                    var timeStr = XTime.Format(data.Time, "MM/dd HH:mm:ss.fff");
-                    var fullText = $"[{timeStr}] {text}";
+                        var timeStr = XTime.Format(data.Time, "MM/dd HH:mm:ss.fff");
+                        var fullText = $"[{timeStr}] {text}";
 
-                    if (data.Level == LevelType.Emergency) Handler.Default.LogFormat(LogType.Exception, null, "{0}", fullText);
-                    else if (data.Level <= LevelType.Error) Handler.Default.LogFormat(LogType.Error, null, "{0}", fullText);
-                    else Handler.Default.LogFormat(LogType.Log, null, "{0}", fullText);
+                        if (data.Level == LevelType.Emergency) Handler.Default.LogFormat(LogType.Exception, null, "{0}", fullText);
+                        else if (data.Level <= LevelType.Error) Handler.Default.LogFormat(LogType.Error, null, "{0}", fullText);
+                        else Handler.Default.LogFormat(LogType.Log, null, "{0}", fullText);
+                    }
                 }
                 catch (Exception e) { Handler.Default.LogException(e, null); }
                 finally { LogData.Put(data); }
