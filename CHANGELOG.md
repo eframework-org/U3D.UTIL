@@ -6,6 +6,7 @@
 - 新增 XMani.Read 读取远端清单的预请求功能（onPreRequest）
 - 新增 XPrefs.IRemote.IHandler 接口的 OnStarted 函数（原 OnRequest 函数）
 - 修改 XPrefs.IRemote.IHandler 的 OnRequest 函数签名（增加了 UnityWebRequest 参数）
+- 新增 EFRAMEWORK_PREFERENCES_INSECURE 宏定义用于控制是否启用 Staging/Prod 环境的首选项覆盖功能
 
 ### 修复
 - 修复 XLog 标准适配器输出异常堆栈的 HyperLink 显示问题

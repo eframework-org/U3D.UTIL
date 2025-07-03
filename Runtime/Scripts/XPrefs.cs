@@ -967,9 +967,11 @@ namespace EFramework.Utility
             {
                 var ret = base.Parse(text, out error);
 
+#if !EFRAMEWORK_PREFERENCES_INSECURE
                 // 仅编辑器或 Dev/Test 模式支持变量覆盖
                 var mode = GetString(XEnv.Prefs.Mode, "");
                 if (Application.isEditor || mode == XEnv.ModeDev || mode == XEnv.ModeTest)
+#endif
                 {
                     var args = XEnv.GetArgs();
                     foreach (var pair in args)
@@ -1054,8 +1056,10 @@ namespace EFramework.Utility
             {
                 var ret = base.Parse(text, out error);
 
+#if !EFRAMEWORK_PREFERENCES_INSECURE
                 // 仅编辑器或 Dev/Test 模式支持变量覆盖
                 if (Application.isEditor || XEnv.Mode <= XEnv.ModeType.Test)
+#endif
                 {
                     var args = XEnv.GetArgs();
                     foreach (var pair in args)
