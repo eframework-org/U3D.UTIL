@@ -106,7 +106,7 @@ namespace EFramework.Utility
             public string Name;
 
             /// <summary>
-            /// MD5 是文件的 MD5 哈希值。
+            /// MD5 是文件的哈希值。
             /// </summary>
             public string MD5;
 
@@ -164,40 +164,39 @@ namespace EFramework.Utility
             public Manifest(string uri = "") { Uri = uri; }
 
             /// <summary>
-            /// Parse 解析清单文本内容。
-            /// </summary>
-            /// <param name="data">清单文本内容</param>
-            /// <param name="error">解析错误信息</param>
-            /// <returns>是否解析成功</returns>
-            public virtual bool Parse(string data, out string error) { return Parse(Encoding.UTF8.GetBytes(data), out error); }
-
-            /// <summary>
             /// Parse 解析清单文件内容。
             /// </summary>
-            /// <param name="bytes">清单文件的字节内容</param>
+            /// <param name="data">清单文件的内容</param>
             /// <param name="error">解析错误信息</param>
+            /// <param name="secret">清单内容的对称密钥</param>
             /// <returns>是否解析成功</returns>
-            public virtual bool Parse(byte[] bytes, out string error)
+            public virtual bool Parse(string data, out string error, string secret = "")
             {
                 error = "";
-                if (bytes == null || bytes.Length == 0)
-                {
-                    error = "Null bytes for loading mainfest.";
-                }
+                if (string.IsNullOrEmpty(data)) error = "Null content for parsing mainfest.";
                 else
                 {
                     try
                     {
+                        if (!string.IsNullOrEmpty(secret)) data = XString.Decrypt(data, secret);
+                        var bytes = Encoding.UTF8.GetBytes(data);
                         using var ms = new MemoryStream(bytes);
                         using var sr = new StreamReader(ms);
-                        while (sr.EndOfStream == false)
+                        while (!sr.EndOfStream)
                         {
                             var line = sr.ReadLine();
                             if (string.IsNullOrEmpty(line)) continue;
                             var strs = line.Split('|');
-                            var file = new FileInfo();
-                            file.Name = strs[0];
-                            file.MD5 = strs[1];
+                            if (strs.Length < 3)
+                            {
+                                error = $"Invalid line format: {line}";
+                                return false;
+                            }
+                            var file = new FileInfo
+                            {
+                                Name = strs[0],
+                                MD5 = strs[1]
+                            };
                             long.TryParse(strs[2], out file.Size);
                             Files.Add(file);
                         }
@@ -216,9 +215,10 @@ namespace EFramework.Utility
             /// Read 读取清单文件。
             /// </summary>
             /// <param name="uri">清单文件的路径或 URL，为空则使用实例的 Uri</param>
+            /// <param name="secret">清单内容的对称密钥</param>
             /// <param name="timeout">HTTP 请求超时时间（秒）</param>
             /// <returns>状态检查处理器，返回 true 表示读取完成</returns>
-            public virtual Func<bool> Read(string uri = "", int timeout = 10)
+            public virtual Func<bool> Read(string uri = "", string secret = "", int timeout = 10)
             {
                 Error = string.Empty;
                 if (string.IsNullOrEmpty(uri)) uri = Uri;
@@ -228,7 +228,7 @@ namespace EFramework.Utility
                 UnityWebRequest req = null;
                 var handler = new Func<bool>(() =>
                 {
-                    if (done == false)
+                    if (!done)
                     {
                         if (www)
                         {
@@ -248,7 +248,7 @@ namespace EFramework.Utility
                                         done = true;
                                         if (req.responseCode == 200)
                                         {
-                                            if (Parse(req.downloadHandler.data, out var perror) == false)
+                                            if (!Parse(req.downloadHandler.text, out var perror, secret))
                                             {
                                                 Error = "Request manifest succeeded, but parsing failed: {0}, content: {1}".Format(perror, req.downloadHandler.text);
                                             }
@@ -283,7 +283,7 @@ namespace EFramework.Utility
 
                     if (string.IsNullOrEmpty(uri)) Error = "Null file for reading mainfest.";
                     else if (!XFile.HasFile(uri)) Error = $"Non exist file {uri} for reading mainfest.";
-                    else if (!Parse(XFile.OpenFile(uri), out var perror)) Error = perror;
+                    else if (!Parse(XFile.OpenText(uri), out var perror, secret)) Error = perror;
 
                     if (string.IsNullOrEmpty(Error)) XLog.Notice("XMani.Manifest.Read: load and parse manifest succeeded.");
                     else XLog.Error("XMani.Manifest.Read: load and parse failed with error: {0}", Error);
@@ -321,18 +321,12 @@ namespace EFramework.Utility
                             break;
                         }
                     }
-                    if (sig == false)
-                    {
-                        diffInfo.Deleted.Add(sf);
-                    }
+                    if (!sig) diffInfo.Deleted.Add(sf);
                 }
                 for (var i = 0; i < otherFiles.Count; i++)
                 {
                     var fi = otherFiles[i];
-                    if (visited.Contains(fi) == false)
-                    {
-                        diffInfo.Added.Add(fi);
-                    }
+                    if (!visited.Contains(fi)) diffInfo.Added.Add(fi);
                 }
                 return diffInfo;
             }

@@ -5,7 +5,6 @@
 #if UNITY_INCLUDE_TESTS
 using NUnit.Framework;
 using EFramework.Utility;
-using System.IO;
 
 public class TestXMani
 {
@@ -32,14 +31,15 @@ public class TestXMani
     [Test]
     public void Read()
     {
-        var tempFilePath = Path.Combine(XEnv.LocalPath, XMani.Default);
-        XFile.SaveText(tempFilePath, "file1.txt|d41d8cd98f00b204e9800998ecf8427e|0\nfile2.txt|d41d8cd98f00b204e9800998ecf8427e|123");
+        var tempSecret = "12345678";
+        var tempFilePath = XFile.PathJoin(XEnv.LocalPath, "TestXMani-Read-" + XTime.GetMillisecond());
+        XFile.SaveText(tempFilePath, "file1.txt|d41d8cd98f00b204e9800998ecf8427e|100\nfile2.txt|d41d8cd98f00b204e9800998ecf8427e|123".Encrypt(tempSecret));
 
         // Arrange
         var manifest = new XMani.Manifest();
 
         // Act
-        var handler = manifest.Read(tempFilePath);
+        var handler = manifest.Read(tempFilePath, secret: tempSecret);
 
         // Simulate the completion of the request
         while (!handler.Invoke()) { }
@@ -47,6 +47,12 @@ public class TestXMani
         // Assert
         Assert.IsTrue(string.IsNullOrEmpty(manifest.Error), "读取清单文件不应产生错误");
         Assert.IsNotEmpty(manifest.Files, "清单文件应包含文件记录");
+
+        var fileInfo = manifest.Files.Find(ele => ele.Name == "file1.txt");
+        Assert.IsNotNull(fileInfo, "清单文件应包含 file1.txt 的文件记录");
+        Assert.AreEqual(fileInfo.MD5, "d41d8cd98f00b204e9800998ecf8427e", "清单文件解析的 file1.txt 文件哈希值应当和保存的一致");
+        Assert.AreEqual(fileInfo.Size, 100, "清单文件解析的 file1.txt 文件大小应当和保存的一致");
+
         XFile.DeleteFile(tempFilePath);
     }
 
