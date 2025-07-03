@@ -31,15 +31,22 @@ public class TestXMani
     [Test]
     public void Read()
     {
+        var tempDir = XFile.PathJoin(XEnv.LocalPath, "TestXMani-" + XTime.GetMillisecond());
+        var tempFilePath = XFile.PathJoin(tempDir, XMani.Default);
         var tempSecret = "12345678";
-        var tempFilePath = XFile.PathJoin(XEnv.LocalPath, "TestXMani-Read-" + XTime.GetMillisecond());
+
         XFile.SaveText(tempFilePath, "file1.txt|d41d8cd98f00b204e9800998ecf8427e|100\nfile2.txt|d41d8cd98f00b204e9800998ecf8427e|123".Encrypt(tempSecret));
 
         // Arrange
         var manifest = new XMani.Manifest();
 
         // Act
-        var handler = manifest.Read(tempFilePath, secret: tempSecret);
+        var handler = manifest.Read(uri: tempFilePath, secret: tempSecret, onPreRequest: req =>
+        {
+            req.timeout = 10;
+        });
+
+        manifest.Files.Add(new XMani.FileInfo { Name = "file1.txt", MD5 = "d41d8cd98f00b204e9800998ecf8427e", Size = 100 });
 
         // Simulate the completion of the request
         while (!handler.Invoke()) { }
@@ -53,7 +60,7 @@ public class TestXMani
         Assert.AreEqual(fileInfo.MD5, "d41d8cd98f00b204e9800998ecf8427e", "清单文件解析的 file1.txt 文件哈希值应当和保存的一致");
         Assert.AreEqual(fileInfo.Size, 100, "清单文件解析的 file1.txt 文件大小应当和保存的一致");
 
-        XFile.DeleteFile(tempFilePath);
+        XFile.DeleteDirectory(tempDir);
     }
 
     [Test]

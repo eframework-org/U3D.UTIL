@@ -11,18 +11,17 @@ using UnityEngine.Networking;
 namespace EFramework.Utility
 {
     /// <summary>
-    /// XMani 提供了一个文件清单管理工具，支持文件清单的生成、解析、对比和版本管理。
+    /// XMani 提供了一个文件清单管理工具，支持文件清单的生成、解析、对比等功能。
     /// </summary>
     /// <remarks>
     /// <code>
     /// 功能特性
     /// - 支持文件清单的生成和解析
-    /// - 支持本地和远程清单的读取
-    /// - 支持清单文件的差异对比
-    /// - 支持文件的 MD5 校验
+    /// - 支持本地和远端清单的读取
+    /// - 支持文件清单的差异对比
     /// 
     /// 使用手册
-    /// 1. 清单管理
+    /// 1. 基础用法
     /// 
     /// 1.1 创建清单
     ///     // 创建一个新的清单实例
@@ -31,26 +30,50 @@ namespace EFramework.Utility
     ///     // 或指定清单路径创建
     ///     var manifest = new XMani.Manifest("path/to/manifest/file");
     /// 
-    /// 1.2 解析清单
+    /// 1.2 保存清单
+    ///     // 创建清单实例
+    ///     var manifest = new XMani.Manifest();
+    ///     
+    ///     // 添加文件信息
+    ///     manifest.Files.Add(new XMani.FileInfo 
+    ///     { 
+    ///         Name = "file.txt", 
+    ///         MD5 = "md5_value", 
+    ///         Size = 100 
+    ///     });
+    ///     
+    ///     // 将清单格式化为文本
+    ///     var text = manifest.ToString();
+    ///     
+    ///     // 将清单持久化至文件
+    ///     XFile.SaveText("path/to/manifest/file", text);
+    /// 
+    /// 1.3 解析清单
     ///     // 解析清单文本
     ///     var data = "file1.txt|d41d8cd98f00b204e9800998ecf8427e|0\n" +
     ///                "file2.txt|d41d8cd98f00b204e9800998ecf8427e|123";
-    ///     bool success = manifest.Parse(data, out string error);
+    ///     
+    ///     var succeeded = manifest.Parse(data, out string error);
     ///     
     ///     // 检查解析结果
-    ///     if (success)
+    ///     if (succeeded)
     ///     {
     ///         foreach (var file in manifest.Files)
     ///         {
     ///             Debug.Log($"文件：{file.Name}，MD5：{file.MD5}，大小：{file.Size}");
     ///         }
     ///     }
+    ///     else
+    ///     {
+    ///         Debug.LogError($"解析失败：{error}");
+    ///     }
     /// 
     /// 2. 清单读取
     /// 
-    /// 2.1 本地文件读取
+    /// 2.1 本地文件
     ///     // 从本地文件读取清单
-    ///     var handler = manifest.Read("path/to/manifest/file");
+    ///     // 对称密钥为：12345678
+    ///     var handler = manifest.Read(uri: "path/to/manifest/file", secret: "12345678");
     ///     while (!handler()) { } // 等待读取完成
     ///     
     ///     if (string.IsNullOrEmpty(manifest.Error))
@@ -58,15 +81,23 @@ namespace EFramework.Utility
     ///         Debug.Log($"读取成功，包含 {manifest.Files.Count} 个文件");
     ///     }
     /// 
-    /// 2.2 远程文件读取
-    ///     // 从远程 URL 读取清单，设置 10 秒超时
-    ///     var handler = manifest.Read("http://example.com/Manifest.db", 10);
+    /// 2.2 远端文件
+    ///     // 从远端 URL 读取清单
+    ///     // 对称密钥为：12345678
+    ///     // 设置预请求回调
+    ///     var handler = manifest.Read(uri: "http://example.com/Manifest.db", secret: "12345678", onPreRequest: req =&gt;
+    ///     {
+    ///         req.timeout = 10;
+    ///     });
     ///     while (!handler()) { } // 等待读取完成
+    ///     
+    ///     if (string.IsNullOrEmpty(manifest.Error))
+    ///     {
+    ///         Debug.Log($"读取成功，包含 {manifest.Files.Count} 个文件");
+    ///     }
     /// 
     /// 3. 清单对比
-    /// 
-    /// 3.1 比较两个清单
-    ///     // 创建两个清单实例
+    ///     // 准备清单
     ///     var manifest1 = new XMani.Manifest();
     ///     manifest1.Files.Add(new XMani.FileInfo 
     ///     { 
@@ -85,6 +116,11 @@ namespace EFramework.Utility
     ///     
     ///     // 执行对比
     ///     var diff = manifest1.Compare(manifest2);
+    ///     
+    ///     // 检查差异
+    ///     Debug.Log($"新增：{diff.Added.Count} 个文件");
+    ///     Debug.Log($"修改：{diff.Modified.Count} 个文件");
+    ///     Debug.Log($"删除：{diff.Deleted.Count} 个文件");
     /// </code>
     /// 更多信息请参考模块文档。
     /// </remarks>
@@ -101,7 +137,7 @@ namespace EFramework.Utility
         public class FileInfo
         {
             /// <summary>
-            /// Name 是文件的名称，包含相对路径。
+            /// Name 是文件的名称。
             /// </summary>
             public string Name;
 
@@ -216,9 +252,9 @@ namespace EFramework.Utility
             /// </summary>
             /// <param name="uri">清单文件的路径或 URL，为空则使用实例的 Uri</param>
             /// <param name="secret">清单内容的对称密钥</param>
-            /// <param name="timeout">HTTP 请求超时时间（秒）</param>
+            /// <param name="onPreRequest">HTTP 预请求回调</param>
             /// <returns>状态检查处理器，返回 true 表示读取完成</returns>
-            public virtual Func<bool> Read(string uri = "", string secret = "", int timeout = 10)
+            public virtual Func<bool> Read(string uri = "", string secret = "", Action<UnityWebRequest> onPreRequest = null)
             {
                 Error = string.Empty;
                 if (string.IsNullOrEmpty(uri)) uri = Uri;
@@ -238,7 +274,8 @@ namespace EFramework.Utility
                                 {
                                     XLog.Notice("XMani.Manifest.Read: requesting <a href=\"{0}\">{1}</a>.", uri, uri);
                                     req = UnityWebRequest.Get(uri);
-                                    req.timeout = timeout;
+                                    req.timeout = 10;
+                                    onPreRequest?.Invoke(req);
                                     req.SendWebRequest();
                                 }
                                 else
@@ -279,7 +316,7 @@ namespace EFramework.Utility
                 if (!www)
                 {
                     done = true;
-                    XLog.Notice("XMani.Manifest.Read: loading <a href=\"file:///{0}\">{1}</a>.", Path.GetFullPath(uri), uri);
+                    XLog.Notice("XMani.Manifest.Read: loading <a href=\"file:///{0}\">{1}</a>.", Path.GetFullPath(uri), Path.GetRelativePath(XEnv.ProjectPath, uri));
 
                     if (string.IsNullOrEmpty(uri)) Error = "Null file for reading mainfest.";
                     else if (!XFile.HasFile(uri)) Error = $"Non exist file {uri} for reading mainfest.";
