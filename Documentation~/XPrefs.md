@@ -8,7 +8,7 @@ XPrefs 是一个灵活高效的配置系统，实现了多源化配置的读写�
 
 ## 功能特性
 
-- 多源化配置：支持内置配置（只读）、本地配置（可写）和远程配置（只读），支持多个配置源按优先级顺序读取
+- 多源化配置：支持内置配置（只读）、本地配置（可写）和远端配置（只读），支持多个配置源按优先级顺序读取
 - 多数据类型：支持基础类型（整数、浮点数、布尔值、字符串）、数组类型及配置实例（IBase）
 - 变量求值：支持通过命令行参数动态覆盖配置项，使用 ${Prefs.Key} 语法引用其他配置项
 - 可视化编辑：支持通过自定义面板拓展可视化的配置编辑功能
@@ -67,25 +67,58 @@ XPrefs.Local.Save();
 string value = XPrefs.Local.GetString("key");
 ```
 
-#### 2.3 远程配置（只读）
+#### 2.3 远端配置（只读）
 ```csharp
-// 实现远程配置处理器
+// 实现远端配置处理器
 public class RemoteHandler : XPrefs.IRemote.IHandler
 {
+    /// <summary>
+    /// Uri 是远端的地址。
+    /// </summary>
     public string Uri => "http://example.com/config";
-    public int Timeout => 10;
+
+    /// <summary>
+    /// OnStarted 是流程启动的回调。
+    /// </summary>
+    /// <param name="prefs">上下文实例</param>
+    public void OnStarted(XPrefs.IRemote prefs) { }
     
-    public void OnRequest(XPrefs.IRemote prefs) { }
-    public bool OnRetry(XPrefs.IRemote prefs, int count, out float wait)
+    /// <summary>
+    /// OnRequest 是预请求的回调。
+    /// </summary>
+    /// <param name="prefs">上下文实例</param>
+    /// <param name="request">HTTP 请求实例</param>
+    public void OnRequest(XPrefs.IRemote prefs, UnityWebRequest request) { 
+        request.timeout = 10;
+    }
+
+    /// <summary>
+    /// OnRetry 是错误重试的回调。
+    /// </summary>
+    /// <param name="prefs">上下文实例</param>
+    /// <param name="count">重试次数</param>
+    /// <param name="pending">重试等待</param>
+    /// <returns></returns>
+    public bool OnRetry(XPrefs.IRemote prefs, int count, out float pending)
     {
-        wait = 1.0f;
+        pending = 1.0f;
         return count < 3;
     }
+
+    /// <summary>
+    /// OnSucceeded 是请求成功的回调。
+    /// </summary>
+    /// <param name="prefs">上下文实例</param>
     public void OnSucceeded(XPrefs.IRemote prefs) { }
+
+    /// <summary>
+    /// OnFailed 是请求失败的回调。
+    /// </summary>
+    /// <param name="prefs">上下文实例</param>
     public void OnFailed(XPrefs.IRemote prefs) { }
 }
 
-// 读取远程配置
+// 读取远端配置
 StartCoroutine(XPrefs.Remote.Read(new RemoteHandler()));
 ```
 
@@ -138,9 +171,9 @@ string result = XPrefs.Local.Eval("${Prefs.user.name} is ${Prefs.user.age}");
 - 检查引用的配置项是否存在。
 - 注意避免循环引用和嵌套引用。
 
-### 3. 远程配置加载失败
+### 3. 远端配置加载失败
 - 检查网络连接是否正常。
-- 确认远程服务器地址正确。
+- 确认远端服务器地址正确。
 - 验证超时和重试参数设置。
 
 更多问题，请查阅[问题反馈](../CONTRIBUTING.md#问题反馈)。

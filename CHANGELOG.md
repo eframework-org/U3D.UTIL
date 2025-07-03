@@ -4,6 +4,8 @@
 ### 变更
 - 新增 XMani.Parse 解析清单内容的加密功能（secret）
 - 新增 XMani.Read 读取远端清单的预请求功能（onPreRequest）
+- 新增 XPrefs.IRemote.IHandler 接口的 OnStarted 函数（原 OnRequest 函数）
+- 修改 XPrefs.IRemote.IHandler 的 OnRequest 函数签名（增加了 UnityWebRequest 参数）
 
 ### 修复
 - 修复 XLog 标准适配器输出异常堆栈的 HyperLink 显示问题

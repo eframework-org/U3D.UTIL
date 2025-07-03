@@ -4,7 +4,6 @@
 
 #if UNITY_INCLUDE_TESTS
 using NUnit.Framework;
-using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.TestTools;
 using EFramework.Utility;
