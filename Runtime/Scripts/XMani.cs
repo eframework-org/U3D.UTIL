@@ -378,7 +378,9 @@ namespace EFramework.Utility
                 for (var i = 0; i < Files.Count; i++)
                 {
                     var fi = Files[i];
-                    sb.AppendLine(fi.Name + "|" + fi.MD5 + "|" + fi.Size);
+                    var str = $"{fi.Name}|{fi.MD5}|{fi.Size}";
+                    if (i == Files.Count - 1) sb.Append(str);
+                    else sb.AppendLine(str);
                 }
                 return sb.ToString();
             }
