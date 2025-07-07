@@ -305,7 +305,11 @@ namespace EFramework.Utility
                 if (string.IsNullOrEmpty(File)) Error = "Null file for instantiating preferences.";
                 else if (!XFile.HasFile(File)) Error = $"Non exist file {File} for instantiating preferences.";
                 else if (!Parse(encrypt ? XString.Decrypt(XFile.OpenText(File)) : XFile.OpenText(File), out var perror)) Error = perror;
-                if (!string.IsNullOrEmpty(Error)) XLog.Error($"XPrefs.Read: load <a href=\"file:///{Path.GetFullPath(File)}\">{Path.GetRelativePath(XEnv.ProjectPath, File)}</a> with error: {Error}");
+                if (!string.IsNullOrEmpty(Error))
+                {
+                    if (string.IsNullOrEmpty(File)) XLog.Error($"XPrefs.Read: {Error}");
+                    else XLog.Error($"XPrefs.Read: load <a href=\"file:///{Path.GetFullPath(File)}\">{Path.GetRelativePath(XEnv.ProjectPath, File)}</a> with error: {Error}");
+                }
                 return string.IsNullOrEmpty(Error);
             }
 
