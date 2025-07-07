@@ -305,7 +305,7 @@ namespace EFramework.Utility
                 if (string.IsNullOrEmpty(File)) Error = "Null file for instantiating preferences.";
                 else if (!XFile.HasFile(File)) Error = $"Non exist file {File} for instantiating preferences.";
                 else if (!Parse(encrypt ? XString.Decrypt(XFile.OpenText(File)) : XFile.OpenText(File), out var perror)) Error = perror;
-                if (!string.IsNullOrEmpty(Error)) XLog.Error($"XPrefs.Read: load <a href=\"file:///{File}\">{File}</a> with error: {Error}");
+                if (!string.IsNullOrEmpty(Error)) XLog.Error($"XPrefs.Read: load <a href=\"file:///{Path.GetFullPath(File)}\">{Path.GetRelativePath(XEnv.ProjectPath, File)}</a> with error: {Error}");
                 return string.IsNullOrEmpty(Error);
             }
 
@@ -400,7 +400,7 @@ namespace EFramework.Utility
                     Dirty = false;
                     var text = Json(pretty);
                     XFile.SaveText(File, encrypt ? XString.Encrypt(text) : text);
-                    XLog.Notice("XPrefs.Save: persisted to <a href=\"file:///{0}\">{1}</a>.", Path.GetFullPath(File), File);
+                    XLog.Notice("XPrefs.Save: persisted to <a href=\"file:///{0}\">{1}</a>.", Path.GetFullPath(File), Path.GetRelativePath(XEnv.ProjectPath, File));
                     return true;
                 }
             }
