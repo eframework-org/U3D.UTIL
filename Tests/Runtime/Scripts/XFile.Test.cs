@@ -3,36 +3,18 @@
 // license that can be found in the LICENSE file.
 
 #if UNITY_INCLUDE_TESTS
-using NUnit.Framework;
 using System;
 using System.IO;
-using EFramework.Utility;
 using System.Threading.Tasks;
-using System.Threading;
+using System.Security.Cryptography;
+using NUnit.Framework;
+using EFramework.Utility;
 
 /// <summary>
 /// XFile 单元测试类，验证文件系统操作的核心功能。
 /// </summary>
-/// <remarks>
-/// 测试覆盖以下功能：
-/// 1. 文件的基本操作（创建、读取、写入、删除）
-/// 2. 目录的基本操作（创建、复制、删除）
-/// 3. 路径处理（合并、归一化）
-/// 4. 压缩解压功能
-/// 5. 文件校验（MD5）
-/// </remarks>
 public class TestXFile
 {
-    /// <summary>
-    /// 测试用的基础路径和相关文件路径。
-    /// </summary>
-    /// <remarks>
-    /// - testBasePath：测试根目录
-    /// - testFilePath：测试文件路径
-    /// - testDirectoryPath：测试目录路径
-    /// - testZipPath：压缩测试目录
-    /// - testUnzipPath：解压测试目录
-    /// </remarks>
     private string testBasePath;
     private string testFilePath;
     private string testDirectoryPath;
@@ -45,9 +27,10 @@ public class TestXFile
     [OneTimeSetUp]
     public void Setup()
     {
-        testBasePath = XFile.PathJoin(XEnv.LocalPath, "XFileTest_" + XTime.GetMillisecond());
-        testFilePath = XFile.PathJoin(testBasePath, "TestFile.txt");
+        testBasePath = XFile.PathJoin(XEnv.LocalPath, "TestXFile-" + XTime.GetMillisecond());
         testDirectoryPath = XFile.PathJoin(testBasePath, "TestDirectory");
+        XFile.CreateDirectory(testDirectoryPath);
+        testFilePath = XFile.PathJoin(testBasePath, "TestFile.txt");
         testZipPath = XFile.PathJoin(testBasePath, "TestZip");
         testUnzipPath = XFile.PathJoin(testBasePath, "TestUnzip");
     }
@@ -67,11 +50,6 @@ public class TestXFile
     /// <summary>
     /// 测试 FileSize 方法。
     /// </summary>
-    /// <remarks>
-    /// 验证以下场景：
-    /// 1. 正确获取文件大小
-    /// 2. 文件不存在时返回 -1
-    /// </remarks>
     [Test]
     public void FileSize()
     {
@@ -90,11 +68,6 @@ public class TestXFile
     /// <summary>
     /// 测试 HasFile 方法。
     /// </summary>
-    /// <remarks>
-    /// 验证以下场景：
-    /// 1. 存在的文件返回 true
-    /// 2. 不存在的文件返回 false
-    /// </remarks>
     [Test]
     public void HasFile()
     {
@@ -109,11 +82,6 @@ public class TestXFile
     /// <summary>
     /// 测试 OpenText 方法。
     /// </summary>
-    /// <remarks>
-    /// 验证以下场景：
-    /// 1. 正确读取文本内容
-    /// 2. 内容编码正确（UTF8）
-    /// </remarks>
     [Test]
     public void OpenText()
     {
@@ -131,11 +99,6 @@ public class TestXFile
     /// <summary>
     /// 测试 OpenFile 方法。
     /// </summary>
-    /// <remarks>
-    /// 验证以下场景：
-    /// 1. 正确读取二进制内容
-    /// 2. 文件长度正确
-    /// </remarks>
     [Test]
     public void OpenFile()
     {
@@ -154,12 +117,6 @@ public class TestXFile
     /// <summary>
     /// 测试 SaveText 方法。
     /// </summary>
-    /// <remarks>
-    /// 验证以下场景：
-    /// 1. 成功保存文本内容
-    /// 2. 自动创建目录
-    /// 3. 内容正确性
-    /// </remarks>
     [Test]
     public void SaveText()
     {
@@ -178,11 +135,6 @@ public class TestXFile
     /// <summary>
     /// 测试 DeleteFile 方法。
     /// </summary>
-    /// <remarks>
-    /// 验证以下场景：
-    /// 1. 成功删除文件
-    /// 2. 删除后文件不存在
-    /// </remarks>
     [Test]
     public void DeleteFile()
     {
@@ -199,12 +151,6 @@ public class TestXFile
     /// <summary>
     /// 测试 CopyFile 方法。
     /// </summary>
-    /// <remarks>
-    /// 验证以下场景：
-    /// 1. 成功复制文件
-    /// 2. 目标文件存在
-    /// 3. 文件内容一致
-    /// </remarks>
     [Test]
     public void CopyFile()
     {
@@ -224,11 +170,6 @@ public class TestXFile
     /// <summary>
     /// 测试 HasDirectory 方法。
     /// </summary>
-    /// <remarks>
-    /// 验证以下场景：
-    /// 1. 存在的目录返回 true
-    /// 2. 不存在的目录返回 false
-    /// </remarks>
     [Test]
     public void HasDirectory()
     {
@@ -243,11 +184,6 @@ public class TestXFile
     /// <summary>
     /// 测试 DeleteDirectory 方法。
     /// </summary>
-    /// <remarks>
-    /// 验证以下场景：
-    /// 1. 成功删除目录及其内容
-    /// 2. 删除后目录不存在
-    /// </remarks>
     [Test]
     public void DeleteDirectory()
     {
@@ -267,11 +203,6 @@ public class TestXFile
     /// <summary>
     /// 测试 CreateDirectory 方法。
     /// </summary>
-    /// <remarks>
-    /// 验证以下场景：
-    /// 1. 成功创建目录
-    /// 2. 创建后目录存在
-    /// </remarks>
     [Test]
     public void CreateDirectory()
     {
@@ -285,13 +216,6 @@ public class TestXFile
     /// <summary>
     /// 测试 CopyDirectory 方法。
     /// </summary>
-    /// <remarks>
-    /// 验证以下场景：
-    /// 1. 成功复制目录结构
-    /// 2. 文件排除功能
-    /// 3. 递归复制子目录
-    /// 4. 文件内容正确性
-    /// </remarks>
     [Test]
     public void CopyDirectory()
     {
@@ -339,12 +263,6 @@ public class TestXFile
     /// <summary>
     /// 测试 IsDirectory 方法。
     /// </summary>
-    /// <remarks>
-    /// 验证以下场景：
-    /// 1. 正确识别目录路径
-    /// 2. 正确识别文件路径
-    /// 3. 特殊路径处理
-    /// </remarks>
     [Test]
     public void IsDirectory()
     {
@@ -361,12 +279,6 @@ public class TestXFile
     /// <summary>
     /// 测试 NormalizePath 方法。
     /// </summary>
-    /// <remarks>
-    /// 验证以下场景：
-    /// 1. 路径分隔符统一
-    /// 2. 相对路径处理
-    /// 3. 特殊字符处理
-    /// </remarks>
     [Test]
     public void NormalizePath()
     {
@@ -385,13 +297,6 @@ public class TestXFile
     /// <summary>
     /// 测试 PathJoin 方法。
     /// </summary>
-    /// <remarks>
-    /// 验证以下场景：
-    /// 1. 基本路径合并
-    /// 2. 处理重复分隔符
-    /// 3. 空路径处理
-    /// 4. 特殊路径合并
-    /// </remarks>
     [Test]
     public void PathJoin()
     {
@@ -415,12 +320,6 @@ public class TestXFile
     /// <summary>
     /// 测试 Zip 方法。
     /// </summary>
-    /// <remarks>
-    /// 验证以下场景：
-    /// 1. 成功创建压缩文件
-    /// 2. 压缩文件大小正确
-    /// 3. 压缩操作成功完成
-    /// </remarks>
     [Test]
     public void Zip()
     {
@@ -446,13 +345,6 @@ public class TestXFile
     /// <summary>
     /// 测试 Unzip 方法。
     /// </summary>
-    /// <remarks>
-    /// 验证以下场景：
-    /// 1. 成功解压文件
-    /// 2. 解压后文件完整性
-    /// 3. 异步操作正确性
-    /// 4. 超时处理
-    /// </remarks>
     [Test]
     public void Unzip()
     {
@@ -506,33 +398,32 @@ public class TestXFile
     /// <summary>
     /// 测试 FileMD5 方法。
     /// </summary>
-    /// <remarks>
-    /// 验证以下场景：
-    /// 1. MD5计算正确性
-    /// 2. 相同内容产生相同MD5
-    /// 3. 不同内容产生不同MD5
-    /// 4. 文件不存在的处理
-    /// </remarks>
     [Test]
     public void FileMD5()
     {
         // 准备测试文件
-        var testFile = XFile.PathJoin(testDirectoryPath, "md5test.txt");
+        var testFile = XFile.PathJoin(testBasePath, "md5test.txt");
         var content = "Hello, MD5!";
-        XFile.SaveText(testFile, content);
+        using (var sw = new StreamWriter(testFile))
+        {
+            for (int i = 0; i < 1000; i++) sw.WriteLine(content);
+        }
 
         // 计算MD5
-        var md5 = XFile.FileMD5(testFile);
+        var md5 = XFile.FileMD5(testFile, 4, 32);
 
         // 验证MD5不为空且长度正确（32个字符）
         Assert.That(md5, Is.Not.Empty, "MD5值不应为空");
         Assert.That(md5.Length, Is.EqualTo(32), "MD5值应为32个字符");
 
         // 验证相同内容产生相同的MD5
-        var testFile2 = XFile.PathJoin(testDirectoryPath, "md5test2.txt");
-        XFile.SaveText(testFile2, content);
-        var md5_2 = XFile.FileMD5(testFile2);
-        Assert.That(md5_2, Is.EqualTo(md5), "相同内容应产生相同的MD5值");
+        var testFile2 = XFile.PathJoin(testBasePath, "md5test2.txt");
+        using (var sw2 = new StreamWriter(testFile2))
+        {
+            for (int i = 0; i < 1000; i++) sw2.WriteLine(content);
+        }
+        var md52 = XFile.FileMD5(testFile2, 4, 32);
+        Assert.That(md52, Is.EqualTo(md5), "相同内容应产生相同的MD5值");
 
         // 验证不同内容产生不同的MD5
         XFile.SaveText(testFile2, "Different content");
@@ -542,6 +433,23 @@ public class TestXFile
         // 测试不存在的文件
         var nonExistentMD5 = XFile.FileMD5("nonexistent.txt");
         Assert.That(nonExistentMD5, Is.Empty, "不存在的文件应返回空MD5值");
+
+        // 空文件的MD5值
+        var emptyFile = XFile.PathJoin(testBasePath, "empty.txt");
+        XFile.SaveText(emptyFile, "");
+        var emptyMd5 = XFile.FileMD5(emptyFile);
+        Assert.That(emptyMd5, Is.Not.Empty, "空文件的MD5值不应为空");
+        Assert.That(emptyMd5.Length, Is.EqualTo(32), "空文件的MD5值应为32个字符");
+
+        // 文件路径为null或空字符串
+        Assert.That(XFile.FileMD5(null), Is.Empty, "文件路径为null应返回空MD5值");
+        Assert.That(XFile.FileMD5(string.Empty), Is.Empty, "文件路径为空字符串应返回空MD5值");
+
+        // 分段数量为 0 时应计算全文件MD5
+        using var fs = new FileStream(testFile, FileMode.Open, FileAccess.Read, FileShare.Read);
+        using var fsMd5 = MD5.Create();
+        var fullHash = BitConverter.ToString(fsMd5.ComputeHash(fs)).Replace("-", "").ToLowerInvariant();
+        Assert.That(XFile.FileMD5(testFile, 0), Is.EqualTo(fullHash), "分段数量为 0 时应计算全文件MD5");
     }
 }
 #endif

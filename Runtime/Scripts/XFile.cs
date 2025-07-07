@@ -30,13 +30,13 @@ namespace EFramework.Utility
     /// 1.1 读取文件
     /// 
     ///     // 读取文本文件
-    ///     string content = XFile.OpenText("config.txt");
+    ///     var content = XFile.OpenText("config.txt");
     ///     
     ///     // 读取二进制文件
-    ///     byte[] data = XFile.OpenFile("data.bin");
+    ///     var data = XFile.OpenFile("data.bin");
     ///     
     ///     // 获取文件大小
-    ///     long size = XFile.FileSize("file.dat");
+    ///     var size = XFile.FileSize("file.dat");
     /// 
     /// 1.2 写入文件
     /// 
@@ -44,7 +44,7 @@ namespace EFramework.Utility
     ///     XFile.SaveText("config.txt", "Hello World");
     ///     
     ///     // 写入二进制文件
-    ///     byte[] data = new byte[] { 1, 2, 3 };
+    ///     var data = new byte[] { 1, 2, 3 };
     ///     XFile.SaveFile("data.bin", data);
     /// 
     /// 2. 目录操作
@@ -74,13 +74,13 @@ namespace EFramework.Utility
     /// 3.1 路径合并
     /// 
     ///     // 合并多段路径
-    ///     string path = XFile.PathJoin("root", "sub", "file.txt");
+    ///     var path = XFile.PathJoin("root", "sub", "file.txt");
     ///     // 结果: root/sub/file.txt
     /// 
     /// 3.2 路径归一化
     /// 
     ///     // 统一分隔符
-    ///     string path = XFile.NormalizePath("root\\sub\\file.txt");
+    ///     var path = XFile.NormalizePath("root\\sub\\file.txt");
     ///     // 结果: root/sub/file.txt
     /// 
     /// 4. 压缩解压
@@ -108,7 +108,9 @@ namespace EFramework.Utility
     /// 5.1 计算 MD5
     /// 
     ///     // 获取文件的 MD5 值
-    ///     string md5 = XFile.FileMD5("file.dat");
+    ///     // 支持全文件或分段采样模式
+    ///     // 分段模式会将文件大小及多个采样段拼接后进行哈希，可显著减少对大文件的读取时间，同时降低冲突概率
+    ///     var md5 = XFile.FileMD5("file.dat", 8, 64 * 1024);
     ///     if (!string.IsNullOrEmpty(md5))
     ///     {
     ///         Console.WriteLine($"文件 MD5: {md5}");
@@ -119,14 +121,17 @@ namespace EFramework.Utility
     public class XFile
     {
         /// <summary>
-        /// 路径分隔符（POSIX风格）
+        /// Separator 是路径分隔符（POSIX风格）。
         /// </summary>
         public static readonly string Separator = "/";
 
+        /// <summary>
+        /// androidProxy 是 Android 平台的代理工具类。
+        /// </summary>
         internal static readonly AndroidJavaClass androidProxy = new("org.eframework.u3d.util.XFile");
 
         /// <summary>
-        /// Android 平台的压缩监听器
+        /// AndroidZipListener 是 Android 平台的压缩监听器
         /// </summary>
         internal class AndroidZipListener : AndroidJavaProxy
         {
@@ -148,7 +153,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 获取文件大小。
+        /// FileSize 用于获取文件的大小。
         /// </summary>
         /// <param name="file">文件路径</param>
         /// <returns>文件大小（字节），文件不存在返回 -1</returns>
@@ -171,7 +176,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 检查文件是否存在。
+        /// HasFile 检查文件是否存在。
         /// </summary>
         /// <param name="path">文件路径</param>
         /// <returns>文件存在返回 true，否则返回 false</returns>
@@ -192,7 +197,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 以 UTF8 编码打开文本文件。
+        /// OpenText 以 UTF8 编码打开文本文件。
         /// </summary>
         /// <param name="path">文件路径</param>
         /// <returns>文件内容字符串</returns>
@@ -213,7 +218,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 打开文件并读取二进制内容。
+        /// OpenFile 打开文件并读取二进制内容。
         /// </summary>
         /// <param name="path">文件路径</param>
         /// <returns>文件内容字节数组</returns>
@@ -242,7 +247,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 保存文本内容到文件。
+        /// SaveText 保存文本内容到文件。
         /// </summary>
         /// <param name="path">文件路径</param>
         /// <param name="content">文本内容</param>
@@ -255,7 +260,7 @@ namespace EFramework.Utility
         public static bool SaveText(string path, string content, FileMode mode = FileMode.CreateNew) { return SaveFile(path, Encoding.UTF8.GetBytes(content), mode); }
 
         /// <summary>
-        /// 保存二进制内容到文件。
+        /// SaveFile 保存二进制内容到文件。
         /// </summary>
         /// <param name="path">文件路径</param>
         /// <param name="buffer">二进制内容</param>
@@ -287,7 +292,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 删除文件。
+        /// DeleteFile 删除文件。
         /// </summary>
         /// <param name="path">文件路径</param>
         /// <remarks>
@@ -301,7 +306,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 复制文件。
+        /// CopyFile 复制文件。
         /// </summary>
         /// <param name="src">源文件路径</param>
         /// <param name="dst">目标文件路径</param>
@@ -313,14 +318,14 @@ namespace EFramework.Utility
         public static void CopyFile(string src, string dst, bool overwrite = true) { File.Copy(src, dst, overwrite); }
 
         /// <summary>
-        /// 检查目录是否存在。
+        /// HasDirectory 检查目录是否存在。
         /// </summary>
         /// <param name="path">目录路径</param>
         /// <returns>目录存在返回 true，否则返回 false</returns>
         public static bool HasDirectory(string path) { return Directory.Exists(path); }
 
         /// <summary>
-        /// 删除目录。
+        /// DeleteDirectory 删除目录。
         /// </summary>
         /// <param name="path">目录路径</param>
         /// <param name="recursive">是否递归删除子目录和文件</param>
@@ -351,7 +356,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 创建目录。
+        /// CreateDirectory 创建目录。
         /// </summary>
         /// <param name="path">目录路径</param>
         /// <remarks>
@@ -365,7 +370,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 复制目录。
+        /// CopyDirectory 复制目录。
         /// </summary>
         /// <param name="src">源目录路径</param>
         /// <param name="dst">目标目录路径</param>
@@ -414,7 +419,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 判断路径是否为目录。
+        /// IsDirectory 判断路径是否为目录。
         /// </summary>
         /// <param name="path">要判断的路径</param>
         /// <returns>是目录返回 true，否则返回 false</returns>
@@ -428,7 +433,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 归一化路径。
+        /// NormalizePath 归一化路径。
         /// </summary>
         /// <param name="path">要归一化的路径</param>
         /// <returns>归一化后的路径</returns>
@@ -464,7 +469,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 合并路径。
+        /// PathJoin 合并路径。
         /// </summary>
         /// <param name="path">基础路径</param>
         /// <param name="paths">要合并的路径数组</param>
@@ -490,7 +495,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 压缩目录为 ZIP 文件。
+        /// Zip 将目录压缩为 ZIP 文件。
         /// </summary>
         /// <param name="dir">要压缩的目录</param>
         /// <param name="zip">目标 ZIP 文件路径</param>
@@ -595,7 +600,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 解压 ZIP 文件。
+        /// Unzip 解压 ZIP 文件。
         /// </summary>
         /// <param name="src">ZIP 文件路径</param>
         /// <param name="to">解压目标目录</param>
@@ -679,30 +684,87 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 计算文件的 MD5 值。
+        /// FileMD5 计算文件的 MD5 指纹值，支持全文件或分段采样模式。
         /// </summary>
         /// <param name="path">文件路径</param>
-        /// <returns>32 位小写 MD5 字符串，文件不存在返回空字符串</returns>
+        /// <param name="segmentCount">
+        /// 分段数量：
+        /// 小于等于 0 表示对整个文件计算 MD5；
+        /// 大于 0 表示按等间距采样 segmentCount 段，每段长度由 segmentSize 指定。
+        /// </param>
+        /// <param name="segmentSize">每段采样的最大字节数（仅分段模式有效）</param>
+        /// <returns>
+        /// 32 位小写 MD5 字符串，若文件不存在或出错返回空字符串。
+        /// </returns>
         /// <remarks>
-        /// 使用 MD5CryptoServiceProvider 计算哈希值。
-        /// 计算失败返回空字符串。
+        /// 使用哈希算法计算文件指纹，分段模式会将文件大小及多个采样段拼接后进行哈希，可显著减少对大文件的读取时间，同时降低冲突概率。
         /// </remarks>
-        public static string FileMD5(string path)
+        public static string FileMD5(string path, int segmentCount = 8, int segmentSize = 64 * 1024)
         {
             if (!File.Exists(path)) return string.Empty;
+
             try
             {
-                using var fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+                var fileInfo = new FileInfo(path);
+                long fileSize = fileInfo.Length;
+
                 using var md5 = MD5.Create();
-                var hash = md5.ComputeHash(fs);
-                var sb = new StringBuilder();
-                foreach (var b in hash)
+
+                if (segmentCount <= 0) // 全文件哈希
                 {
-                    sb.Append(b.ToString("x2"));
+                    using var fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+                    var fullHash = md5.ComputeHash(fs);
+                    return BitConverter.ToString(fullHash).Replace("-", "").ToLowerInvariant();
                 }
-                return sb.ToString();
+                else // 分段哈希
+                {
+                    using var ms = new MemoryStream();
+
+                    // 写入文件大小（8字节，Little Endian）
+                    ms.Write(BitConverter.GetBytes(fileSize));
+
+                    if (fileSize == 0)
+                    {
+                        ms.Position = 0;
+                        var hashEmpty = md5.ComputeHash(ms);
+                        return BitConverter.ToString(hashEmpty).Replace("-", "").ToLowerInvariant();
+                    }
+
+                    using var fsSample = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+                    var buffer = new byte[segmentSize];
+
+                    for (int i = 0; i < segmentCount; i++)
+                    {
+                        long offset = fileSize * i / segmentCount;
+                        long remaining = fileSize - offset;
+                        if (remaining <= 0) break;
+
+                        var readSize = (int)Math.Min(segmentSize, remaining > int.MaxValue ? int.MaxValue : remaining);
+                        if (readSize <= 0) break;
+
+                        fsSample.Seek(offset, SeekOrigin.Begin);
+
+                        var totalRead = 0;
+                        while (totalRead < readSize)
+                        {
+                            var read = fsSample.Read(buffer, totalRead, readSize - totalRead);
+                            if (read == 0) break;
+                            totalRead += read;
+                        }
+
+                        ms.Write(buffer, 0, totalRead);
+                    }
+
+                    ms.Position = 0;
+                    var finalHash = md5.ComputeHash(ms);
+                    return BitConverter.ToString(finalHash).Replace("-", "").ToLowerInvariant();
+                }
             }
-            catch (Exception e) { XLog.Panic(e, path); return string.Empty; }
+            catch (Exception e)
+            {
+                XLog.Panic(e, path);
+                return string.Empty;
+            }
         }
     }
 }

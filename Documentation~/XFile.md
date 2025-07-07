@@ -21,13 +21,13 @@ XFile 提供了文件系统操作功能，支持文件和目录的基本操作�
 #### 1.1 读取文件
 ```csharp
 // 读取文本文件
-string content = XFile.OpenText("config.txt");
+var content = XFile.OpenText("config.txt");
 
 // 读取二进制文件
-byte[] data = XFile.OpenFile("data.bin");
+var data = XFile.OpenFile("data.bin");
 
 // 获取文件大小
-long size = XFile.FileSize("file.dat");
+var size = XFile.FileSize("file.dat");
 ```
 
 #### 1.2 写入文件
@@ -36,7 +36,7 @@ long size = XFile.FileSize("file.dat");
 XFile.SaveText("config.txt", "Hello World");
 
 // 写入二进制文件
-byte[] data = new byte[] { 1, 2, 3 };
+var data = new byte[] { 1, 2, 3 };
 XFile.SaveFile("data.bin", data);
 ```
 
@@ -82,7 +82,7 @@ XFile.CopyDirectory("source", "target", ".meta", ".tmp");
 #### 3.1 路径合并
 ```csharp
 // 合并多段路径
-string path = XFile.PathJoin("root", "sub", "file.txt");
+var path = XFile.PathJoin("root", "sub", "file.txt");
 // 结果: root/sub/file.txt
 
 // 处理带分隔符的路径
@@ -93,7 +93,7 @@ path = XFile.PathJoin("root/", "/sub/", "/file.txt");
 #### 3.2 路径归一化
 ```csharp
 // 统一分隔符
-string path = XFile.NormalizePath("root\\sub\\file.txt");
+var path = XFile.NormalizePath("root\\sub\\file.txt");
 // 结果: root/sub/file.txt
 
 // 处理特殊路径
@@ -132,7 +132,9 @@ XFile.Unzip("source.zip", "targetDir",
 #### 5.1 计算 MD5
 ```csharp
 // 获取文件的 MD5 值
-string md5 = XFile.FileMD5("file.dat");
+// 支持全文件或分段采样模式
+// 分段模式会将文件大小及多个采样段拼接后进行哈希，可显著减少对大文件的读取时间，同时降低冲突概率
+var md5 = XFile.FileMD5("file.dat", 8, 64 * 1024);
 if (!string.IsNullOrEmpty(md5))
 {
     Console.WriteLine($"文件 MD5: {md5}");
