@@ -28,6 +28,8 @@
     ".puer",
     "Editor",
     "Editor.meta",
+    "Plugins",
+    "Plugins.meta",
     "Runtime",
     "Runtime.meta",
     "Documentation~",
