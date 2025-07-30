@@ -509,51 +509,83 @@ namespace EFramework.Utility
 
             public override string Tooltip => "Preferences of Environment.";
 
-            public override void OnVisualize(string searchContext)
+            public override void OnVisualize(string searchContext, XPrefs.IBase target)
             {
                 UnityEditor.EditorGUILayout.BeginVertical(UnityEditor.EditorStyles.helpBox);
                 UnityEditor.EditorGUILayout.BeginHorizontal();
                 Title("App");
-                Enum.TryParse<AppType>(Target.GetString(App, AppDefault), out var appType);
-                Target.Set(App, UnityEditor.EditorGUILayout.EnumPopup("", appType).ToString());
+                Enum.TryParse<AppType>(target.GetString(App, AppDefault), out var appType);
+                target.Set(App, UnityEditor.EditorGUILayout.EnumPopup("", appType).ToString());
 
                 Title("Mode");
-                Enum.TryParse<ModeType>(Target.GetString(Mode, ModeDefault), out var modeType);
-                Target.Set(Mode, UnityEditor.EditorGUILayout.EnumPopup("", modeType).ToString());
+                Enum.TryParse<ModeType>(target.GetString(Mode, ModeDefault), out var modeType);
+                target.Set(Mode, UnityEditor.EditorGUILayout.EnumPopup("", modeType).ToString());
                 UnityEditor.EditorGUILayout.EndHorizontal();
 
                 UnityEditor.EditorGUILayout.BeginHorizontal();
                 Title("Solution");
-                Target.Set(Solution, UnityEditor.EditorGUILayout.TextField("", Target.GetString(Solution, SolutionDefault)));
+                target.Set(Solution, UnityEditor.EditorGUILayout.TextField("", target.GetString(Solution, SolutionDefault)));
 
                 Title("Project");
-                Target.Set(Project, UnityEditor.EditorGUILayout.TextField("", Target.GetString(Project, ProjectDefault)));
+                target.Set(Project, UnityEditor.EditorGUILayout.TextField("", target.GetString(Project, ProjectDefault)));
                 UnityEditor.EditorGUILayout.EndHorizontal();
 
                 UnityEditor.EditorGUILayout.BeginHorizontal();
                 Title("Product");
-                Target.Set(Product, UnityEditor.EditorGUILayout.TextField("", Target.GetString(Product, ProductDefault)));
+                target.Set(Product, UnityEditor.EditorGUILayout.TextField("", target.GetString(Product, ProductDefault)));
 
                 Title("Channel");
-                Target.Set(Channel, UnityEditor.EditorGUILayout.TextField("", Target.GetString(Channel, ChannelDefault)));
+                target.Set(Channel, UnityEditor.EditorGUILayout.TextField("", target.GetString(Channel, ChannelDefault)));
                 UnityEditor.EditorGUILayout.EndHorizontal();
 
                 UnityEditor.EditorGUILayout.BeginHorizontal();
                 Title("Version");
-                Target.Set(Version, UnityEditor.EditorGUILayout.TextField("", Target.GetString(Version, VersionDefault)));
+                target.Set(Version, UnityEditor.EditorGUILayout.TextField("", target.GetString(Version, VersionDefault)));
 
                 Title("Author");
-                Target.Set(Author, UnityEditor.EditorGUILayout.TextField("", Target.GetString(Author, AuthorDefault)));
+                target.Set(Author, UnityEditor.EditorGUILayout.TextField("", target.GetString(Author, AuthorDefault)));
                 UnityEditor.EditorGUILayout.EndHorizontal();
 
                 UnityEditor.EditorGUILayout.BeginHorizontal();
                 Title("Secret");
-                Target.Set(Secret, UnityEditor.EditorGUILayout.TextField("", Target.GetString(Secret, SecretDefault)));
+                target.Set(Secret, UnityEditor.EditorGUILayout.TextField("", target.GetString(Secret, SecretDefault)));
 
                 Title("Remote");
-                Target.Set(Remote, UnityEditor.EditorGUILayout.TextField("", Target.GetString(Remote, RemoteDefault)));
+                target.Set(Remote, UnityEditor.EditorGUILayout.TextField("", target.GetString(Remote, RemoteDefault)));
                 UnityEditor.EditorGUILayout.EndHorizontal();
                 UnityEditor.EditorGUILayout.EndVertical();
+            }
+
+            public override void OnSave(XPrefs.IBase source, XPrefs.IBase target)
+            {
+                target.Set(App, source.Get(App, AppDefault));
+                target.Set(Mode, source.Get(Mode, ModeDefault));
+                target.Set(Solution, source.Get(Solution, SolutionDefault));
+                target.Set(Project, source.Get(Project, ProjectDefault));
+                target.Set(Product, source.Get(Product, ProductDefault));
+                target.Set(Channel, source.Get(Channel, ChannelDefault));
+                target.Set(Version, source.Get(Version, VersionDefault));
+                target.Set(Author, source.Get(Author, AuthorDefault));
+                target.Set(Secret, source.Get(Secret, SecretDefault));
+                target.Set(Remote, source.Get(Remote, RemoteDefault));
+            }
+
+            public override void OnApply(XPrefs.IBase source, XPrefs.IBase target, bool asset, bool local, bool remote)
+            {
+                if (asset) target.Set(Remote, target.Get(Remote, RemoteDefault).Eval(Vars));
+                if (remote)
+                {
+                    target.Unset(App);
+                    target.Unset(Mode);
+                    target.Unset(Solution);
+                    target.Unset(Project);
+                    target.Unset(Product);
+                    target.Unset(Channel);
+                    target.Unset(Version);
+                    target.Unset(Author);
+                    target.Unset(Secret);
+                    target.Unset(Remote);
+                }
             }
 #endif
         }

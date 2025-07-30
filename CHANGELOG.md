@@ -3,6 +3,7 @@
 ## [0.1.8] - 
 ### 变更
 - 修改 XPrefs.IPanel 接口的 OnActivate、OnSave、OnApply 等函数的签名
+- 修改 XEnv、XLog 模块对新版 XPrefs.IPanel 接口的适配
 
 ## [0.1.7] - 2025-07-07
 ### 变更

@@ -12,6 +12,7 @@ using EFramework.Utility;
 public class TestXLogStd
 {
     private XLog.StdAdapter adapter;
+
     private XPrefs.IBase prefs;
 
     [SetUp]
@@ -27,6 +28,27 @@ public class TestXLogStd
         adapter = null;
         prefs = null;
         XLog.batchMode = Application.isBatchMode;
+    }
+
+    [Test]
+    public void Prefs()
+    {
+        var panel = ScriptableObject.CreateInstance<XLog.StdAdapter.Prefs>();
+
+        // Save
+        var targetPrefs = new XPrefs.IBase();
+        panel.OnSave(source: new XPrefs.IBase(), target: targetPrefs);
+
+        var targetConfig = targetPrefs.Get<XPrefs.IBase>(XLog.StdAdapter.Prefs.Config);
+        Assert.NotNull(targetConfig, "Log/Std 配置项应当存在。");
+
+        Assert.AreEqual(XLog.StdAdapter.Prefs.LevelDefault, targetConfig.GetString(XLog.StdAdapter.Prefs.Level), "Log/Std/Level 配置项应当存在。");
+        Assert.AreEqual(XLog.StdAdapter.Prefs.ColorDefault, targetConfig.GetBool(XLog.StdAdapter.Prefs.Color), "Log/Std/Color 配置项应当存在。");
+
+        // Apply
+        panel.OnApply(source: targetPrefs, target: targetPrefs, asset: false, local: false, remote: true);
+        targetConfig = targetPrefs.Get<XPrefs.IBase>(XLog.StdAdapter.Prefs.Config);
+        Assert.IsNull(targetConfig, "Log/Std 配置项在远端应当被移除。");
     }
 
     [Test]

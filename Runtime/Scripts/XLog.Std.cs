@@ -137,9 +137,9 @@ namespace EFramework.Utility
 
                 [SerializeField] protected bool foldout = true;
 
-                public override void OnVisualize(string searchContext)
+                public override void OnVisualize(string searchContext, XPrefs.IBase target)
                 {
-                    var config = Target.Get(Config, ConfigDefault);
+                    var config = target.Get(Config, ConfigDefault);
                     UnityEditor.EditorGUILayout.BeginVertical(UnityEditor.EditorStyles.helpBox);
                     foldout = UnityEditor.EditorGUILayout.Foldout(foldout, new GUIContent("Std", "Standard Output Adapter."));
                     if (foldout)
@@ -156,20 +156,35 @@ namespace EFramework.Utility
                         UnityEditor.EditorGUILayout.EndVertical();
                     }
                     UnityEditor.EditorGUILayout.EndVertical();
-                    if (!Target.Has(Config) || config.Dirty) Target.Set(Config, config);
+                    if (!target.Has(Config) || config.Dirty) target.Set(Config, config);
                 }
 
-                public override bool Validate()
+                public override bool Validate(XPrefs.IBase target)
                 {
                     levelMax = LevelType.Undefined; // 重置最大值
-                    return base.Validate();
+                    return base.Validate(target);
                 }
 
-                public override void OnApply()
+                public override void OnSave(XPrefs.IBase source, XPrefs.IBase target)
                 {
-                    var config = Target.Get(Config, ConfigDefault);
-                    Enum.TryParse<LevelType>(config.GetString(Level, LevelDefault), out var levelType);
-                    if (levelType > levelMax) levelMax = levelType;
+                    var currentConfig = target.Get(Config, ConfigDefault);
+
+                    var targetConfig = new XPrefs.IBase();
+                    target.Set(Config, targetConfig);
+
+                    targetConfig.Set(Level, currentConfig.Get(Level, LevelDefault));
+                    targetConfig.Set(Color, currentConfig.Get(Color, ColorDefault));
+                }
+
+                public override void OnApply(XPrefs.IBase source, XPrefs.IBase target, bool asset, bool local, bool remote)
+                {
+                    if (local)
+                    {
+                        var config = target.Get(Config, ConfigDefault);
+                        Enum.TryParse<LevelType>(config.GetString(Level, LevelDefault), out var levelType);
+                        if (levelType > levelMax) levelMax = levelType;
+                    }
+                    if (remote) target.Unset(Config);
                 }
 #endif
             }

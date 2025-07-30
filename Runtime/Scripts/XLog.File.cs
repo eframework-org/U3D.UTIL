@@ -5,11 +5,11 @@
 using System;
 using System.IO;
 using System.Text;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Concurrent;
 using UnityEngine;
-using System.Linq;
 
 namespace EFramework.Utility
 {
@@ -481,7 +481,7 @@ namespace EFramework.Utility
                 }
                 catch (Exception e) { Handler.Default.LogException(e, null); }
 
-RESTART_LOGGER:
+            RESTART_LOGGER:
                 NewWriter();
                 DeleteOld();
 
@@ -572,7 +572,7 @@ RESTART_LOGGER:
 
                 public static readonly int MaxHourDefault = 168;
 
-                public const string Path = "Path@Const";
+                public const string Path = "Path";
 
                 public static readonly string PathDefault = "${Env.LocalPath}/Log/";
 
@@ -595,9 +595,9 @@ RESTART_LOGGER:
 
                 [SerializeField] protected bool foldout = true;
 
-                public override void OnVisualize(string searchContext)
+                public override void OnVisualize(string searchContext, XPrefs.IBase target)
                 {
-                    var config = Target.Get(Config, ConfigDefault);
+                    var config = target.Get(Config, ConfigDefault);
                     UnityEditor.EditorGUILayout.BeginVertical(UnityEditor.EditorStyles.helpBox);
                     foldout = UnityEditor.EditorGUILayout.Foldout(foldout, new GUIContent("File", "File Persistent Adapter."));
                     if (foldout)
@@ -660,20 +660,43 @@ RESTART_LOGGER:
                         UnityEditor.EditorGUILayout.EndVertical();
                     }
                     UnityEditor.EditorGUILayout.EndVertical();
-                    if (!Target.Has(Config) || config.Dirty) Target.Set(Config, config);
+                    if (!target.Has(Config) || config.Dirty) target.Set(Config, config);
                 }
 
-                public override bool Validate()
+                public override bool Validate(XPrefs.IBase target)
                 {
                     levelMax = LevelType.Undefined; // 重置最大值
-                    return base.Validate();
+                    return base.Validate(target);
                 }
 
-                public override void OnApply()
+                public override void OnSave(XPrefs.IBase source, XPrefs.IBase target)
                 {
-                    var config = Target.Get(Config, ConfigDefault);
-                    Enum.TryParse<LevelType>(config.GetString(Level, LevelDefault), out var levelType);
-                    if (levelType > levelMax) levelMax = levelType;
+                    var currentConfig = target.Get(Config, ConfigDefault);
+
+                    var targetConfig = new XPrefs.IBase();
+                    target.Set(Config, targetConfig);
+
+                    targetConfig.Set(Level, currentConfig.Get(Level, LevelDefault));
+                    targetConfig.Set(Rotate, currentConfig.Get(Rotate, RotateDefault));
+                    targetConfig.Set(Daily, currentConfig.Get(Daily, DailyDefault));
+                    targetConfig.Set(MaxDay, currentConfig.Get(MaxDay, MaxDayDefault));
+                    targetConfig.Set(Hourly, currentConfig.Get(Hourly, HourlyDefault));
+                    targetConfig.Set(MaxHour, currentConfig.Get(MaxHour, MaxHourDefault));
+                    targetConfig.Set(Path, currentConfig.Get(Path, PathDefault));
+                    targetConfig.Set(MaxFile, currentConfig.Get(MaxFile, MaxFileDefault));
+                    targetConfig.Set(MaxLine, currentConfig.Get(MaxLine, MaxLineDefault));
+                    targetConfig.Set(MaxSize, currentConfig.Get(MaxSize, MaxSizeDefault));
+                }
+
+                public override void OnApply(XPrefs.IBase source, XPrefs.IBase target, bool asset, bool local, bool remote)
+                {
+                    if (local)
+                    {
+                        var config = target.Get(Config, ConfigDefault);
+                        Enum.TryParse<LevelType>(config.GetString(Level, LevelDefault), out var levelType);
+                        if (levelType > levelMax) levelMax = levelType;
+                    }
+                    if (remote) target.Unset(Config);
                 }
 #endif
             }

@@ -3,11 +3,11 @@
 // license that can be found in the LICENSE file.
 
 #if UNITY_INCLUDE_TESTS
+using NUnit.Framework;
 using System;
 using System.IO;
-using EFramework.Utility;
-using NUnit.Framework;
 using UnityEngine;
+using EFramework.Utility;
 
 /// <summary>
 /// XEnv 环境工具类的单元测试。
@@ -17,26 +17,12 @@ public class TestXEnv
     /// <summary>
     /// 清理测试环境。
     /// </summary>
-    /// <remarks>
-    /// 重置命令行参数缓存，确保不影响其他测试。
-    /// </remarks>
     [OneTimeTearDown]
     public void Cleanup() { XEnv.ParseArgs(reset: true); }
 
     /// <summary>
     /// 测试环境元数据的有效性。
     /// </summary>
-    /// <remarks>
-    /// 验证以下环境信息是否正确设置：
-    /// - 平台类型不为未知
-    /// - 设备标识符不为空
-    /// - 解决方案名称不为空
-    /// - 项目名称不为空
-    /// - 产品名称不为空
-    /// - 发布渠道不为空
-    /// - 版本号不为空
-    /// - 作者信息不为空
-    /// </remarks>
     [Test]
     public void Metas()
     {
@@ -54,44 +40,59 @@ public class TestXEnv
     /// <summary>
     /// 测试环境配置的默认值。
     /// </summary>
-    /// <remarks>
-    /// 验证所有配置项的默认值是否正确设置：
-    /// - 应用类型默认值
-    /// - 运行模式默认值
-    /// - 解决方案名称默认值
-    /// - 项目名称默认值
-    /// - 产品名称默认值
-    /// - 发布渠道默认值
-    /// - 版本号默认值
-    /// - 作者信息默认值
-    /// - 密钥默认值
-    /// - 远程配置地址默认值
-    /// </remarks>
     [Test]
     public void Prefs()
     {
-        Assert.IsNotNull(XEnv.Prefs.AppDefault, "应用类型默认值不应为空");
-        Assert.IsNotNull(XEnv.Prefs.ModeDefault, "运行模式默认值不应为空");
-        Assert.IsNotNull(XEnv.Prefs.SolutionDefault, "解决方案名称默认值不应为空");
-        Assert.IsNotNull(XEnv.Prefs.ProjectDefault, "项目名称默认值不应为空");
-        Assert.IsNotNull(XEnv.Prefs.ProductDefault, "产品名称默认值不应为空");
-        Assert.IsNotNull(XEnv.Prefs.ChannelDefault, "发布渠道默认值不应为空");
-        Assert.IsNotNull(XEnv.Prefs.VersionDefault, "版本号默认值不应为空");
-        Assert.IsNotNull(XEnv.Prefs.AuthorDefault, "作者信息默认值不应为空");
-        Assert.IsNotNull(XEnv.Prefs.SecretDefault, "密钥默认值不应为空");
-        Assert.IsNotNull(XEnv.Prefs.RemoteDefault, "远程配置地址默认值不应为空");
+        Assert.IsNotNull(XEnv.Prefs.AppDefault, "Env/App 应用类型默认值不应为空");
+        Assert.IsNotNull(XEnv.Prefs.ModeDefault, "Env/Mode 运行模式默认值不应为空");
+        Assert.IsNotNull(XEnv.Prefs.SolutionDefault, "Env/Solution 解决方案名称默认值不应为空");
+        Assert.IsNotNull(XEnv.Prefs.ProjectDefault, "Env/Project 项目名称默认值不应为空");
+        Assert.IsNotNull(XEnv.Prefs.ProductDefault, "Env/Product 产品名称默认值不应为空");
+        Assert.IsNotNull(XEnv.Prefs.ChannelDefault, "Env/Channel 发布渠道默认值不应为空");
+        Assert.IsNotNull(XEnv.Prefs.VersionDefault, "Env/Version 版本号默认值不应为空");
+        Assert.IsNotNull(XEnv.Prefs.AuthorDefault, "Env/Author 作者信息默认值不应为空");
+        Assert.IsNotNull(XEnv.Prefs.SecretDefault, "Env/Secret 应用密钥默认值不应为空");
+        Assert.IsNotNull(XEnv.Prefs.RemoteDefault, "Env/Remote 远程配置地址默认值不应为空");
+
+        var panel = ScriptableObject.CreateInstance<XEnv.Prefs>();
+        var targetPrefs = new XPrefs.IBase();
+        panel.OnSave(source: new XPrefs.IBase(), target: targetPrefs);
+
+        // Save
+        Assert.AreEqual(XEnv.Prefs.AppDefault, targetPrefs.GetString(XEnv.Prefs.App), "Env/App 配置项应当存在。");
+        Assert.AreEqual(XEnv.Prefs.ModeDefault, targetPrefs.GetString(XEnv.Prefs.Mode), "Env/Mode 配置项应当存在。");
+        Assert.AreEqual(XEnv.Prefs.SolutionDefault, targetPrefs.GetString(XEnv.Prefs.Solution), "Env/Solution 配置项应当存在。");
+        Assert.AreEqual(XEnv.Prefs.ProjectDefault, targetPrefs.GetString(XEnv.Prefs.Project), "Env/Project 配置项应当存在。");
+        Assert.AreEqual(XEnv.Prefs.ProductDefault, targetPrefs.GetString(XEnv.Prefs.Product), "Env/Product 配置项应当存在。");
+        Assert.AreEqual(XEnv.Prefs.ChannelDefault, targetPrefs.GetString(XEnv.Prefs.Channel), "Env/Channel 配置项应当存在。");
+        Assert.AreEqual(XEnv.Prefs.VersionDefault, targetPrefs.GetString(XEnv.Prefs.Version), "Env/Version 配置项应当存在。");
+        Assert.AreEqual(XEnv.Prefs.AuthorDefault, targetPrefs.GetString(XEnv.Prefs.Author), "Env/Author 配置项应当存在。");
+        Assert.AreEqual(XEnv.Prefs.SecretDefault, targetPrefs.GetString(XEnv.Prefs.Secret), "Env/Secret 配置项应当存在。");
+        Assert.AreEqual(XEnv.Prefs.RemoteDefault, targetPrefs.GetString(XEnv.Prefs.Remote), "Env/Remote 配置项应当存在。");
+
+        // Apply - asset
+        var lastRemote = targetPrefs.GetString(XEnv.Prefs.Remote);
+        panel.OnApply(source: new XPrefs.IBase(), target: targetPrefs, asset: true, local: false, remote: false);
+        Assert.AreNotEqual(lastRemote, targetPrefs.GetString(XEnv.Prefs.Remote), "Env/Remote 配置项在资产中应当被求值。");
+
+        // Apply - remote
+        targetPrefs = new XPrefs.IBase();
+        panel.OnApply(source: new XPrefs.IBase(), target: targetPrefs, asset: false, local: false, remote: true);
+        Assert.IsFalse(targetPrefs.Has(XEnv.Prefs.App), "Env/App 配置项在远端应当被移除。");
+        Assert.IsFalse(targetPrefs.Has(XEnv.Prefs.Mode), "Env/Mode 配置项在远端应当被移除。");
+        Assert.IsFalse(targetPrefs.Has(XEnv.Prefs.Solution), "Env/Solution 配置项在远端应当被移除。");
+        Assert.IsFalse(targetPrefs.Has(XEnv.Prefs.Project), "Env/Project 配置项在远端应当被移除。");
+        Assert.IsFalse(targetPrefs.Has(XEnv.Prefs.Product), "Env/Product 配置项在远端应当被移除。");
+        Assert.IsFalse(targetPrefs.Has(XEnv.Prefs.Channel), "Env/Channel 配置项在远端应当被移除。");
+        Assert.IsFalse(targetPrefs.Has(XEnv.Prefs.Version), "Env/Version 配置项在远端应当被移除。");
+        Assert.IsFalse(targetPrefs.Has(XEnv.Prefs.Author), "Env/Author 配置项在远端应当被移除。");
+        Assert.IsFalse(targetPrefs.Has(XEnv.Prefs.Secret), "Env/Secret 配置项在远端应当被移除。");
+        Assert.IsFalse(targetPrefs.Has(XEnv.Prefs.Remote), "Env/Remote 配置项在远端应当被移除。");
     }
 
     /// <summary>
     /// 测试路径管理功能。
     /// </summary>
-    /// <remarks>
-    /// 测试以下路径相关功能：
-    /// 1. 项目路径的有效性
-    /// 2. 资源路径的正确性
-    /// 3. 本地数据目录的创建
-    /// 4. 自定义本地路径的设置和验证
-    /// </remarks>
     [Test]
     public void Paths()
     {
@@ -133,17 +134,6 @@ public class TestXEnv
     /// <summary>
     /// 测试命令行参数解析功能。
     /// </summary>
-    /// <remarks>
-    /// 测试以下命令行参数场景：
-    /// 1. 基本参数形式的解析
-    /// 2. 多种参数形式的组合
-    /// 3. 特殊值的处理
-    /// 4. 参数缓存的控制
-    /// 5. 缓存重置功能
-    /// 6. 空参数列表处理
-    /// 7. 无效参数处理
-    /// 8. 参数列表直接访问
-    /// </remarks>
     [Test]
     public void Args()
     {
@@ -250,14 +240,6 @@ public class TestXEnv
     /// <summary>
     /// 测试环境变量解析功能。
     /// </summary>
-    /// <remarks>
-    /// 测试以下环境变量解析场景：
-    /// 1. 命令行参数的解析
-    /// 2. 系统环境变量的解析
-    /// 3. 参数优先级处理
-    /// 4. 缺失变量处理
-    /// 5. 嵌套变量处理
-    /// </remarks>
     [Test]
     public void Eval()
     {

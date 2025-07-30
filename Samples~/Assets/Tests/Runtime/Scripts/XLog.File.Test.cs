@@ -50,7 +50,9 @@ public class TestXLogFile
     }
 
     private XLog.FileAdapter adapter;
+
     private XPrefs.IBase prefs;
+
     private string testLogDir;
 
     [SetUp]
@@ -73,7 +75,36 @@ public class TestXLogFile
     }
 
     [Test]
-    public void Initialize()
+    public void Prefs()
+    {
+        var panel = ScriptableObject.CreateInstance<XLog.FileAdapter.Prefs>();
+
+        // Save
+        var targetPrefs = new XPrefs.IBase();
+        panel.OnSave(source: new XPrefs.IBase(), target: targetPrefs);
+
+        var targetConfig = targetPrefs.Get<XPrefs.IBase>(XLog.FileAdapter.Prefs.Config);
+        Assert.NotNull(targetConfig, "Log/File 配置项应当存在。");
+
+        Assert.AreEqual(XLog.FileAdapter.Prefs.LevelDefault, targetConfig.GetString(XLog.FileAdapter.Prefs.Level), "Log/File/Level 配置项应当存在。");
+        Assert.AreEqual(XLog.FileAdapter.Prefs.RotateDefault, targetConfig.GetBool(XLog.FileAdapter.Prefs.Rotate), "Log/File/Rotate 配置项应当存在。");
+        Assert.AreEqual(XLog.FileAdapter.Prefs.DailyDefault, targetConfig.GetBool(XLog.FileAdapter.Prefs.Daily), "Log/File/Daily 配置项应当存在。");
+        Assert.AreEqual(XLog.FileAdapter.Prefs.MaxDayDefault, targetConfig.GetInt(XLog.FileAdapter.Prefs.MaxDay), "Log/File/MaxDay 配置项应当存在。");
+        Assert.AreEqual(XLog.FileAdapter.Prefs.HourlyDefault, targetConfig.GetBool(XLog.FileAdapter.Prefs.Hourly), "Log/File/Hourly 配置项应当存在。");
+        Assert.AreEqual(XLog.FileAdapter.Prefs.MaxHourDefault, targetConfig.GetInt(XLog.FileAdapter.Prefs.MaxHour), "Log/File/MaxHour 配置项应当存在。");
+        Assert.AreEqual(XLog.FileAdapter.Prefs.PathDefault, targetConfig.GetString(XLog.FileAdapter.Prefs.Path), "Log/File/Path 配置项应当存在。");
+        Assert.AreEqual(XLog.FileAdapter.Prefs.MaxFileDefault, targetConfig.GetInt(XLog.FileAdapter.Prefs.MaxFile), "Log/File/MaxFile 配置项应当存在。");
+        Assert.AreEqual(XLog.FileAdapter.Prefs.MaxLineDefault, targetConfig.GetInt(XLog.FileAdapter.Prefs.MaxLine), "Log/File/MaxLine 配置项应当存在。");
+        Assert.AreEqual(XLog.FileAdapter.Prefs.MaxSizeDefault, targetConfig.GetInt(XLog.FileAdapter.Prefs.MaxSize), "Log/File/MaxSize 配置项应当存在。");
+
+        // Apply
+        panel.OnApply(source: targetPrefs, target: targetPrefs, asset: false, local: false, remote: true);
+        targetConfig = targetPrefs.Get<XPrefs.IBase>(XLog.FileAdapter.Prefs.Config);
+        Assert.IsNull(targetConfig, "Log/File 配置项在远端应当被移除。");
+    }
+
+    [Test]
+    public void Init()
     {
         var cases = new TestCase[] {
             new() {
@@ -117,7 +148,7 @@ public class TestXLogFile
     }
 
     [Test]
-    public void WriteAndRotate()
+    public void Rotate()
     {
         var cases = new WriteTestCase[] {
             new() {
