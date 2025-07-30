@@ -628,8 +628,8 @@ namespace EFramework.Utility
         /// B：带大括号、连字符的 32 位数字。
         /// P：带括号、连字符的 32 位数字。
         /// </summary>
-        /// <param name="format">GUID 格式化选项，默认为 N 格式（32 位，无连字符）。</param>
-        /// <returns>随机字符串。</returns>
+        /// <param name="format">GUID 格式化选项，默认为 N 格式（32 位，无连字符）</param>
+        /// <returns>随机字符串</returns>
         public static string Random(string format = "N")
         {
             var guid = Guid.NewGuid().ToString(format);
