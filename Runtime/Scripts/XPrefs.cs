@@ -31,7 +31,7 @@ namespace EFramework.Utility
     /// 
     /// 1.1 检查配置项
     ///     // 检查配置项是否存在
-    ///     bool exists = XPrefs.HasKey("configKey");
+    ///     var exists = XPrefs.HasKey("configKey");
     /// 
     /// 1.2 读写基本类型
     ///     // 写入配置
@@ -41,10 +41,10 @@ namespace EFramework.Utility
     ///     XPrefs.Local.Set("stringKey", "value");
     /// 
     ///     // 读取配置
-    ///     int intValue = XPrefs.GetInt("intKey", 0);
-    ///     float floatValue = XPrefs.GetFloat("floatKey", 0f);
-    ///     bool boolValue = XPrefs.GetBool("boolKey", false);
-    ///     string stringValue = XPrefs.GetString("stringKey", "");
+    ///     var intValue = XPrefs.GetInt("intKey", 0);
+    ///     var floatValue = XPrefs.GetFloat("floatKey", 0f);
+    ///     var boolValue = XPrefs.GetBool("boolKey", false);
+    ///     var stringValue = XPrefs.GetString("stringKey", "");
     /// 
     /// 1.3 读写数组类型
     ///     // 写入数组
@@ -52,14 +52,14 @@ namespace EFramework.Utility
     ///     XPrefs.Local.Set("stringArray", new[] { "a", "b", "c" });
     /// 
     ///     // 读取数组
-    ///     int[] intArray = XPrefs.GetInts("intArray");
-    ///     string[] stringArray = XPrefs.GetStrings("stringArray");
+    ///     var intArray = XPrefs.GetInts("intArray");
+    ///     var stringArray = XPrefs.GetStrings("stringArray");
     /// 
     /// 2. 配置源管理
     /// 
     /// 2.1 内置配置（只读）
     ///     // 读取内置配置
-    ///     string value = XPrefs.Asset.GetString("key");
+    ///     var value = XPrefs.Asset.GetString("key");
     /// 
     /// 2.2 本地配置（可写）
     ///     // 写入本地配置
@@ -67,7 +67,7 @@ namespace EFramework.Utility
     ///     XPrefs.Local.Save();
     /// 
     ///     // 读取本地配置
-    ///     string value = XPrefs.Local.GetString("key");
+    ///     var value = XPrefs.Local.GetString("key");
     /// 
     /// 2.3 远端配置（只读）
     ///     // 实现远端配置处理器
@@ -81,26 +81,26 @@ namespace EFramework.Utility
     ///         /// <summary>
     ///         /// OnStarted 是流程启动的回调。
     ///         /// </summary>
-    ///         /// <param name="prefs">上下文实例</param>
-    ///         public void OnStarted(XPrefs.IRemote prefs) { }
+    ///         /// <param name="context">上下文实例</param>
+    ///         public void OnStarted(XPrefs.IRemote context) { }
     ///         
     ///         /// <summary>
     ///         /// OnRequest 是预请求的回调。
     ///         /// </summary>
-    ///         /// <param name="prefs">上下文实例</param>
+    ///         /// <param name="context">上下文实例</param>
     ///         /// <param name="request">HTTP 请求实例</param>
-    ///         public void OnRequest(XPrefs.IRemote prefs, UnityWebRequest request) { 
+    ///         public void OnRequest(XPrefs.IRemote context, UnityWebRequest request) { 
     ///             request.timeout = 10;
     ///         }
     ///         
     ///         /// <summary>
     ///         /// OnRetry 是错误重试的回调。
     ///         /// </summary>
-    ///         /// <param name="prefs">上下文实例</param>
+    ///         /// <param name="context">上下文实例</param>
     ///         /// <param name="count">重试次数</param>
     ///         /// <param name="pending">重试等待</param>
     ///         /// <returns></returns>
-    ///         public bool OnRetry(XPrefs.IRemote prefs, int count, out float pending)
+    ///         public bool OnRetry(XPrefs.IRemote context, int count, out float pending)
     ///         {
     ///             pending = 1.0f;
     ///             return count < 3;
@@ -109,14 +109,14 @@ namespace EFramework.Utility
     ///         /// <summary>
     ///         /// OnSucceeded 是请求成功的回调。
     ///         /// </summary>
-    ///         /// <param name="prefs">上下文实例</param>
-    ///         public void OnSucceeded(XPrefs.IRemote prefs) { }
+    ///         /// <param name="context">上下文实例</param>
+    ///         public void OnSucceeded(XPrefs.IRemote context) { }
     ///         
     ///         /// <summary>
     ///         /// OnFailed 是请求失败的回调。
     ///         /// </summary>
-    ///         /// <param name="prefs">上下文实例</param>
-    ///         public void OnFailed(XPrefs.IRemote prefs) { }
+    ///         /// <param name="context">上下文实例</param>
+    ///         public void OnFailed(XPrefs.IRemote context) { }
     ///     }
     /// 
     ///     // 读取远端配置
@@ -130,7 +130,7 @@ namespace EFramework.Utility
     ///     XPrefs.Local.Set("greeting", "Hello ${Prefs.name}");
     /// 
     ///     // 解析变量引用
-    ///     string result = XPrefs.Local.Eval("${Prefs.greeting}"); // 输出: Hello John
+    ///     var result = XPrefs.Local.Eval("${Prefs.greeting}"); // 输出: Hello John
     /// 
     /// 3.2 多级路径
     ///     // 设置嵌套配置
@@ -138,7 +138,7 @@ namespace EFramework.Utility
     ///     XPrefs.Local.Set("user.age", 30);
     /// 
     ///     // 使用多级路径引用
-    ///     string result = XPrefs.Local.Eval("${Prefs.user.name} is ${Prefs.user.age}");
+    ///     var result = XPrefs.Local.Eval("${Prefs.user.name} is ${Prefs.user.age}");
     /// 
     /// 4. 命令行参数
     /// 
@@ -155,8 +155,6 @@ namespace EFramework.Utility
     /// </remarks>
     public partial class XPrefs
     {
-        internal static string[] TestArgs { get; set; }
-
         /// <summary>
         /// IBase 是配置基类，提供配置的基本读写和变量替换功能。
         /// </summary>
@@ -193,10 +191,10 @@ namespace EFramework.Utility
             public IBase() : base() { }
 
             /// <summary>
-            /// 使用指定的读写和加密选项初始化配置对象。
+            /// 使用指定的读写和加密选项初始化配置实例。
             /// </summary>
-            /// <param name="writeable">是否可写。</param>
-            /// <param name="encrypt">是否加密存储。</param>
+            /// <param name="writeable">是否可写</param>
+            /// <param name="encrypt">是否加密存储</param>
             public IBase(bool writeable = true, bool encrypt = false)
             {
                 this.writeable = writeable;
@@ -206,8 +204,8 @@ namespace EFramework.Utility
             /// <summary>
             /// Eval 解析配置中的变量引用，支持 ${Prefs.Key} 语法。
             /// </summary>
-            /// <param name="input">包含变量引用的字符串。</param>
-            /// <returns>替换后的字符串。</returns>
+            /// <param name="input">包含变量引用的字符串</param>
+            /// <returns>替换后的字符串</returns>
             public string Eval(string input)
             {
                 var pattern = @"\$\{Prefs\.([^}]+?)\}";
@@ -253,17 +251,17 @@ namespace EFramework.Utility
             }
 
             /// <summary>
-            /// Encode 将配置对象编码为 JSON 节点。
+            /// Encode 将配置实例编码为 JSON 节点。
             /// </summary>
-            /// <returns>JSON 节点。</returns>
-            public JSONNode Encode() { return EncodeInternal(new HashSet<IBase>()); }
+            /// <returns>JSON 节点</returns>
+            public JSONNode Encode() { return Encode(new HashSet<IBase>()); }
 
             /// <summary>
-            /// EncodeInternal 内部编码方法，处理循环引用。
+            /// Encode 是内部的编码方法，处理循环引用。
             /// </summary>
-            /// <param name="visited">已访问的对象集合。</param>
-            /// <returns>JSON 节点。</returns>
-            internal JSONNode EncodeInternal(HashSet<IBase> visited)
+            /// <param name="visited">已访问的实例集合</param>
+            /// <returns>JSON 节点</returns>
+            internal JSONNode Encode(HashSet<IBase> visited)
             {
                 var jobj = new JSONObject();
                 if (visited.Add(this))
@@ -277,26 +275,31 @@ namespace EFramework.Utility
             }
 
             /// <summary>
-            /// Json 将配置对象转换为 JSON 字符串。
+            /// Json 将配置实例转换为 JSON 字符串。
             /// </summary>
-            /// <param name="pretty">是否格式化输出。</param>
-            /// <returns>JSON 字符串。</returns>
-            public virtual string Json(bool pretty = true)
+            /// <param name="pretty">是否格式化输出</param>
+            /// <param name="sort">是否根据键名排序</param>
+            /// <returns>JSON 字符串</returns>
+            public virtual string Json(bool pretty = true, bool sort = true)
             {
                 var jobj = Encode();
-                var keys = new List<string>();
-                foreach (var kvp in jobj) keys.Add(kvp.Key);
-                keys.Sort(); // 按照字母表排序，保证键值的顺序，提高文本可读性
-                var njobj = new JSONObject();
-                foreach (var key in keys) njobj[key] = jobj[key];
-                return pretty ? njobj.ToString(4) : njobj.ToString();
+                if (sort)
+                {
+                    var keys = new List<string>();
+                    foreach (var kvp in jobj) keys.Add(kvp.Key);
+                    keys.Sort(); // 按照字母表排序
+                    var njobj = new JSONObject();
+                    foreach (var key in keys) njobj[key] = jobj[key];
+                    return pretty ? njobj.ToString(4) : njobj.ToString();
+                }
+                else return pretty ? jobj.ToString(4) : jobj.ToString();
             }
 
             /// <summary>
             /// Read 从文件中读取并解析配置。
             /// </summary>
-            /// <param name="file">配置文件路径，为空则使用当前 File 属性。</param>
-            /// <returns>是否读取成功。</returns>
+            /// <param name="file">配置文件路径，为空则使用当前 File 属性</param>
+            /// <returns>是否读取成功</returns>
             public virtual bool Read(string file)
             {
                 Error = string.Empty;
@@ -316,9 +319,9 @@ namespace EFramework.Utility
             /// <summary>
             /// Parse 解析配置文本。
             /// </summary>
-            /// <param name="text">配置文本。</param>
-            /// <param name="error">错误信息输出。</param>
-            /// <returns>是否解析成功。</returns>
+            /// <param name="text">配置文本</param>
+            /// <param name="error">错误信息输出</param>
+            /// <returns>是否解析成功</returns>
             public virtual bool Parse(string text, out string error)
             {
                 Dirty = false;
@@ -386,9 +389,10 @@ namespace EFramework.Utility
             /// <summary>
             /// Save 保存配置到文件。
             /// </summary>
-            /// <param name="pretty">是否格式化输出。</param>
-            /// <returns>是否保存成功。</returns>
-            public virtual bool Save(bool pretty = true)
+            /// <param name="pretty">是否格式化输出</param>
+            /// <param name="sort">是否根据键名排序</param>
+            /// <returns>是否保存成功</returns>
+            public virtual bool Save(bool pretty = true, bool sort = true)
             {
                 if (!writeable)
                 {
@@ -402,7 +406,7 @@ namespace EFramework.Utility
                 else
                 {
                     Dirty = false;
-                    var text = Json(pretty);
+                    var text = Json(pretty, sort);
                     XFile.SaveText(File, encrypt ? XString.Encrypt(text) : text);
                     XLog.Notice("XPrefs.Save: persisted to <a href=\"file:///{0}\">{1}</a>.", Path.GetFullPath(File), Path.GetRelativePath(XEnv.ProjectPath, File));
                     return true;
@@ -412,16 +416,16 @@ namespace EFramework.Utility
             /// <summary>
             /// Has 检查键是否存在。
             /// </summary>
-            /// <param name="key">配置键。</param>
-            /// <returns>是否存在。</returns>
+            /// <param name="key">配置键</param>
+            /// <returns>是否存在</returns>
             public virtual bool Has(string key) { return HasKey(key); }
 
             /// <summary>
             /// Set 设置配置项的值。
             /// </summary>
-            /// <param name="key">配置键。</param>
-            /// <param name="value">配置值。</param>
-            /// <returns>是否设置成功。</returns>
+            /// <param name="key">配置键</param>
+            /// <param name="value">配置值</param>
+            /// <returns>是否设置成功</returns>
             public virtual bool Set(string key, object value)
             {
                 if (!writeable)
@@ -544,8 +548,8 @@ namespace EFramework.Utility
             /// <summary>
             /// Unset 移除配置项。
             /// </summary>
-            /// <param name="key">配置键。</param>
-            /// <returns>是否移除成功。</returns>
+            /// <param name="key">配置键</param>
+            /// <returns>是否移除成功</returns>
             public virtual bool Unset(string key)
             {
                 if (!writeable)
@@ -565,10 +569,10 @@ namespace EFramework.Utility
             /// <summary>
             /// Get 获取指定类型的配置值。
             /// </summary>
-            /// <typeparam name="T">目标类型。</typeparam>
-            /// <param name="key">配置键。</param>
-            /// <param name="defval">默认值。</param>
-            /// <returns>配置值，不存在或类型不匹配时返回默认值。</returns>
+            /// <typeparam name="T">目标类型</typeparam>
+            /// <param name="key">配置键</param>
+            /// <param name="defval">默认值</param>
+            /// <returns>配置值，不存在或类型不匹配时返回默认值</returns>
             public virtual T Get<T>(string key, T defval = default)
             {
                 var type = typeof(T);
@@ -642,10 +646,10 @@ namespace EFramework.Utility
             /// <summary>
             /// Gets 获取指定类型的数组配置值。
             /// </summary>
-            /// <typeparam name="T">数组元素类型。</typeparam>
-            /// <param name="key">配置键。</param>
-            /// <param name="defval">默认值。</param>
-            /// <returns>数组配置值，不存在或类型不匹配时返回默认值。</returns>
+            /// <typeparam name="T">数组元素类型</typeparam>
+            /// <param name="key">配置键</param>
+            /// <param name="defval">默认值</param>
+            /// <returns>数组配置值，不存在或类型不匹配时返回默认值</returns>
             public virtual T[] Gets<T>(string key, T[] defval = null)
             {
                 if (HasKey(key))
@@ -698,9 +702,9 @@ namespace EFramework.Utility
             /// <summary>
             /// GetInt 获取整数配置值。
             /// </summary>
-            /// <param name="key">配置键。</param>
-            /// <param name="defval">默认值。</param>
-            /// <returns>整数值，不存在时返回默认值。</returns>
+            /// <param name="key">配置键</param>
+            /// <param name="defval">默认值</param>
+            /// <returns>整数值，不存在时返回默认值</returns>
             public virtual int GetInt(string key, int defval = 0)
             {
                 if (HasKey(key))
@@ -717,9 +721,9 @@ namespace EFramework.Utility
             /// <summary>
             /// GetInts 获取整数数组配置值。
             /// </summary>
-            /// <param name="key">配置键。</param>
-            /// <param name="defval">默认值。</param>
-            /// <returns>整数数组，不存在时返回默认值。</returns>
+            /// <param name="key">配置键</param>
+            /// <param name="defval">默认值</param>
+            /// <returns>整数数组，不存在时返回默认值</returns>
             public virtual int[] GetInts(string key, int[] defval = null)
             {
                 if (HasKey(key))
@@ -742,9 +746,9 @@ namespace EFramework.Utility
             /// <summary>
             /// GetLong 获取长整数配置值。
             /// </summary>
-            /// <param name="key">配置键。</param>
-            /// <param name="defval">默认值。</param>
-            /// <returns>长整数值，不存在时返回默认值。</returns>
+            /// <param name="key">配置键</param>
+            /// <param name="defval">默认值</param>
+            /// <returns>长整数值，不存在时返回默认值</returns>
             public virtual long GetLong(string key, long defval = 0)
             {
                 if (HasKey(key))
@@ -758,9 +762,9 @@ namespace EFramework.Utility
             /// <summary>
             /// GetLongs 获取长整数数组配置值。
             /// </summary>
-            /// <param name="key">配置键。</param>
-            /// <param name="defval">默认值。</param>
-            /// <returns>长整数数组，不存在时返回默认值。</returns>
+            /// <param name="key">配置键</param>
+            /// <param name="defval">默认值</param>
+            /// <returns>长整数数组，不存在时返回默认值</returns>
             public virtual long[] GetLongs(string key, long[] defval = null)
             {
                 if (HasKey(key))
@@ -783,9 +787,9 @@ namespace EFramework.Utility
             /// <summary>
             /// GetFloat 获取浮点数配置值。
             /// </summary>
-            /// <param name="key">配置键。</param>
-            /// <param name="defval">默认值。</param>
-            /// <returns>浮点数值，不存在时返回默认值。</returns>
+            /// <param name="key">配置键</param>
+            /// <param name="defval">默认值</param>
+            /// <returns>浮点数值，不存在时返回默认值</returns>
             public virtual float GetFloat(string key, float defval = 0f)
             {
                 if (HasKey(key))
@@ -799,9 +803,9 @@ namespace EFramework.Utility
             /// <summary>
             /// GetFloats 获取浮点数数组配置值。
             /// </summary>
-            /// <param name="key">配置键。</param>
-            /// <param name="defval">默认值。</param>
-            /// <returns>浮点数数组，不存在时返回默认值。</returns>
+            /// <param name="key">配置键</param>
+            /// <param name="defval">默认值</param>
+            /// <returns>浮点数数组，不存在时返回默认值</returns>
             public virtual float[] GetFloats(string key, float[] defval = null)
             {
                 if (HasKey(key))
@@ -824,9 +828,9 @@ namespace EFramework.Utility
             /// <summary>
             /// GetBool 获取布尔配置值。
             /// </summary>
-            /// <param name="key">配置键。</param>
-            /// <param name="defval">默认值。</param>
-            /// <returns>布尔值，不存在时返回默认值。</returns>
+            /// <param name="key">配置键</param>
+            /// <param name="defval">默认值</param>
+            /// <returns>布尔值，不存在时返回默认值</returns>
             public virtual bool GetBool(string key, bool defval = false)
             {
                 if (HasKey(key))
@@ -840,9 +844,9 @@ namespace EFramework.Utility
             /// <summary>
             /// GetBools 获取布尔数组配置值。
             /// </summary>
-            /// <param name="key">配置键。</param>
-            /// <param name="defval">默认值。</param>
-            /// <returns>布尔数组，不存在时返回默认值。</returns>
+            /// <param name="key">配置键</param>
+            /// <param name="defval">默认值</param>
+            /// <returns>布尔数组，不存在时返回默认值</returns>
             public virtual bool[] GetBools(string key, bool[] defval = null)
             {
                 if (HasKey(key))
@@ -865,9 +869,9 @@ namespace EFramework.Utility
             /// <summary>
             /// GetString 获取字符串配置值。
             /// </summary>
-            /// <param name="key">配置键。</param>
-            /// <param name="defval">默认值。</param>
-            /// <returns>字符串值，不存在时返回默认值。</returns>
+            /// <param name="key">配置键</param>
+            /// <param name="defval">默认值</param>
+            /// <returns>字符串值，不存在时返回默认值</returns>
             public virtual string GetString(string key, string defval = "")
             {
                 if (HasKey(key))
@@ -881,9 +885,9 @@ namespace EFramework.Utility
             /// <summary>
             /// GetStrings 获取字符串数组配置值。
             /// </summary>
-            /// <param name="key">配置键。</param>
-            /// <param name="defval">默认值。</param>
-            /// <returns>字符串数组，不存在时返回默认值。</returns>
+            /// <param name="key">配置键</param>
+            /// <param name="defval">默认值</param>
+            /// <returns>字符串数组，不存在时返回默认值</returns>
             public virtual string[] GetStrings(string key, string[] defval = null)
             {
                 if (HasKey(key))
@@ -895,10 +899,10 @@ namespace EFramework.Utility
             }
 
             /// <summary>
-            /// Equals 比较两个配置对象是否相等。
+            /// Equals 比较两个配置实例是否相等。
             /// </summary>
-            /// <param name="obj">要比较的对象。</param>
-            /// <returns>是否相等。</returns>
+            /// <param name="obj">要比较的实例</param>
+            /// <returns>是否相等</returns>
             public override bool Equals(object obj)
             {
                 if (obj is not IBase target) return false;
@@ -916,9 +920,9 @@ namespace EFramework.Utility
             }
 
             /// <summary>
-            /// GetHashCode 获取配置对象的哈希码。
+            /// GetHashCode 获取配置实例的哈希码。
             /// </summary>
-            /// <returns>哈希码。</returns>
+            /// <returns>哈希码</returns>
             public override int GetHashCode() { return base.GetHashCode(); }
         }
     }
@@ -1149,36 +1153,36 @@ namespace EFramework.Utility
                 /// <summary>
                 /// OnStarted 是流程启动的回调。
                 /// </summary>
-                /// <param name="prefs">上下文实例</param>
-                void OnStarted(IRemote prefs);
+                /// <param name="context">上下文实例</param>
+                void OnStarted(IRemote context);
 
                 /// <summary>
                 /// OnRequest 是预请求的回调。
                 /// </summary>
-                /// <param name="prefs">上下文实例</param>
+                /// <param name="context">上下文实例</param>
                 /// <param name="request">HTTP 请求实例</param>
-                void OnRequest(IRemote prefs, UnityWebRequest request);
+                void OnRequest(IRemote context, UnityWebRequest request);
 
                 /// <summary>
                 /// OnRetry 是错误重试的回调。
                 /// </summary>
-                /// <param name="prefs">上下文实例</param>
+                /// <param name="context">上下文实例</param>
                 /// <param name="count">重试次数</param>
                 /// <param name="pending">重试等待</param>
                 /// <returns></returns>
-                bool OnRetry(IRemote prefs, int count, out float pending);
+                bool OnRetry(IRemote context, int count, out float pending);
 
                 /// <summary>
                 /// OnSucceeded 是请求成功的回调。
                 /// </summary>
-                /// <param name="prefs">上下文实例</param>
-                void OnSucceeded(IRemote prefs);
+                /// <param name="context">上下文实例</param>
+                void OnSucceeded(IRemote context);
 
                 /// <summary>
                 /// OnFailed 是请求失败的回调。
                 /// </summary>
-                /// <param name="prefs">上下文实例</param>
-                void OnFailed(IRemote prefs);
+                /// <param name="context">上下文实例</param>
+                void OnFailed(IRemote context);
             }
 
             /// <summary>
@@ -1241,7 +1245,7 @@ namespace EFramework.Utility
                 yield return null;
             }
 
-            public override bool Save(bool pretty = true) { throw new Exception($"{GetType().FullName} is readonly."); }
+            public override bool Save(bool pretty = true, bool sort = true) { throw new Exception($"{GetType().FullName} is readonly."); }
         }
 
         internal static IRemote remote;
@@ -1258,9 +1262,9 @@ namespace EFramework.Utility
         /// <summary>
         /// HasKey 检查指定键是否存在于配置源中。
         /// </summary>
-        /// <param name="key">配置键。</param>
-        /// <param name="sources">配置源列表，按优先级排序。</param>
-        /// <returns>是否存在。</returns>
+        /// <param name="key">配置键</param>
+        /// <param name="sources">配置源列表，按优先级排序</param>
+        /// <returns>是否存在</returns>
         public static bool HasKey(string key, params IBase[] sources)
         {
             if (sources == null || sources.Length == 0 || !Application.isPlaying) return Asset.Has(key);
@@ -1274,10 +1278,10 @@ namespace EFramework.Utility
         /// <summary>
         /// GetInt 获取整数配置值。
         /// </summary>
-        /// <param name="key">配置键。</param>
-        /// <param name="defval">默认值。</param>
-        /// <param name="sources">配置源列表，按优先级排序。</param>
-        /// <returns>整数值，不存在时返回默认值。</returns>
+        /// <param name="key">配置键</param>
+        /// <param name="defval">默认值</param>
+        /// <param name="sources">配置源列表，按优先级排序</param>
+        /// <returns>整数值，不存在时返回默认值</returns>
         public static int GetInt(string key, int defval = 0, params IBase[] sources)
         {
             if (sources == null || sources.Length == 0 || !Application.isPlaying) return Asset.GetInt(key, defval);
@@ -1291,10 +1295,10 @@ namespace EFramework.Utility
         /// <summary>
         /// GetInts 获取整数数组配置值。
         /// </summary>
-        /// <param name="key">配置键。</param>
-        /// <param name="defval">默认值。</param>
-        /// <param name="sources">配置源列表，按优先级排序。</param>
-        /// <returns>整数数组，不存在时返回默认值。</returns>
+        /// <param name="key">配置键</param>
+        /// <param name="defval">默认值</param>
+        /// <param name="sources">配置源列表，按优先级排序</param>
+        /// <returns>整数数组，不存在时返回默认值</returns>
         public static int[] GetInts(string key, int[] defval = null, params IBase[] sources)
         {
             if (sources == null || sources.Length == 0 || !Application.isPlaying) return Asset.GetInts(key, defval);
@@ -1308,10 +1312,10 @@ namespace EFramework.Utility
         /// <summary>
         /// GetLong 获取长整数配置值。
         /// </summary>
-        /// <param name="key">配置键。</param>
-        /// <param name="defval">默认值。</param>
-        /// <param name="sources">配置源列表，按优先级排序。</param>
-        /// <returns>长整数值，不存在时返回默认值。</returns>
+        /// <param name="key">配置键</param>
+        /// <param name="defval">默认值</param>
+        /// <param name="sources">配置源列表，按优先级排序</param>
+        /// <returns>长整数值，不存在时返回默认值</returns>
         public static long GetLong(string key, long defval = 0, params IBase[] sources)
         {
             if (sources == null || sources.Length == 0 || !Application.isPlaying) return Asset.GetLong(key, defval);
@@ -1325,10 +1329,10 @@ namespace EFramework.Utility
         /// <summary>
         /// GetLongs 获取长整数数组配置值。
         /// </summary>
-        /// <param name="key">配置键。</param>
-        /// <param name="defval">默认值。</param>
-        /// <param name="sources">配置源列表，按优先级排序。</param>
-        /// <returns>长整数数组，不存在时返回默认值。</returns>
+        /// <param name="key">配置键</param>
+        /// <param name="defval">默认值</param>
+        /// <param name="sources">配置源列表，按优先级排序</param>
+        /// <returns>长整数数组，不存在时返回默认值</returns>
         public static long[] GetLongs(string key, long[] defval = null, params IBase[] sources)
         {
             if (sources == null || sources.Length == 0 || !Application.isPlaying) return Asset.GetLongs(key, defval);
@@ -1359,10 +1363,10 @@ namespace EFramework.Utility
         /// <summary>
         /// GetFloats 获取浮点数数组配置值。
         /// </summary>
-        /// <param name="key">配置键。</param>
-        /// <param name="defval">默认值。</param>
-        /// <param name="sources">配置源列表，按优先级排序。</param>
-        /// <returns>浮点数数组，不存在时返回默认值。</returns>
+        /// <param name="key">配置键</param>
+        /// <param name="defval">默认值</param>
+        /// <param name="sources">配置源列表，按优先级排序</param>
+        /// <returns>浮点数数组，不存在时返回默认值</returns>
         public static float[] GetFloats(string key, float[] defval = null, params IBase[] sources)
         {
             if (sources == null || sources.Length == 0 || !Application.isPlaying) return Asset.GetFloats(key, defval);
@@ -1376,10 +1380,10 @@ namespace EFramework.Utility
         /// <summary>
         /// GetBool 获取布尔配置值。
         /// </summary>
-        /// <param name="key">配置键。</param>
-        /// <param name="defval">默认值。</param>
-        /// <param name="sources">配置源列表，按优先级排序。</param>
-        /// <returns>布尔值，不存在时返回默认值。</returns>
+        /// <param name="key">配置键</param>
+        /// <param name="defval">默认值</param>
+        /// <param name="sources">配置源列表，按优先级排序</param>
+        /// <returns>布尔值，不存在时返回默认值</returns>
         public static bool GetBool(string key, bool defval = false, params IBase[] sources)
         {
             if (sources == null || sources.Length == 0 || !Application.isPlaying) return Asset.GetBool(key, defval);
@@ -1393,10 +1397,10 @@ namespace EFramework.Utility
         /// <summary>
         /// GetBools 获取布尔数组配置值。
         /// </summary>
-        /// <param name="key">配置键。</param>
-        /// <param name="defval">默认值。</param>
-        /// <param name="sources">配置源列表，按优先级排序。</param>
-        /// <returns>布尔数组，不存在时返回默认值。</returns>
+        /// <param name="key">配置键</param>
+        /// <param name="defval">默认值</param>
+        /// <param name="sources">配置源列表，按优先级排序</param>
+        /// <returns>布尔数组，不存在时返回默认值</returns>
         public static bool[] GetBools(string key, bool[] defval = null, params IBase[] sources)
         {
             if (sources == null || sources.Length == 0 || !Application.isPlaying) return Asset.GetBools(key, defval);
@@ -1410,10 +1414,10 @@ namespace EFramework.Utility
         /// <summary>
         /// GetString 获取字符串配置值。
         /// </summary>
-        /// <param name="key">配置键。</param>
-        /// <param name="defval">默认值。</param>
-        /// <param name="sources">配置源列表，按优先级排序。</param>
-        /// <returns>字符串值，不存在时返回默认值。</returns>
+        /// <param name="key">配置键</param>
+        /// <param name="defval">默认值</param>
+        /// <param name="sources">配置源列表，按优先级排序</param>
+        /// <returns>字符串值，不存在时返回默认值</returns>
         public static string GetString(string key, string defval = "", params IBase[] sources)
         {
             if (sources == null || sources.Length == 0 || !Application.isPlaying) return Asset.GetString(key, defval);
@@ -1427,10 +1431,10 @@ namespace EFramework.Utility
         /// <summary>
         /// GetStrings 获取字符串数组配置值。
         /// </summary>
-        /// <param name="key">配置键。</param>
-        /// <param name="defval">默认值。</param>
-        /// <param name="sources">配置源列表，按优先级排序。</param>
-        /// <returns>字符串数组，不存在时返回默认值。</returns>
+        /// <param name="key">配置键</param>
+        /// <param name="defval">默认值</param>
+        /// <param name="sources">配置源列表，按优先级排序</param>
+        /// <returns>字符串数组，不存在时返回默认值</returns>
         public static string[] GetStrings(string key, string[] defval = null, params IBase[] sources)
         {
             if (sources == null || sources.Length == 0 || !Application.isPlaying) return Asset.GetStrings(key, defval);
@@ -1452,63 +1456,69 @@ namespace EFramework.Utility
         public interface IPanel
         {
             /// <summary>
-            /// Target 获取或设置目标配置对象。
-            /// </summary>
-            IBase Target { get; set; }
-
-            /// <summary>
-            /// Section 获取配置节名称。
+            /// Section 是配置分组的名称。
             /// </summary>
             string Section { get; }
 
             /// <summary>
-            /// Tooltip 获取提示信息。
+            /// Tooltip 是配置分组的提示。
             /// </summary>
             string Tooltip { get; }
 
             /// <summary>
-            /// Foldable 获取是否可折叠。
+            /// Foldable 表示是否支持折叠。
             /// </summary>
             bool Foldable { get; }
 
             /// <summary>
-            /// Priority 获取显示优先级。
+            /// Priority 获取显示的优先级。
             /// </summary>
             int Priority { get; }
 
             /// <summary>
             /// OnActivate 在面板激活时调用。
             /// </summary>
-            /// <param name="searchContext">搜索上下文。</param>
-            /// <param name="rootElement">根元素。</param>
-            void OnActivate(string searchContext, VisualElement rootElement);
+            /// <param name="searchContext">搜索上下文</param>
+            /// <param name="rootElement">根元素</param>
+            /// <param name="target">目标配置实例</param>
+            void OnActivate(string searchContext, VisualElement rootElement, IBase target);
 
             /// <summary>
-            /// OnVisualize 在面板可视化时调用。
+            /// OnVisualize 在面板绘制时调用。
             /// </summary>
-            /// <param name="searchContext">搜索上下文。</param>
-            void OnVisualize(string searchContext);
+            /// <param name="searchContext">搜索上下文</param>
+            /// <param name="target">目标配置实例</param>
+            void OnVisualize(string searchContext, IBase target);
 
             /// <summary>
             /// OnDeactivate 在面板停用时调用。
             /// </summary>
-            void OnDeactivate();
-
-            /// <summary>
-            /// OnSave 在保存配置时调用。
-            /// </summary>
-            void OnSave();
-
-            /// <summary>
-            /// OnApply 在应用配置时调用。
-            /// </summary>
-            void OnApply();
+            /// <param name="target">目标配置实例</param>
+            void OnDeactivate(IBase target);
 
             /// <summary>
             /// Validate 在验证配置是否有效。
             /// </summary>
-            /// <returns>是否有效。</returns>
-            bool Validate();
+            /// <param name="target">目标配置实例</param>
+            /// <returns>是否有效</returns>
+            bool Validate(IBase target);
+
+            /// <summary>
+            /// OnSave 在保存配置时调用。
+            /// </summary>
+            /// <param name="source">源配置实例</param>
+            /// <param name="target">目标配置实例</param>
+            void OnSave(IBase source, IBase target);
+
+            /// <summary>
+            /// OnApply 在应用配置时调用。
+            /// </summary>
+            /// <param name="source">源配置实例</param>
+            /// <param name="target">目标配置实例</param>
+            /// <param name="asset">是否应用到资产</param>
+            /// <param name="local">是否应用到本地</param>
+            /// <param name="remote">是否应用到远端</param>
+            void OnApply(IBase source, IBase target, bool asset, bool local, bool remote);
         }
 
         /// <summary>
@@ -1517,12 +1527,12 @@ namespace EFramework.Utility
         public class Panel : ScriptableObject, IPanel
         {
             /// <summary>
-            /// section 是配置节名称。
+            /// section 是配置分组的名称。
             /// </summary>
             private readonly string section;
 
             /// <summary>
-            /// tooltip 是配置节提示信息。
+            /// tooltip 是配置分组的提示。
             /// </summary>
             private readonly string tooltip;
 
@@ -1532,7 +1542,7 @@ namespace EFramework.Utility
             private readonly bool foldable = true;
 
             /// <summary>
-            /// priority 是显示优先级。
+            /// priority 是显示的优先级。
             /// </summary>
             private readonly int priority;
 
@@ -1541,10 +1551,10 @@ namespace EFramework.Utility
             /// <summary>
             /// 初始化配置面板。
             /// </summary>
-            /// <param name="section">配置节名称。</param>
-            /// <param name="tooltip">提示信息。</param>
-            /// <param name="foldable">是否可折叠。</param>
-            /// <param name="priority">显示优先级。</param>
+            /// <param name="section">配置分组名称</param>
+            /// <param name="tooltip">分组提示信息</param>
+            /// <param name="foldable">是否支持折叠</param>
+            /// <param name="priority">显示优先级</param>
             public Panel(string section, string tooltip = "", bool foldable = true, int priority = 0)
             {
                 this.section = section;
@@ -1554,22 +1564,17 @@ namespace EFramework.Utility
             }
 
             /// <summary>
-            /// Target 获取或设置目标配置对象。
-            /// </summary>
-            public virtual IBase Target { get; set; }
-
-            /// <summary>
-            /// Section 获取配置节名称。
+            /// Section 获取配置分组名称。
             /// </summary>
             public virtual string Section => section;
 
             /// <summary>
-            /// Tooltip 获取提示信息。
+            /// Tooltip 获取分组提示信息。
             /// </summary>
             public virtual string Tooltip => tooltip;
 
             /// <summary>
-            /// Foldable 获取是否可折叠。
+            /// Foldable 表示是否支持折叠。
             /// </summary>
             public virtual bool Foldable => foldable;
 
@@ -1581,43 +1586,54 @@ namespace EFramework.Utility
             /// <summary>
             /// OnActivate 在面板激活时调用。
             /// </summary>
-            /// <param name="searchContext">搜索上下文。</param>
-            /// <param name="rootElement">根元素。</param>
-            public virtual void OnActivate(string searchContext, VisualElement rootElement) { }
+            /// <param name="searchContext">搜索上下文</param>
+            /// <param name="rootElement">根元素</param>
+            /// <param name="target">目标配置实例</param>
+            public virtual void OnActivate(string searchContext, VisualElement rootElement, IBase target) { }
 
             /// <summary>
-            /// OnVisualize 在面板可视化时调用。
+            /// OnVisualize 在面板绘制时调用。
             /// </summary>
-            /// <param name="searchContext">搜索上下文。</param>
-            public virtual void OnVisualize(string searchContext) { }
+            /// <param name="searchContext">搜索上下文</param>
+            /// <param name="target">目标配置实例</param>
+            public virtual void OnVisualize(string searchContext, IBase target) { }
 
             /// <summary>
             /// OnDeactivate 在面板停用时调用。
             /// </summary>
-            public virtual void OnDeactivate() { }
-
-            /// <summary>
-            /// OnSave 在保存配置时调用。
-            /// </summary>
-            public virtual void OnSave() { }
-
-            /// <summary>
-            /// OnApply 在应用配置时调用。
-            /// </summary>
-            public virtual void OnApply() { }
+            /// <param name="target">目标配置实例</param>
+            public virtual void OnDeactivate(IBase target) { }
 
             /// <summary>
             /// Validate 验证配置是否有效。
             /// </summary>
-            /// <returns>是否有效。</returns>
-            public virtual bool Validate() { return true; }
+            /// <param name="target">目标配置实例</param>
+            /// <returns>是否有效</returns>
+            public virtual bool Validate(IBase target) { return true; }
+
+            /// <summary>
+            /// OnSave 在保存配置时调用。
+            /// </summary>
+            /// <param name="source">源配置实例</param>
+            /// <param name="target">目标配置实例</param>
+            public virtual void OnSave(IBase source, IBase target) { throw new NotImplementedException(); }
+
+            /// <summary>
+            /// OnApply 在应用配置时调用。
+            /// </summary>
+            /// <param name="source">源配置实例</param>
+            /// <param name="target">目标配置实例</param>
+            /// <param name="asset">是否应用到资产</param>
+            /// <param name="local">是否应用到本地</param>
+            /// <param name="remote">是否应用到远端</param>
+            public virtual void OnApply(IBase source, IBase target, bool asset, bool local, bool remote) { }
 
             /// <summary>
             /// Title 用于绘制标题。
             /// </summary>
-            /// <param name="text">标题文本。</param>
-            /// <param name="tooltip">提示信息。</param>
-            /// <param name="width">宽度，-1 表示使用默认宽度。</param>
+            /// <param name="text">标题文本</param>
+            /// <param name="tooltip">提示信息</param>
+            /// <param name="width">宽度，-1 表示使用默认宽度</param>
             public virtual void Title(string text, string tooltip = "", int width = -1)
             {
                 GUILayout.Label(new GUIContent(text, tooltip), GUILayout.Width(width == -1 ? 60 : width));

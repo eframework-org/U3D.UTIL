@@ -20,7 +20,7 @@ XPrefs 是一个灵活高效的配置系统，实现了多源化配置的读写�
 #### 1.1 检查配置项
 ```csharp
 // 检查配置项是否存在
-bool exists = XPrefs.HasKey("configKey");
+var exists = XPrefs.HasKey("configKey");
 ```
 
 #### 1.2 读写基本类型
@@ -32,10 +32,10 @@ XPrefs.Local.Set("boolKey", true);
 XPrefs.Local.Set("stringKey", "value");
 
 // 读取配置
-int intValue = XPrefs.GetInt("intKey", 0);
-float floatValue = XPrefs.GetFloat("floatKey", 0f);
-bool boolValue = XPrefs.GetBool("boolKey", false);
-string stringValue = XPrefs.GetString("stringKey", "");
+var intValue = XPrefs.GetInt("intKey", 0);
+var floatValue = XPrefs.GetFloat("floatKey", 0f);
+var boolValue = XPrefs.GetBool("boolKey", false);
+var stringValue = XPrefs.GetString("stringKey", "");
 ```
 
 #### 1.3 读写数组类型
@@ -45,8 +45,8 @@ XPrefs.Local.Set("intArray", new[] { 1, 2, 3 });
 XPrefs.Local.Set("stringArray", new[] { "a", "b", "c" });
 
 // 读取数组
-int[] intArray = XPrefs.GetInts("intArray");
-string[] stringArray = XPrefs.GetStrings("stringArray");
+var intArray = XPrefs.GetInts("intArray");
+var stringArray = XPrefs.GetStrings("stringArray");
 ```
 
 ### 2. 配置源管理
@@ -54,7 +54,7 @@ string[] stringArray = XPrefs.GetStrings("stringArray");
 #### 2.1 内置配置（只读）
 ```csharp
 // 读取内置配置
-string value = XPrefs.Asset.GetString("key");
+var value = XPrefs.Asset.GetString("key");
 ```
 
 #### 2.2 本地配置（可写）
@@ -64,7 +64,7 @@ XPrefs.Local.Set("key", "value");
 XPrefs.Local.Save();
 
 // 读取本地配置
-string value = XPrefs.Local.GetString("key");
+var value = XPrefs.Local.GetString("key");
 ```
 
 #### 2.3 远端配置（只读）
@@ -80,26 +80,26 @@ public class RemoteHandler : XPrefs.IRemote.IHandler
     /// <summary>
     /// OnStarted 是流程启动的回调。
     /// </summary>
-    /// <param name="prefs">上下文实例</param>
-    public void OnStarted(XPrefs.IRemote prefs) { }
+    /// <param name="context">上下文实例</param>
+    public void OnStarted(XPrefs.IRemote context) { }
     
     /// <summary>
     /// OnRequest 是预请求的回调。
     /// </summary>
-    /// <param name="prefs">上下文实例</param>
+    /// <param name="context">上下文实例</param>
     /// <param name="request">HTTP 请求实例</param>
-    public void OnRequest(XPrefs.IRemote prefs, UnityWebRequest request) { 
+    public void OnRequest(XPrefs.IRemote context, UnityWebRequest request) { 
         request.timeout = 10;
     }
 
     /// <summary>
     /// OnRetry 是错误重试的回调。
     /// </summary>
-    /// <param name="prefs">上下文实例</param>
+    /// <param name="context">上下文实例</param>
     /// <param name="count">重试次数</param>
     /// <param name="pending">重试等待</param>
     /// <returns></returns>
-    public bool OnRetry(XPrefs.IRemote prefs, int count, out float pending)
+    public bool OnRetry(XPrefs.IRemote context, int count, out float pending)
     {
         pending = 1.0f;
         return count < 3;
@@ -108,14 +108,14 @@ public class RemoteHandler : XPrefs.IRemote.IHandler
     /// <summary>
     /// OnSucceeded 是请求成功的回调。
     /// </summary>
-    /// <param name="prefs">上下文实例</param>
-    public void OnSucceeded(XPrefs.IRemote prefs) { }
+    /// <param name="context">上下文实例</param>
+    public void OnSucceeded(XPrefs.IRemote context) { }
 
     /// <summary>
     /// OnFailed 是请求失败的回调。
     /// </summary>
-    /// <param name="prefs">上下文实例</param>
-    public void OnFailed(XPrefs.IRemote prefs) { }
+    /// <param name="context">上下文实例</param>
+    public void OnFailed(XPrefs.IRemote context) { }
 }
 
 // 读取远端配置
@@ -131,7 +131,7 @@ XPrefs.Local.Set("name", "John");
 XPrefs.Local.Set("greeting", "Hello ${Prefs.name}");
 
 // 解析变量引用
-string result = XPrefs.Local.Eval("${Prefs.greeting}"); // 输出: Hello John
+var result = XPrefs.Local.Eval("${Prefs.greeting}"); // 输出: Hello John
 ```
 
 #### 3.2 多级路径
@@ -141,7 +141,7 @@ XPrefs.Local.Set("user.name", "John");
 XPrefs.Local.Set("user.age", 30);
 
 // 使用多级路径引用
-string result = XPrefs.Local.Eval("${Prefs.user.name} is ${Prefs.user.age}");
+var result = XPrefs.Local.Eval("${Prefs.user.name} is ${Prefs.user.age}");
 ```
 
 ### 4. 命令行参数

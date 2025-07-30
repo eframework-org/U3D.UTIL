@@ -1,5 +1,9 @@
 # 更新记录
 
+## [0.1.8] - 
+### 变更
+- 修改 XPrefs.IPanel 接口的 OnActivate、OnSave、OnApply 等函数的签名
+
 ## [0.1.7] - 2025-07-07
 ### 变更
 - 优化 XFile.FileMD5 函数，支持分段采样模式，提高大文件哈希计算速度
