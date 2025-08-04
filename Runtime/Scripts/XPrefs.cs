@@ -1045,7 +1045,7 @@ namespace EFramework.Utility
         {
             /// <summary>
             /// Uri 是配置文件的路径。
-            /// 优先返回环境变量中设置的 Prefs@Asset 字段，其次返回 XEnv.LocalPath 目录下的 Preferences.json 文件。
+            /// 优先返回环境变量中设置的 Prefs@Local 字段，其次返回 XEnv.LocalPath 目录下的 Preferences.json 文件。
             /// </summary>
             public static string Uri
             {
@@ -1516,9 +1516,8 @@ namespace EFramework.Utility
             /// <param name="source">源配置实例</param>
             /// <param name="target">目标配置实例</param>
             /// <param name="asset">是否应用到资产</param>
-            /// <param name="local">是否应用到本地</param>
             /// <param name="remote">是否应用到远端</param>
-            void OnApply(IBase source, IBase target, bool asset, bool local, bool remote);
+            void OnApply(IBase source, IBase target, bool asset, bool remote);
         }
 
         /// <summary>
@@ -1616,7 +1615,7 @@ namespace EFramework.Utility
             /// </summary>
             /// <param name="source">源配置实例</param>
             /// <param name="target">目标配置实例</param>
-            public virtual void OnSave(IBase source, IBase target) { throw new NotImplementedException(); }
+            public virtual void OnSave(IBase source, IBase target) { }
 
             /// <summary>
             /// OnApply 在应用配置时调用。
@@ -1624,9 +1623,8 @@ namespace EFramework.Utility
             /// <param name="source">源配置实例</param>
             /// <param name="target">目标配置实例</param>
             /// <param name="asset">是否应用到资产</param>
-            /// <param name="local">是否应用到本地</param>
             /// <param name="remote">是否应用到远端</param>
-            public virtual void OnApply(IBase source, IBase target, bool asset, bool local, bool remote) { }
+            public virtual void OnApply(IBase source, IBase target, bool asset, bool remote) { }
 
             /// <summary>
             /// Title 用于绘制标题。

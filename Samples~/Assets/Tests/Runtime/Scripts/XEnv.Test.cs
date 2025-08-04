@@ -72,12 +72,12 @@ public class TestXEnv
 
         // Apply - asset
         var lastRemote = targetPrefs.GetString(XEnv.Prefs.Remote);
-        panel.OnApply(source: new XPrefs.IBase(), target: targetPrefs, asset: true, local: false, remote: false);
+        panel.OnApply(source: new XPrefs.IBase(), target: targetPrefs, asset: true, remote: false);
         Assert.AreNotEqual(lastRemote, targetPrefs.GetString(XEnv.Prefs.Remote), "Env/Remote 配置项在资产中应当被求值。");
 
         // Apply - remote
         targetPrefs = new XPrefs.IBase();
-        panel.OnApply(source: new XPrefs.IBase(), target: targetPrefs, asset: false, local: false, remote: true);
+        panel.OnApply(source: new XPrefs.IBase(), target: targetPrefs, asset: false, remote: true);
         Assert.IsFalse(targetPrefs.Has(XEnv.Prefs.App), "Env/App 配置项在远端应当被移除。");
         Assert.IsFalse(targetPrefs.Has(XEnv.Prefs.Mode), "Env/Mode 配置项在远端应当被移除。");
         Assert.IsFalse(targetPrefs.Has(XEnv.Prefs.Solution), "Env/Solution 配置项在远端应当被移除。");

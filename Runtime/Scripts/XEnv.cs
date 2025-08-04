@@ -570,7 +570,7 @@ namespace EFramework.Utility
                 target.Set(Remote, source.Get(Remote, RemoteDefault));
             }
 
-            public override void OnApply(XPrefs.IBase source, XPrefs.IBase target, bool asset, bool local, bool remote)
+            public override void OnApply(XPrefs.IBase source, XPrefs.IBase target, bool asset, bool remote)
             {
                 if (asset) target.Set(Remote, target.Get(Remote, RemoteDefault).Eval(Vars));
                 if (remote)

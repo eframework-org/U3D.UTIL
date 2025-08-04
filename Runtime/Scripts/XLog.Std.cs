@@ -176,11 +176,11 @@ namespace EFramework.Utility
                     targetConfig.Set(Color, currentConfig.Get(Color, ColorDefault));
                 }
 
-                public override void OnApply(XPrefs.IBase source, XPrefs.IBase target, bool asset, bool local, bool remote)
+                public override void OnApply(XPrefs.IBase source, XPrefs.IBase target, bool asset, bool remote)
                 {
-                    if (local)
+                    if (asset)
                     {
-                        var config = target.Get(Config, ConfigDefault);
+                        var config = source.Get(Config, ConfigDefault);
                         Enum.TryParse<LevelType>(config.GetString(Level, LevelDefault), out var levelType);
                         if (levelType > levelMax) levelMax = levelType;
                     }

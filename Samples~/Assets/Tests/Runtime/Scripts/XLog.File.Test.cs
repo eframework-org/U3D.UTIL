@@ -98,7 +98,7 @@ public class TestXLogFile
         Assert.AreEqual(XLog.FileAdapter.Prefs.MaxSizeDefault, targetConfig.GetInt(XLog.FileAdapter.Prefs.MaxSize), "Log/File/MaxSize 配置项应当存在。");
 
         // Apply
-        panel.OnApply(source: targetPrefs, target: targetPrefs, asset: false, local: false, remote: true);
+        panel.OnApply(source: targetPrefs, target: targetPrefs, asset: false, remote: true);
         targetConfig = targetPrefs.Get<XPrefs.IBase>(XLog.FileAdapter.Prefs.Config);
         Assert.IsNull(targetConfig, "Log/File 配置项在远端应当被移除。");
     }

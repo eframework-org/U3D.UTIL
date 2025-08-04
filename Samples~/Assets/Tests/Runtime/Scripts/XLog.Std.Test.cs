@@ -46,7 +46,7 @@ public class TestXLogStd
         Assert.AreEqual(XLog.StdAdapter.Prefs.ColorDefault, targetConfig.GetBool(XLog.StdAdapter.Prefs.Color), "Log/Std/Color 配置项应当存在。");
 
         // Apply
-        panel.OnApply(source: targetPrefs, target: targetPrefs, asset: false, local: false, remote: true);
+        panel.OnApply(source: targetPrefs, target: targetPrefs, asset: false, remote: true);
         targetConfig = targetPrefs.Get<XPrefs.IBase>(XLog.StdAdapter.Prefs.Config);
         Assert.IsNull(targetConfig, "Log/Std 配置项在远端应当被移除。");
     }
