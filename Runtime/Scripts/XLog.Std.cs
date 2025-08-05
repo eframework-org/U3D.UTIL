@@ -4,6 +4,7 @@
 
 using System;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace EFramework.Utility
 {
@@ -13,12 +14,6 @@ namespace EFramework.Utility
         /// StdAdapter 是日志标准输出适配器，实现日志的控制台输出功能。
         /// 支持日志着色和级别过滤等特性。
         /// </summary>
-        /// <remarks>
-        /// 功能特性:
-        /// - 支持日志级别过滤
-        /// - 支持日志着色输出
-        /// - 支持批处理模式
-        /// </remarks>
         internal partial class StdAdapter : IAdapter
         {
             /// <summary>
@@ -116,7 +111,7 @@ namespace EFramework.Utility
 
         internal partial class StdAdapter
         {
-            public class Prefs : XPrefs.Panel
+            public class Prefs : XPrefs.IEditor
             {
                 public const string Config = "Log/Std";
 
@@ -131,13 +126,19 @@ namespace EFramework.Utility
                 public static readonly bool ColorDefault = true;
 
 #if UNITY_EDITOR
-                public override string Section => "Log";
+                string XPrefs.IEditor.Section => "Log";
 
-                public override int Priority => 10;
+                string XPrefs.IEditor.Tooltip => string.Empty;
+
+                bool XPrefs.IEditor.Foldable => true;
+
+                int XPrefs.IEditor.Priority => 10;
 
                 [SerializeField] protected bool foldout = true;
 
-                public override void OnVisualize(string searchContext, XPrefs.IBase target)
+                void XPrefs.IEditor.OnActivate(string searchContext, VisualElement rootElement, XPrefs.IBase target) { }
+
+                void XPrefs.IEditor.OnVisualize(string searchContext, XPrefs.IBase target)
                 {
                     var config = target.Get(Config, ConfigDefault);
                     UnityEditor.EditorGUILayout.BeginVertical(UnityEditor.EditorStyles.helpBox);
@@ -146,11 +147,11 @@ namespace EFramework.Utility
                     {
                         UnityEditor.EditorGUILayout.BeginVertical(UnityEditor.EditorStyles.helpBox);
                         UnityEditor.EditorGUILayout.BeginHorizontal();
-                        Title("Level", "Log Level.");
+                        GUILayout.Label(new GUIContent("Level", "Log level."), GUILayout.Width(60));
                         Enum.TryParse<LevelType>(config.GetString(Level, LevelDefault), out var levelType);
                         config.Set(Level, UnityEditor.EditorGUILayout.EnumPopup("", levelType).ToString());
 
-                        Title("Color", "Enable color log.");
+                        GUILayout.Label(new GUIContent("Color", "Enable colored log."), GUILayout.Width(60));
                         config.Set(Color, UnityEditor.EditorGUILayout.Toggle("", config.GetBool(Color, ColorDefault)));
                         UnityEditor.EditorGUILayout.EndHorizontal();
                         UnityEditor.EditorGUILayout.EndVertical();
@@ -159,13 +160,15 @@ namespace EFramework.Utility
                     if (!target.Has(Config) || config.Dirty) target.Set(Config, config);
                 }
 
-                public override bool Validate(XPrefs.IBase target)
+                void XPrefs.IEditor.OnDeactivate(XPrefs.IBase target) { }
+
+                bool XPrefs.IEditor.OnValidate(XPrefs.IBase target)
                 {
                     levelMax = LevelType.Undefined; // 重置最大值
-                    return base.Validate(target);
+                    return true;
                 }
 
-                public override void OnSave(XPrefs.IBase source, XPrefs.IBase target)
+                void XPrefs.IEditor.OnSave(XPrefs.IBase source, XPrefs.IBase target)
                 {
                     var currentConfig = target.Get(Config, ConfigDefault);
 
@@ -176,7 +179,7 @@ namespace EFramework.Utility
                     targetConfig.Set(Color, currentConfig.Get(Color, ColorDefault));
                 }
 
-                public override void OnApply(XPrefs.IBase source, XPrefs.IBase target, bool asset, bool remote)
+                void XPrefs.IEditor.OnApply(XPrefs.IBase source, XPrefs.IBase target, bool asset, bool remote)
                 {
                     if (asset)
                     {

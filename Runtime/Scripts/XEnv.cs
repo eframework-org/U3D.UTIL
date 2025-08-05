@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Net.NetworkInformation;
 using System.Text.RegularExpressions;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace EFramework.Utility
 {
@@ -416,7 +417,7 @@ namespace EFramework.Utility
         /// - Secret：密钥
         /// - Remote：远程配置地址
         /// </remarks>
-        public class Prefs : XPrefs.Panel
+        public class Prefs : XPrefs.IEditor
         {
 #if UNITY_EDITOR
             [UnityEditor.InitializeOnLoadMethod]
@@ -503,60 +504,68 @@ namespace EFramework.Utility
             public const string RemoteDefault = "${Env.OssPublic}/Prefs/${Env.Solution}/${Env.Channel}/${Env.Platform}/${Env.Version}/Preferences.json";
 
 #if UNITY_EDITOR
-            public override string Section => "Env";
+            string XPrefs.IEditor.Section => "Env";
 
-            public override int Priority => -1;
+            string XPrefs.IEditor.Tooltip => "Preferences of Environment.";
 
-            public override string Tooltip => "Preferences of Environment.";
+            bool XPrefs.IEditor.Foldable => true;
 
-            public override void OnVisualize(string searchContext, XPrefs.IBase target)
+            int XPrefs.IEditor.Priority => -1;
+
+            void XPrefs.IEditor.OnActivate(string searchContext, VisualElement rootElement, XPrefs.IBase target) { }
+
+            void XPrefs.IEditor.OnVisualize(string searchContext, XPrefs.IBase target)
             {
                 UnityEditor.EditorGUILayout.BeginVertical(UnityEditor.EditorStyles.helpBox);
                 UnityEditor.EditorGUILayout.BeginHorizontal();
-                Title("App");
+                GUILayout.Label(new GUIContent("App"), GUILayout.Width(60));
                 Enum.TryParse<AppType>(target.GetString(App, AppDefault), out var appType);
                 target.Set(App, UnityEditor.EditorGUILayout.EnumPopup("", appType).ToString());
 
-                Title("Mode");
+                GUILayout.Label(new GUIContent("Mode"), GUILayout.Width(60));
                 Enum.TryParse<ModeType>(target.GetString(Mode, ModeDefault), out var modeType);
                 target.Set(Mode, UnityEditor.EditorGUILayout.EnumPopup("", modeType).ToString());
                 UnityEditor.EditorGUILayout.EndHorizontal();
 
                 UnityEditor.EditorGUILayout.BeginHorizontal();
-                Title("Solution");
+                GUILayout.Label(new GUIContent("Solution"), GUILayout.Width(60));
                 target.Set(Solution, UnityEditor.EditorGUILayout.TextField("", target.GetString(Solution, SolutionDefault)));
 
-                Title("Project");
+                GUILayout.Label(new GUIContent("Project"), GUILayout.Width(60));
                 target.Set(Project, UnityEditor.EditorGUILayout.TextField("", target.GetString(Project, ProjectDefault)));
                 UnityEditor.EditorGUILayout.EndHorizontal();
 
                 UnityEditor.EditorGUILayout.BeginHorizontal();
-                Title("Product");
+                GUILayout.Label(new GUIContent("Product"), GUILayout.Width(60));
                 target.Set(Product, UnityEditor.EditorGUILayout.TextField("", target.GetString(Product, ProductDefault)));
 
-                Title("Channel");
+                GUILayout.Label(new GUIContent("Channel"), GUILayout.Width(60));
                 target.Set(Channel, UnityEditor.EditorGUILayout.TextField("", target.GetString(Channel, ChannelDefault)));
                 UnityEditor.EditorGUILayout.EndHorizontal();
 
                 UnityEditor.EditorGUILayout.BeginHorizontal();
-                Title("Version");
+                GUILayout.Label(new GUIContent("Version"), GUILayout.Width(60));
                 target.Set(Version, UnityEditor.EditorGUILayout.TextField("", target.GetString(Version, VersionDefault)));
 
-                Title("Author");
+                GUILayout.Label(new GUIContent("Author"), GUILayout.Width(60));
                 target.Set(Author, UnityEditor.EditorGUILayout.TextField("", target.GetString(Author, AuthorDefault)));
                 UnityEditor.EditorGUILayout.EndHorizontal();
 
                 UnityEditor.EditorGUILayout.BeginHorizontal();
-                Title("Secret");
+                GUILayout.Label(new GUIContent("Secret"), GUILayout.Width(60));
                 target.Set(Secret, UnityEditor.EditorGUILayout.TextField("", target.GetString(Secret, SecretDefault)));
 
-                Title("Remote");
+                GUILayout.Label(new GUIContent("Remote"), GUILayout.Width(60));
                 target.Set(Remote, UnityEditor.EditorGUILayout.TextField("", target.GetString(Remote, RemoteDefault)));
                 UnityEditor.EditorGUILayout.EndHorizontal();
                 UnityEditor.EditorGUILayout.EndVertical();
             }
 
-            public override void OnSave(XPrefs.IBase source, XPrefs.IBase target)
+            void XPrefs.IEditor.OnDeactivate(XPrefs.IBase target) { }
+
+            bool XPrefs.IEditor.OnValidate(XPrefs.IBase target) { return true; }
+
+            void XPrefs.IEditor.OnSave(XPrefs.IBase source, XPrefs.IBase target)
             {
                 target.Set(App, source.Get(App, AppDefault));
                 target.Set(Mode, source.Get(Mode, ModeDefault));
@@ -570,7 +579,7 @@ namespace EFramework.Utility
                 target.Set(Remote, source.Get(Remote, RemoteDefault));
             }
 
-            public override void OnApply(XPrefs.IBase source, XPrefs.IBase target, bool asset, bool remote)
+            void XPrefs.IEditor.OnApply(XPrefs.IBase source, XPrefs.IBase target, bool asset, bool remote)
             {
                 if (asset) target.Set(Remote, target.Get(Remote, RemoteDefault).Eval(Vars));
                 if (remote)

@@ -54,9 +54,9 @@ public class TestXEnv
         Assert.IsNotNull(XEnv.Prefs.SecretDefault, "Env/Secret 应用密钥默认值不应为空");
         Assert.IsNotNull(XEnv.Prefs.RemoteDefault, "Env/Remote 远程配置地址默认值不应为空");
 
-        var panel = ScriptableObject.CreateInstance<XEnv.Prefs>();
+        var prefsEditor = new XEnv.Prefs() as XPrefs.IEditor;
         var targetPrefs = new XPrefs.IBase();
-        panel.OnSave(source: new XPrefs.IBase(), target: targetPrefs);
+        prefsEditor.OnSave(source: new XPrefs.IBase(), target: targetPrefs);
 
         // Save
         Assert.AreEqual(XEnv.Prefs.AppDefault, targetPrefs.GetString(XEnv.Prefs.App), "Env/App 配置项应当存在。");
@@ -72,12 +72,12 @@ public class TestXEnv
 
         // Apply - asset
         var lastRemote = targetPrefs.GetString(XEnv.Prefs.Remote);
-        panel.OnApply(source: new XPrefs.IBase(), target: targetPrefs, asset: true, remote: false);
+        prefsEditor.OnApply(source: new XPrefs.IBase(), target: targetPrefs, asset: true, remote: false);
         Assert.AreNotEqual(lastRemote, targetPrefs.GetString(XEnv.Prefs.Remote), "Env/Remote 配置项在资产中应当被求值。");
 
         // Apply - remote
         targetPrefs = new XPrefs.IBase();
-        panel.OnApply(source: new XPrefs.IBase(), target: targetPrefs, asset: false, remote: true);
+        prefsEditor.OnApply(source: new XPrefs.IBase(), target: targetPrefs, asset: false, remote: true);
         Assert.IsFalse(targetPrefs.Has(XEnv.Prefs.App), "Env/App 配置项在远端应当被移除。");
         Assert.IsFalse(targetPrefs.Has(XEnv.Prefs.Mode), "Env/Mode 配置项在远端应当被移除。");
         Assert.IsFalse(targetPrefs.Has(XEnv.Prefs.Solution), "Env/Solution 配置项在远端应当被移除。");

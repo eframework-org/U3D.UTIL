@@ -1447,13 +1447,13 @@ namespace EFramework.Utility
     }
     #endregion
 
-    #region 编辑面板
+    #region 编辑工具
     public partial class XPrefs
     {
         /// <summary>
-        /// IPanel 是配置编辑面板接口，定义配置的可视化编辑功能。
+        /// IEditor 是配置的编辑器接口，规范了配置的可视化、校验、保存、应用等行为。
         /// </summary>
-        public interface IPanel
+        public interface IEditor
         {
             /// <summary>
             /// Section 是配置分组的名称。
@@ -1497,11 +1497,11 @@ namespace EFramework.Utility
             void OnDeactivate(IBase target);
 
             /// <summary>
-            /// Validate 在验证配置是否有效。
+            /// OnValidate 在验证配置时调用。
             /// </summary>
             /// <param name="target">目标配置实例</param>
             /// <returns>是否有效</returns>
-            bool Validate(IBase target);
+            bool OnValidate(IBase target);
 
             /// <summary>
             /// OnSave 在保存配置时调用。
@@ -1518,124 +1518,6 @@ namespace EFramework.Utility
             /// <param name="asset">是否应用到资产</param>
             /// <param name="remote">是否应用到远端</param>
             void OnApply(IBase source, IBase target, bool asset, bool remote);
-        }
-
-        /// <summary>
-        /// Panel 是配置编辑面板基类，提供配置的可视化编辑功能。
-        /// </summary>
-        public class Panel : ScriptableObject, IPanel
-        {
-            /// <summary>
-            /// section 是配置分组的名称。
-            /// </summary>
-            private readonly string section;
-
-            /// <summary>
-            /// tooltip 是配置分组的提示。
-            /// </summary>
-            private readonly string tooltip;
-
-            /// <summary>
-            /// foldable 表示是否支持折叠。
-            /// </summary>
-            private readonly bool foldable = true;
-
-            /// <summary>
-            /// priority 是显示的优先级。
-            /// </summary>
-            private readonly int priority;
-
-            public Panel() { }
-
-            /// <summary>
-            /// 初始化配置面板。
-            /// </summary>
-            /// <param name="section">配置分组名称</param>
-            /// <param name="tooltip">分组提示信息</param>
-            /// <param name="foldable">是否支持折叠</param>
-            /// <param name="priority">显示优先级</param>
-            public Panel(string section, string tooltip = "", bool foldable = true, int priority = 0)
-            {
-                this.section = section;
-                this.tooltip = tooltip;
-                this.foldable = foldable;
-                this.priority = priority;
-            }
-
-            /// <summary>
-            /// Section 获取配置分组名称。
-            /// </summary>
-            public virtual string Section => section;
-
-            /// <summary>
-            /// Tooltip 获取分组提示信息。
-            /// </summary>
-            public virtual string Tooltip => tooltip;
-
-            /// <summary>
-            /// Foldable 表示是否支持折叠。
-            /// </summary>
-            public virtual bool Foldable => foldable;
-
-            /// <summary>
-            /// Priority 获取显示优先级。
-            /// </summary>
-            public virtual int Priority => priority;
-
-            /// <summary>
-            /// OnActivate 在面板激活时调用。
-            /// </summary>
-            /// <param name="searchContext">搜索上下文</param>
-            /// <param name="rootElement">根元素</param>
-            /// <param name="target">目标配置实例</param>
-            public virtual void OnActivate(string searchContext, VisualElement rootElement, IBase target) { }
-
-            /// <summary>
-            /// OnVisualize 在面板绘制时调用。
-            /// </summary>
-            /// <param name="searchContext">搜索上下文</param>
-            /// <param name="target">目标配置实例</param>
-            public virtual void OnVisualize(string searchContext, IBase target) { }
-
-            /// <summary>
-            /// OnDeactivate 在面板停用时调用。
-            /// </summary>
-            /// <param name="target">目标配置实例</param>
-            public virtual void OnDeactivate(IBase target) { }
-
-            /// <summary>
-            /// Validate 验证配置是否有效。
-            /// </summary>
-            /// <param name="target">目标配置实例</param>
-            /// <returns>是否有效</returns>
-            public virtual bool Validate(IBase target) { return true; }
-
-            /// <summary>
-            /// OnSave 在保存配置时调用。
-            /// </summary>
-            /// <param name="source">源配置实例</param>
-            /// <param name="target">目标配置实例</param>
-            public virtual void OnSave(IBase source, IBase target) { }
-
-            /// <summary>
-            /// OnApply 在应用配置时调用。
-            /// </summary>
-            /// <param name="source">源配置实例</param>
-            /// <param name="target">目标配置实例</param>
-            /// <param name="asset">是否应用到资产</param>
-            /// <param name="remote">是否应用到远端</param>
-            public virtual void OnApply(IBase source, IBase target, bool asset, bool remote) { }
-
-            /// <summary>
-            /// Title 用于绘制标题。
-            /// </summary>
-            /// <param name="text">标题文本</param>
-            /// <param name="tooltip">提示信息</param>
-            /// <param name="width">宽度，-1 表示使用默认宽度</param>
-            public virtual void Title(string text, string tooltip = "", int width = -1)
-            {
-                GUILayout.Label(new GUIContent(text, tooltip), GUILayout.Width(width == -1 ? 60 : width));
-            }
         }
     }
     #endregion

@@ -77,11 +77,11 @@ public class TestXLogFile
     [Test]
     public void Prefs()
     {
-        var panel = ScriptableObject.CreateInstance<XLog.FileAdapter.Prefs>();
+        var prefsEditor = new XLog.FileAdapter.Prefs() as XPrefs.IEditor;
 
         // Save
         var targetPrefs = new XPrefs.IBase();
-        panel.OnSave(source: new XPrefs.IBase(), target: targetPrefs);
+        prefsEditor.OnSave(source: new XPrefs.IBase(), target: targetPrefs);
 
         var targetConfig = targetPrefs.Get<XPrefs.IBase>(XLog.FileAdapter.Prefs.Config);
         Assert.NotNull(targetConfig, "Log/File 配置项应当存在。");
@@ -98,7 +98,7 @@ public class TestXLogFile
         Assert.AreEqual(XLog.FileAdapter.Prefs.MaxSizeDefault, targetConfig.GetInt(XLog.FileAdapter.Prefs.MaxSize), "Log/File/MaxSize 配置项应当存在。");
 
         // Apply
-        panel.OnApply(source: targetPrefs, target: targetPrefs, asset: false, remote: true);
+        prefsEditor.OnApply(source: targetPrefs, target: targetPrefs, asset: false, remote: true);
         targetConfig = targetPrefs.Get<XPrefs.IBase>(XLog.FileAdapter.Prefs.Config);
         Assert.IsNull(targetConfig, "Log/File 配置项在远端应当被移除。");
     }

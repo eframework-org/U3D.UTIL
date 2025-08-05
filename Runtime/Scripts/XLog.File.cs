@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Concurrent;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace EFramework.Utility
 {
@@ -19,14 +20,6 @@ namespace EFramework.Utility
         /// FileAdapter 是日志文件适配器，实现日志的文件存储功能。
         /// 支持日志轮转、按时间分割和自动清理等特性。
         /// </summary>
-        /// <remarks>
-        /// 功能特性:
-        /// - 支持日志级别过滤
-        /// - 支持日志文件轮转
-        /// - 支持按天/小时分割日志
-        /// - 支持自动清理过期日志
-        /// - 支持异步写入日志
-        /// </remarks>
         internal partial class FileAdapter : IAdapter
         {
             /// <summary>
@@ -542,7 +535,7 @@ namespace EFramework.Utility
 
         internal partial class FileAdapter
         {
-            public class Prefs : XPrefs.Panel
+            public class Prefs : XPrefs.IEditor
             {
                 public const string Config = "Log/File";
 
@@ -589,13 +582,19 @@ namespace EFramework.Utility
                 public static readonly int MaxSizeDefault = 1 << 27; // 128MB
 
 #if UNITY_EDITOR
-                public override string Section => "Log";
+                string XPrefs.IEditor.Section => "Log";
 
-                public override int Priority => 11;
+                string XPrefs.IEditor.Tooltip => string.Empty;
+
+                bool XPrefs.IEditor.Foldable => true;
+
+                int XPrefs.IEditor.Priority => 11;
 
                 [SerializeField] protected bool foldout = true;
 
-                public override void OnVisualize(string searchContext, XPrefs.IBase target)
+                void XPrefs.IEditor.OnActivate(string searchContext, VisualElement rootElement, XPrefs.IBase target) { }
+
+                void XPrefs.IEditor.OnVisualize(string searchContext, XPrefs.IBase target)
                 {
                     var config = target.Get(Config, ConfigDefault);
                     UnityEditor.EditorGUILayout.BeginVertical(UnityEditor.EditorStyles.helpBox);
@@ -605,11 +604,11 @@ namespace EFramework.Utility
                         UnityEditor.EditorGUILayout.BeginVertical(UnityEditor.EditorStyles.helpBox);
 
                         UnityEditor.EditorGUILayout.BeginHorizontal();
-                        Title("Level", "Log Level.");
+                        GUILayout.Label(new GUIContent("Level", "Log level."), GUILayout.Width(60));
                         Enum.TryParse<LevelType>(config.GetString(Level, LevelDefault), out var levelType);
                         config.Set(Level, UnityEditor.EditorGUILayout.EnumPopup("", levelType).ToString());
 
-                        Title("Rotate", "Enable log rotation.");
+                        GUILayout.Label(new GUIContent("Rotate", "Enable log rotation."), GUILayout.Width(60));
                         var rotate = config.GetBool(Rotate, RotateDefault);
                         config.Set(Rotate, UnityEditor.EditorGUILayout.Toggle("", rotate));
                         UnityEditor.EditorGUILayout.EndHorizontal();
@@ -618,7 +617,7 @@ namespace EFramework.Utility
                         if (!rotate) GUI.color = GUI.color = Color.gray;
 
                         UnityEditor.EditorGUILayout.BeginHorizontal();
-                        Title("Daily", "Enable daily log rotation.");
+                        GUILayout.Label(new GUIContent("Daily", "Enable daily log rotation."), GUILayout.Width(60));
                         var daily = UnityEditor.EditorGUILayout.Toggle(config.GetBool(Daily, DailyDefault));
                         if (rotate) config.Set(Daily, daily);
                         var maxDay = UnityEditor.EditorGUILayout.IntField("", config.GetInt(MaxDay, MaxDayDefault));
@@ -626,7 +625,7 @@ namespace EFramework.Utility
                         UnityEditor.EditorGUILayout.EndHorizontal();
 
                         UnityEditor.EditorGUILayout.BeginHorizontal();
-                        Title("Hourly", "Enable hourly log rotation.");
+                        GUILayout.Label(new GUIContent("Hourly", "Enable hourly log rotation."), GUILayout.Width(60));
                         var hourly = UnityEditor.EditorGUILayout.Toggle("", config.GetBool(Hourly, HourlyDefault));
                         if (rotate) config.Set(Hourly, hourly);
                         var maxHour = UnityEditor.EditorGUILayout.IntField("", config.GetInt(MaxHour, MaxHourDefault));
@@ -635,22 +634,22 @@ namespace EFramework.Utility
 
                         GUI.color = ocolor;
                         UnityEditor.EditorGUILayout.BeginHorizontal();
-                        Title("Path", "Log file path.");
+                        GUILayout.Label(new GUIContent("Path", "Log file path."), GUILayout.Width(60));
                         var path = config.GetString(Path, PathDefault);
                         config.Set(Path, UnityEditor.EditorGUILayout.TextField("", path));
 
                         if (!rotate) GUI.color = GUI.color = Color.gray;
-                        Title("Count", "Max file count.");
+                        GUILayout.Label(new GUIContent("Count", "Max file count."), GUILayout.Width(60));
                         var maxFile = UnityEditor.EditorGUILayout.IntField("", config.GetInt(MaxFile, MaxFileDefault));
                         if (rotate) config.Set(MaxFile, maxFile);
                         UnityEditor.EditorGUILayout.EndHorizontal();
 
                         UnityEditor.EditorGUILayout.BeginHorizontal();
-                        Title("Line", "Max line count.");
+                        GUILayout.Label(new GUIContent("Line", "Max line count."), GUILayout.Width(60));
                         var maxLine = UnityEditor.EditorGUILayout.IntField("", config.GetInt(MaxLine, MaxLineDefault));
                         if (rotate) config.Set(MaxLine, maxLine);
 
-                        Title("Size", "Max file size(MB).");
+                        GUILayout.Label(new GUIContent("Size", "Max file size(MB)."), GUILayout.Width(60));
                         var maxSize = UnityEditor.EditorGUILayout.IntField("", config.GetInt(MaxSize, MaxSizeDefault) / 1024 / 1024) * 1024 * 1024;
                         if (rotate) config.Set(MaxSize, maxSize);
                         UnityEditor.EditorGUILayout.EndHorizontal();
@@ -663,13 +662,15 @@ namespace EFramework.Utility
                     if (!target.Has(Config) || config.Dirty) target.Set(Config, config);
                 }
 
-                public override bool Validate(XPrefs.IBase target)
+                void XPrefs.IEditor.OnDeactivate(XPrefs.IBase target) { }
+
+                bool XPrefs.IEditor.OnValidate(XPrefs.IBase target)
                 {
                     levelMax = LevelType.Undefined; // 重置最大值
-                    return base.Validate(target);
+                    return true;
                 }
 
-                public override void OnSave(XPrefs.IBase source, XPrefs.IBase target)
+                void XPrefs.IEditor.OnSave(XPrefs.IBase source, XPrefs.IBase target)
                 {
                     var currentConfig = target.Get(Config, ConfigDefault);
 
@@ -688,7 +689,7 @@ namespace EFramework.Utility
                     targetConfig.Set(MaxSize, currentConfig.Get(MaxSize, MaxSizeDefault));
                 }
 
-                public override void OnApply(XPrefs.IBase source, XPrefs.IBase target, bool asset, bool remote)
+                void XPrefs.IEditor.OnApply(XPrefs.IBase source, XPrefs.IBase target, bool asset, bool remote)
                 {
                     if (asset)
                     {

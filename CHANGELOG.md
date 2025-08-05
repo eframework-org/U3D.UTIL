@@ -7,6 +7,7 @@
 - 修改 XComp 若干函数的名称：CloneGO -> CloneGameObject、DestroyGO -> DestroyGameObject、SetActiveState -> SetGameObjectActive
 - 修改 XLoom 若干函数的名称：StartCR -> StartCoroutine、StopCR -> StopCoroutine
 - 修改 XString 的 IEval 接口的名称为 IEvaluator
+- 修改 XPrefs.IPanel 接口的名称为 IEditor，并修改若干函数的签名，移除冗余的 XPrefs.Panel 实现
 
 ## [0.1.7] - 2025-07-07
 ### 变更
