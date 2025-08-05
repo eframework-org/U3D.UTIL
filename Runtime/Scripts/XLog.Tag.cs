@@ -13,70 +13,63 @@ namespace EFramework.Utility
     public partial class XLog
     {
         /// <summary>
-        /// 日志标签类，用于为日志添加结构化的标签信息。
+        /// LogTag 是日志标签类，用于为日志添加结构化的标签信息。
         /// 支持键值对形式的标签和线程关联等特性。
         /// </summary>
-        /// <remarks>
-        /// 功能特性:
-        /// - 支持键值对形式的标签
-        /// - 支持标签的线程关联
-        /// - 支持标签的对象池管理
-        /// - 支持标签的字符串和字典表示
-        /// </remarks>
         public class LogTag
         {
             /// <summary>
-            /// 用于同步的锁对象
+            /// lockObj 是用于同步的锁对象。
             /// </summary>
             internal readonly object lockObj = new();
 
             /// <summary>
-            /// 日志输出级别
+            /// level 是日志输出的级别。
             /// </summary>
             internal LevelType level;
 
             /// <summary>
-            /// 标签键列表
+            /// keys 是标签键的列表。
             /// </summary>
             internal readonly List<string> keys = new();
 
             /// <summary>
-            /// 标签值列表
+            /// values 是标签值的列表。
             /// </summary>
             internal readonly List<string> values = new();
 
             /// <summary>
-            /// 标签的字符串表示
+            /// text 是标签的字符串表示。
             /// </summary>
             internal string text;
 
             /// <summary>
-            /// 标签的字典表示
+            /// data 是标签的字典表示。
             /// </summary>
             internal Dictionary<string, string> data;
 
             /// <summary>
-            /// 当前标签数量
+            /// count 是当前的标签数量。
             /// </summary>
             internal int count;
 
             /// <summary>
-            /// 是否需要重建字符串表示
+            /// rebuildText 表示是否需要重建字符串表示。
             /// </summary>
             internal bool rebuildText;
 
             /// <summary>
-            /// 是否需要重建字典表示
+            /// rebuildData 表示是否需要重建字典表示。
             /// </summary>
             internal bool rebuildData;
 
             /// <summary>
-            /// 是否已被对象池回收
+            /// pooled 表示是否已被对象池回收。
             /// </summary>
             internal bool pooled;
 
             /// <summary>
-            /// 获取字符串表示
+            /// Text 获取字符串表示。
             /// </summary>
             public string Text
             {
@@ -117,7 +110,7 @@ namespace EFramework.Utility
             }
 
             /// <summary>
-            /// 获取数据字典表示
+            /// Data 获取数据字典表示。
             /// </summary>
             public Dictionary<string, string> Data
             {
@@ -142,7 +135,7 @@ namespace EFramework.Utility
             }
 
             /// <summary>
-            /// 日志级别
+            /// Level 是日志的输出级别。
             /// </summary>
             public LevelType Level
             {
@@ -153,7 +146,7 @@ namespace EFramework.Utility
             public LogTag() { Reset(); }
 
             /// <summary>
-            /// 重置标签状态
+            /// Reset 重置标签状态。
             /// </summary>
             public LogTag Reset()
             {
@@ -167,7 +160,7 @@ namespace EFramework.Utility
             }
 
             /// <summary>
-            /// 设置键值对
+            /// Set 设置键值对。
             /// </summary>
             public LogTag Set(string key, string value)
             {
@@ -212,7 +205,7 @@ namespace EFramework.Utility
             }
 
             /// <summary>
-            /// 获取指定键的值
+            /// Get 获取指定键的值。
             /// </summary>
             public string Get(string key)
             {
@@ -233,7 +226,7 @@ namespace EFramework.Utility
             }
 
             /// <summary>
-            /// 创建新的标签实例
+            /// Clone 创建并克隆新的标签实例。
             /// </summary>
             public LogTag Clone()
             {
@@ -251,21 +244,25 @@ namespace EFramework.Utility
                 }
             }
 
+            /// <summary>
+            /// ToString 使用内置的文本进行表示。
+            /// </summary>
+            /// <returns>内置文本</returns>
             public override string ToString() { return Text; }
         }
 
         /// <summary>
-        /// 线程关联的标签映射
+        /// tagContext 是线程关联的标签映射。
         /// </summary>
         internal static readonly ConcurrentDictionary<int, LogTag> tagContext = new();
 
         /// <summary>
-        /// 标签对象池
+        /// tagPool 是标签的对象池。
         /// </summary>
         internal static ObjectPool<LogTag> tagPool = new(() => new LogTag(), null, null, null);
 
         /// <summary>
-        /// 获取标签实例
+        /// GetTag 获取标签的实例。
         /// </summary>
         /// <returns>新的标签实例</returns>
         public static LogTag GetTag()
@@ -279,7 +276,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 回收标签实例到对象池
+        /// PutTag 回收标签实例到对象池。
         /// </summary>
         /// <param name="tag">要回收的标签实例</param>
         public static void PutTag(LogTag tag)
@@ -299,7 +296,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 监视当前线程的标签
+        /// Watch 监视当前线程的标签。
         /// </summary>
         /// <param name="tag">要监视的标签实例，为null时创建新实例</param>
         /// <returns>监视的标签实例</returns>
@@ -311,7 +308,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 获取或创建当前线程的标签
+        /// Tag 获取或创建当前线程的标签。
         /// </summary>
         /// <param name="pairs">标签键值对数组</param>
         /// <returns>当前线程的标签实例</returns>
@@ -350,7 +347,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 移除当前线程的标签
+        /// Defer 移除当前线程的标签。
         /// </summary>
         public static void Defer()
         {
