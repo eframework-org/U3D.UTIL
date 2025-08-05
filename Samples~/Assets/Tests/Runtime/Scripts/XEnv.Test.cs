@@ -34,7 +34,7 @@ public class TestXEnv
         Assert.IsFalse(string.IsNullOrEmpty(XEnv.Product), "产品名称不应为空");
         Assert.IsFalse(string.IsNullOrEmpty(XEnv.Channel), "发布渠道不应为空");
         Assert.IsFalse(string.IsNullOrEmpty(XEnv.Version), "版本号不应为空");
-        Assert.IsFalse(string.IsNullOrEmpty(XEnv.Author), "作者信息不应为空");
+        Assert.IsFalse(string.IsNullOrEmpty(XEnv.Author), "作者名称不应为空");
     }
 
     /// <summary>
@@ -50,7 +50,7 @@ public class TestXEnv
         Assert.IsNotNull(XEnv.Prefs.ProductDefault, "Env/Product 产品名称默认值不应为空");
         Assert.IsNotNull(XEnv.Prefs.ChannelDefault, "Env/Channel 发布渠道默认值不应为空");
         Assert.IsNotNull(XEnv.Prefs.VersionDefault, "Env/Version 版本号默认值不应为空");
-        Assert.IsNotNull(XEnv.Prefs.AuthorDefault, "Env/Author 作者信息默认值不应为空");
+        Assert.IsNotNull(XEnv.Prefs.AuthorDefault, "Env/Author 作者名称默认值不应为空");
         Assert.IsNotNull(XEnv.Prefs.SecretDefault, "Env/Secret 应用密钥默认值不应为空");
         Assert.IsNotNull(XEnv.Prefs.RemoteDefault, "Env/Remote 远程配置地址默认值不应为空");
 

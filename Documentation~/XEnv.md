@@ -75,7 +75,7 @@ var channel = XEnv.Channel;
 // 获取版本号
 var version = XEnv.Version;
 
-// 获取作者信息
+// 获取作者名称
 var author = XEnv.Author;
 ```
 
@@ -155,7 +155,7 @@ var result = text.Eval(XEnv.Vars);
 | Product | 产品名称 |
 | Channel | 发布渠道 |
 | Version | 应用版本 |
-| Author | 作者信息 |
+| Author | 作者名称 |
 | Secret | 应用密钥 |
 | NumCPU | CPU 核心数 |
 

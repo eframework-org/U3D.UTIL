@@ -90,54 +90,51 @@ namespace EFramework.Utility
     public static partial class XEnv
     {
         /// <summary>
-        /// 平台类型枚举，定义了支持的运行平台类型。
+        /// PlatformType 是平台类型枚举，定义了支持的运行平台类型。
         /// </summary>
-        /// <remarks>
-        /// 用于标识应用程序运行的目标平台，支持主流桌面、移动和浏览器平台。
-        /// </remarks>
         public enum PlatformType
         {
-            /// <summary>未知或不支持的平台</summary>
+            /// <summary>Unknown 表示未知或不支持的平台。</summary>
             Unknown,
 
-            /// <summary>Windows 桌面平台</summary>
+            /// <summary>Windows 表示 Windows 10/11/Server 等操作系统平台。</summary>
             Windows,
 
-            /// <summary>Linux 桌面平台</summary>
+            /// <summary>Linux 表示 Ubuntu/CentOS 等操作系统平台。</summary>
             Linux,
 
-            /// <summary>macOS 桌面平台</summary>
+            /// <summary>macOS 表示 macOS 操作系统平台。</summary>
             macOS,
 
-            /// <summary>Android 移动平台</summary>
+            /// <summary>Android 表示 Android 及其衍生的操作系统平台。</summary>
             Android,
 
-            /// <summary>iOS 移动平台，包括 iPhone 和 iPad</summary>
+            /// <summary>iOS 表示 iPhone 和 iPad 操作系统平台。</summary>
             iOS,
 
-            /// <summary>浏览器平台，主要指 WebGL</summary>
+            /// <summary>Browser 表示浏览器平台，主要指 WebGL。</summary>
             Browser
         }
 
-        /// <summary>未知平台的字符串标识</summary>
+        /// <summary>PlatformUnknown 是未知平台的字符串标识。</summary>
         public static readonly string PlatformUnknown = PlatformType.Unknown.ToString();
 
-        /// <summary>Windows 平台的字符串标识</summary>
+        /// <summary>PlatformWindows 是 Windows 10/11/Server 等操作系统平台的字符串标识。</summary>
         public static readonly string PlatformWindows = PlatformType.Windows.ToString();
 
-        /// <summary>Linux 平台的字符串标识</summary>
+        /// <summary>PlatformLinux 是 Ubuntu/CentOS 等操作系统平台的字符串标识。</summary>
         public static readonly string PlatformLinux = PlatformType.Linux.ToString();
 
-        /// <summary>macOS 平台的字符串标识</summary>
+        /// <summary>PlatformmacOS 是 macOS 操作系统平台的字符串标识。</summary>
         public static readonly string PlatformmacOS = PlatformType.macOS.ToString();
 
-        /// <summary>Android 平台的字符串标识</summary>
+        /// <summary>PlatformAndroid 是 Android 及其衍生的操作系统平台的字符串标识。</summary>
         public static readonly string PlatformAndroid = PlatformType.Android.ToString();
 
-        /// <summary>iOS 平台的字符串标识</summary>
+        /// <summary>PlatformiOS 是 iPhone 和 iPad 操作系统平台的字符串标识。</summary>
         public static readonly string PlatformiOS = PlatformType.iOS.ToString();
 
-        /// <summary>浏览器平台的字符串标识</summary>
+        /// <summary>PlatformBrowser 是浏览器平台，主要指 WebGL 的字符串标识。</summary>
         public static readonly string PlatformBrowser = PlatformType.Browser.ToString();
 
 #if UNITY_EDITOR
@@ -145,19 +142,15 @@ namespace EFramework.Utility
         internal static bool platformGet = false;
 
         /// <summary>
-        /// 编辑器初始化方法，确保平台类型正确设置。
+        /// OnInit 是编辑器的初始化方法，确保平台类型正确设置。
         /// </summary>
         [UnityEditor.InitializeOnLoadMethod]
         internal static void OnInit() { if (Platform == PlatformType.Unknown) { } }
 #endif
 
         /// <summary>
-        /// 获取当前运行平台类型。
+        /// Platform 获取当前运行平台类型。
         /// </summary>
-        /// <remarks>
-        /// 在编辑器中，根据当前的构建目标平台返回对应类型。
-        /// 在运行时，根据实际运行平台返回对应类型。
-        /// </remarks>
         public static PlatformType Platform
         {
             get
@@ -212,78 +205,69 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 应用类型枚举，定义应用程序的类型。
+        /// AppType 是应用类型的枚举，定义应用程序的类型。
         /// </summary>
-        /// <remarks>
-        /// 用于区分应用程序的运行角色，支持服务器端和客户端应用。
-        /// </remarks>
         public enum AppType
         {
-            /// <summary>未知或未定义的应用类型</summary>
+            /// <summary>Unknown 表示未知或未定义的应用类型。</summary>
             Unknown,
 
-            /// <summary>服务器应用，用于后端业务</summary>
+            /// <summary>Server 表示服务器类型的应用，用于后端业务。</summary>
             Server,
 
-            /// <summary>客户端应用，用于前端业务</summary>
+            /// <summary>Client 表示客户端类型的应用，用于前端业务。</summary>
             Client
         }
 
-        /// <summary>未知应用类型的字符串标识</summary>
+        /// <summary>AppUnknown 是未知或未定义的应用类型的字符串标识。</summary>
         public static readonly string AppUnknown = AppType.Unknown.ToString();
 
-        /// <summary>服务器应用类型的字符串标识</summary>
+        /// <summary>AppServer 是服务器类型的应用的字符串标识。</summary>
         public static readonly string AppServer = AppType.Server.ToString();
 
-        /// <summary>客户端应用类型的字符串标识</summary>
+        /// <summary>AppClient 是客户端类型的应用的字符串标识。</summary>
         public static readonly string AppClient = AppType.Client.ToString();
 
         /// <summary>
-        /// 运行模式枚举，定义应用程序的运行环境。
+        /// ModeType 是运行模式的枚举，定义应用程序的运行环境。
         /// </summary>
-        /// <remarks>
-        /// 用于区分应用程序的运行环境，支持开发、测试、预发和生产环境。
-        /// </remarks>
         public enum ModeType
         {
-            /// <summary>未知或未定义的运行模式</summary>
+            /// <summary>Unknown 表示未知或未定义的运行模式。</summary>
             Unknown,
 
-            /// <summary>开发模式，用于本地开发和调试</summary>
+            /// <summary>Dev 表示开发模式，用于本地开发和调试。</summary>
             Dev,
 
-            /// <summary>测试模式，用于功能测试和验证</summary>
+            /// <summary>Test 表示测试模式，用于功能测试和验证。</summary>
             Test,
 
-            /// <summary>预发模式，用于上线前测试</summary>
+            /// <summary>Staging 表示预发模式，用于上线前测试。</summary>
             Staging,
 
-            /// <summary>生产模式，用于正式环境</summary>
+            /// <summary>Prod 表示生产模式，用于正式环境。</summary>
             Prod
         }
 
-        /// <summary>未知运行模式的字符串标识</summary>
+        /// <summary>ModeUnknown 是未知或未定义的运行模式的字符串标识。</summary>
         public static readonly string ModeUnknown = ModeType.Unknown.ToString();
 
-        /// <summary>开发模式的字符串标识</summary>
+        /// <summary>ModeDev 是开发模式的字符串标识。</summary>
         public static readonly string ModeDev = ModeType.Dev.ToString();
 
-        /// <summary>测试模式的字符串标识</summary>
+        /// <summary>ModeTest 是测试模式的字符串标识。</summary>
         public static readonly string ModeTest = ModeType.Test.ToString();
 
-        /// <summary>预发模式的字符串标识</summary>
+        /// <summary>ModeStaging 是预发模式的字符串标识。</summary>
         public static readonly string ModeStaging = ModeType.Staging.ToString();
 
-        /// <summary>生产模式的字符串标识</summary>
+        /// <summary>ModeProd 是生产模式的字符串标识。</summary>
         public static readonly string ModeProd = ModeType.Prod.ToString();
 
         internal static string projectPath;
         /// <summary>
-        /// ProjectPath 获取项目根目录路径。
+        /// ProjectPath 获取项目根目录路径，这个函数是线程安全的，可以多线程访问。
         /// </summary>
-        /// <remarks>
-        /// 这个函数是线程安全的，可以多线程访问。
-        /// </remarks>
         public static string ProjectPath
         {
             get
@@ -298,11 +282,8 @@ namespace EFramework.Utility
 
         internal static string localPath;
         /// <summary>
-        /// LocalPath 获取数据存储目录路径。
+        /// LocalPath 获取数据存储目录路径，这个函数是线程不安全的，只能在主线程访问。
         /// </summary>
-        /// <remarks>
-        /// 这个函数是线程不安全的，只能在主线程访问。
-        /// </remarks>
         public static string LocalPath
         {
             get
@@ -351,11 +332,8 @@ namespace EFramework.Utility
 
         internal static string assetPath;
         /// <summary>
-        /// AssetPath 获取只读资源目录路径。
+        /// AssetPath 获取只读资源目录路径，这个函数是线程不安全的，只能在主线程访问。
         /// </summary>
-        /// <remarks>
-        /// 这个函数是线程不安全的，只能在主线程访问。
-        /// </remarks>
         public static string AssetPath
         {
             get
@@ -369,21 +347,13 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 获取设备唯一标识符
+        /// DeviceID 获取设备唯一标识符。
         /// </summary>
-        /// <remarks>
-        /// 使用SystemInfo.deviceUniqueIdentifier获取
-        /// 在同一设备上保持不变
-        /// </remarks>
         public static string DeviceID { get { return SystemInfo.deviceUniqueIdentifier; } }
 
         /// <summary>
-        /// 获取设备MAC地址
+        /// MacAddr 获取设备MAC地址。
         /// </summary>
-        /// <remarks>
-        /// 获取第一个网络接口的物理地址
-        /// 如果获取失败返回错误信息
-        /// </remarks>
         public static string MacAddr
         {
             get
@@ -402,21 +372,8 @@ namespace EFramework.Utility
     public static partial class XEnv
     {
         /// <summary>
-        /// 环境配置面板类，提供环境相关配置项的管理功能。
+        /// Prefs 是环境配置的编辑器，提供环境相关配置项的管理功能。
         /// </summary>
-        /// <remarks>
-        /// 提供以下配置项：
-        /// - App：应用程序类型（Client/Server）
-        /// - Mode：运行模式（Dev/Test/Staging/Prod）
-        /// - Solution：解决方案名称
-        /// - Project：项目名称
-        /// - Product：产品名称
-        /// - Channel：发布渠道
-        /// - Version：版本号
-        /// - Author：作者信息
-        /// - Secret：密钥
-        /// - Remote：远程配置地址
-        /// </remarks>
         public class Prefs : XPrefs.IEditor
         {
 #if UNITY_EDITOR
@@ -425,13 +382,8 @@ namespace EFramework.Utility
             [UnityEngine.RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
 #endif
             /// <summary>
-            /// 初始化环境配置的默认值。
+            /// OnInit 初始化环境配置的默认值。
             /// </summary>
-            /// <remarks>
-            /// - 从项目路径解析 Solution 和 Project 默认值
-            /// - 从 Unity 配置获取 Product 和 Version 默认值
-            /// - 生成随机的 Secret 默认值
-            /// </remarks>
             internal static void OnInit()
             {
                 var projectName = Path.GetFileName(ProjectPath);
@@ -443,64 +395,64 @@ namespace EFramework.Utility
                 SecretDefault = XString.Random()[..8];
             }
 
-            /// <summary>应用类型配置键</summary>
+            /// <summary>App 是应用类型的配置键。</summary>
             public const string App = "Env/App";
 
-            /// <summary>应用类型默认值：客户端</summary>
+            /// <summary>AppDefault 是应用类型的默认值：客户端。</summary>
             public static readonly string AppDefault = AppType.Client.ToString();
 
-            /// <summary>运行模式配置键</summary>
+            /// <summary>Mode 是运行模式的配置键。</summary>
             public const string Mode = "Env/Mode";
 
-            /// <summary>运行模式默认值：开发模式</summary>
+            /// <summary>ModeDefault 是运行模式的默认值：开发模式。</summary>
             public static readonly string ModeDefault = ModeType.Dev.ToString();
 
-            /// <summary>解决方案名称配置键</summary>
+            /// <summary>Solution 是解决方案名称的配置键。</summary>
             public const string Solution = "Env/Solution";
 
-            /// <summary>解决方案名称默认值</summary>
+            /// <summary>SolutionDefault 是解决方案名称的默认值。</summary>
             public static string SolutionDefault { get; private set; }
 
-            /// <summary>项目名称配置键</summary>
+            /// <summary>Project 是项目名称的配置键。</summary>
             public const string Project = "Env/Project";
 
-            /// <summary>项目名称默认值</summary>
+            /// <summary>ProjectDefault 是项目名称的默认值。</summary>
             public static string ProjectDefault { get; private set; }
 
-            /// <summary>产品名称配置键</summary>
+            /// <summary>Product 是产品名称的配置键。</summary>
             public const string Product = "Env/Product";
 
-            /// <summary>产品名称默认值</summary>
+            /// <summary>ProductDefault 是产品名称的默认值。</summary>
             public static string ProductDefault { get; private set; }
 
-            /// <summary>发布渠道配置键</summary>
+            /// <summary>Channel 是发布渠道的配置键。</summary>
             public const string Channel = "Env/Channel";
 
-            /// <summary>发布渠道默认值</summary>
+            /// <summary>ChannelDefault 是发布渠道的默认值。</summary>
             public const string ChannelDefault = "Default";
 
-            /// <summary>版本号配置键</summary>
+            /// <summary>Version 是版本号的配置键。</summary>
             public const string Version = "Env/Version";
 
-            /// <summary>版本号默认值</summary>
+            /// <summary>VersionDefault 是版本号的默认值。</summary>
             public static string VersionDefault { get; private set; }
 
-            /// <summary>作者信息配置键</summary>
+            /// <summary>Author 是作者名称的配置键。</summary>
             public const string Author = "Env/Author";
 
-            /// <summary>作者信息默认值：使用系统用户名</summary>
+            /// <summary>AuthorDefault 是作者名称的默认值：使用系统用户名。</summary>
             public const string AuthorDefault = "${Env.UserName}";
 
-            /// <summary>密钥配置键</summary>
+            /// <summary>Secret 是应用密钥的配置键。</summary>
             public const string Secret = "Env/Secret";
 
-            /// <summary>密钥默认值：随机生成的8位字符串</summary>
+            /// <summary>SecretDefault 是应用密钥的默认值：随机生成的8位字符串。</summary>
             public static string SecretDefault { get; private set; }
 
-            /// <summary>远程配置地址配置键</summary>
+            /// <summary>Remote 是远程配置地址的配置键。</summary>
             public const string Remote = "Env/Remote";
 
-            /// <summary>远程配置地址默认值：使用环境变量组合的URL</summary>
+            /// <summary>RemoteDefault 是远程配置地址的默认值：使用环境变量组合的 URL。</summary>
             public const string RemoteDefault = "${Env.OssPublic}/Prefs/${Env.Solution}/${Env.Channel}/${Env.Platform}/${Env.Version}/Preferences.json";
 
 #if UNITY_EDITOR
@@ -602,12 +554,8 @@ namespace EFramework.Utility
         internal static bool bSolution = false;
         internal static string solution = "";
         /// <summary>
-        /// 获取解决方案名称。
+        /// Solution 获取解决方案名称。
         /// </summary>
-        /// <remarks>
-        /// 从配置中获取，支持环境变量解析。
-        /// 在编辑器中每次访问都会重新获取。
-        /// </remarks>
         public static string Solution
         {
             get
@@ -628,12 +576,8 @@ namespace EFramework.Utility
         internal static bool bProject = false;
         internal static string project = "";
         /// <summary>
-        /// 获取项目名称。
+        /// Project 获取项目名称。
         /// </summary>
-        /// <remarks>
-        /// 从配置中获取，支持环境变量解析。
-        /// 在编辑器中每次访问都会重新获取。
-        /// </remarks>
         public static string Project
         {
             get
@@ -654,12 +598,8 @@ namespace EFramework.Utility
         internal static bool bProduct = false;
         internal static string product = "";
         /// <summary>
-        /// 获取产品名称。
+        /// Product 获取产品名称。
         /// </summary>
-        /// <remarks>
-        /// 从配置中获取，支持环境变量解析。
-        /// 在编辑器中每次访问都会重新获取。
-        /// </remarks>
         public static string Product
         {
             get
@@ -680,12 +620,8 @@ namespace EFramework.Utility
         internal static bool bChannel = false;
         internal static string channel = "";
         /// <summary>
-        /// 获取发布渠道。
+        /// Channel 获取发布渠道。
         /// </summary>
-        /// <remarks>
-        /// 从配置中获取，支持环境变量解析。
-        /// 在编辑器中每次访问都会重新获取。
-        /// </remarks>
         public static string Channel
         {
             get
@@ -706,12 +642,8 @@ namespace EFramework.Utility
         internal static bool bVersion = false;
         internal static string version = "";
         /// <summary>
-        /// 获取版本号。
+        /// Version 获取版本号。
         /// </summary>
-        /// <remarks>
-        /// 从配置中获取，支持环境变量解析。
-        /// 在编辑器中每次访问都会重新获取。
-        /// </remarks>
         public static string Version
         {
             get
@@ -732,12 +664,8 @@ namespace EFramework.Utility
         internal static bool bAuthor = false;
         internal static string author = "";
         /// <summary>
-        /// 获取作者信息。
+        /// Author 获取作者名称。
         /// </summary>
-        /// <remarks>
-        /// 从配置中获取，支持环境变量解析。
-        /// 在编辑器中每次访问都会重新获取。
-        /// </remarks>
         public static string Author
         {
             get
@@ -758,12 +686,8 @@ namespace EFramework.Utility
         internal static bool bApp = false;
         internal static AppType app = AppType.Unknown;
         /// <summary>
-        /// 获取应用类型。
+        /// App 获取应用类型。
         /// </summary>
-        /// <remarks>
-        /// 从配置中获取，支持环境变量解析。
-        /// 在编辑器中每次访问都会重新获取。
-        /// </remarks>
         public static AppType App
         {
             get
@@ -784,12 +708,8 @@ namespace EFramework.Utility
         internal static bool bMode = false;
         internal static ModeType mode = ModeType.Unknown;
         /// <summary>
-        /// 获取运行模式。
+        /// Mode 获取运行模式。
         /// </summary>
-        /// <remarks>
-        /// 从配置中获取，支持环境变量解析。
-        /// 在编辑器中每次访问都会重新获取。
-        /// </remarks>
         public static ModeType Mode
         {
             get
@@ -810,13 +730,8 @@ namespace EFramework.Utility
         internal static bool bSecret = false;
         internal static string secret = "";
         /// <summary>
-        /// 获取应用密钥。
+        /// Secret 获取应用密钥。
         /// </summary>
-        /// <remarks>
-        /// 从配置中获取，支持环境变量解析。
-        /// 在编辑器中每次访问都会重新获取。
-        /// 如果未设置则使用默认值并输出警告。
-        /// </remarks>
         public static string Secret
         {
             get
@@ -838,12 +753,8 @@ namespace EFramework.Utility
         internal static bool bRemote = false;
         internal static string remote = "";
         /// <summary>
-        /// 获取远程配置地址。
+        /// Remote 获取远程配置地址。
         /// </summary>
-        /// <remarks>
-        /// 从配置中获取，支持环境变量解析。
-        /// 使用环境变量组合生成完整的URL地址。
-        /// </remarks>
         public static string Remote
         {
             get
@@ -867,16 +778,9 @@ namespace EFramework.Utility
         internal static bool argsCacheInitialized;
 
         /// <summary>
-        /// 获取命令行参数值
+        /// GetArg 获取命令行参数值。
         /// </summary>
         /// <param name="key">参数名(不含--前缀)</param>
-        /// <returns>参数值，未找到返回空字符串</returns>
-        /// <example>
-        /// <code>
-        /// // 命令行: --port 8080
-        /// var port = XEnv.GetArg("port"); // 返回 "8080"
-        /// </code>
-        /// </example>
         public static string GetArg(string key)
         {
             var args = ParseArgs(false);
@@ -891,26 +795,13 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 获取所有命令行参数
+        /// GetArgs 获取所有命令行参数。
         /// </summary>
         /// <returns>参数列表，每个元素为一个键值对</returns>
-        /// <remarks>
-        /// 支持以下格式：
-        /// 1. -key 或 --key：无值参数
-        /// 2. -key=value 或 --key=value：等号连接的键值对
-        /// 3. -key value 或 --key value：空格分隔的键值对
-        /// </remarks>
-        /// <example>
-        /// <code>
-        /// // 命令行: --port 8080 --config=dev.json --flag
-        /// var args = XEnv.GetArgs();
-        /// // args 包含 [{"--port", "8080"}, {"--config", "dev.json"}, {"--flag", ""}]
-        /// </code>
-        /// </example>
         public static List<KeyValuePair<string, string>> GetArgs() { return ParseArgs(false); }
 
         /// <summary>
-        /// 解析命令行参数并存储在缓存中。
+        /// ParseArgs 解析命令行参数并存储在缓存中。
         /// 支持以下格式：
         /// 1. -key 或 --key：无值参数
         /// 2. -key=value 或 --key=value：等号连接的键值对
@@ -975,46 +866,25 @@ namespace EFramework.Utility
     public static partial class XEnv
     {
         /// <summary>
-        /// 环境变量解析器实例。
+        /// Vars 是环境变量解析器实例。
         /// </summary>
-        public static readonly Eval Vars = new();
+        public static readonly Evaluator Vars = new();
 
         /// <summary>
-        /// 环境变量解析器，用于处理配置中的环境变量引用。
+        /// Evaluator 是环境变量解析器，用于处理配置中的环境变量引用。
         /// </summary>
-        /// <remarks>
-        /// 支持以下功能：
-        /// 1. 解析 ${Env.xxx} 格式的环境变量引用
-        /// 2. 支持嵌套变量解析
-        /// 3. 防止循环引用
-        /// 4. 提供默认值和错误处理
-        /// </remarks>
-        public sealed class Eval : XString.IEvaluator
+        public sealed class Evaluator : XString.IEvaluator
         {
             /// <summary>
-            /// 环境变量引用的正则表达式模式。
+            /// pattern 是环境变量引用的正则表达式模式。
             /// </summary>
-            /// <remarks>
-            /// 格式：${Env.变量名}
-            /// 变量名允许使用除}外的任意字符。
-            /// </remarks>
             internal static readonly Regex pattern = new(@"\$\{Env\.([^}]+?)\}", RegexOptions.Compiled);
 
             /// <summary>
-            /// 解析包含环境变量引用的字符串。
+            /// Eval 解析包含环境变量引用的字符串。
             /// </summary>
             /// <param name="input">要解析的字符串</param>
             /// <returns>解析后的结果</returns>
-            /// <remarks>
-            /// 解析过程：
-            /// 1. 检查并处理嵌套变量
-            /// 2. 检测并防止循环引用
-            /// 3. 按优先级查找变量值：
-            ///    - 内置环境变量
-            ///    - 命令行参数
-            ///    - 系统环境变量
-            /// 4. 处理未知变量
-            /// </remarks>
             string XString.IEvaluator.Eval(string input)
             {
                 if (string.IsNullOrEmpty(input)) return input;
