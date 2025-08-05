@@ -58,44 +58,61 @@ namespace EFramework.Utility
     public class XEvent
     {
         /// <summary>
-        /// 事件回调
+        /// Callback 是事件的回调委托类型。
         /// </summary>
         /// <param name="args">事件参数</param>
         public delegate void Callback(params object[] args);
 
+        /// <summary>
+        /// GenericProxy 是委托事件的代理类型。
+        /// </summary>
         public class GenericProxy
         {
+            /// <summary>
+            /// ID 是事件的标识。
+            /// </summary>
             public int ID;
+
+            /// <summary>
+            /// Callback 是事件的回调。
+            /// </summary>
             public Callback Callback;
         }
 
         /// <summary>
-        /// 事件管理
+        /// Manager 是事件的管理类。
         /// </summary>
         public class Manager
         {
             /// <summary>
-            /// 多重监听
+            /// Multiple 表示是否支持多重监听。
             /// </summary>
             protected bool Multiple;
 
             /// <summary>
-            /// 事件回调
+            /// Callbacks 记录了事件的回调函数。
             /// </summary>
             protected Dictionary<int, List<Callback>> Callbacks;
 
             /// <summary>
-            /// 回调一次
+            /// Onces 记录了回调一次的事件。
             /// </summary>
             protected Dictionary<Callback, bool> Onces;
 
+            /// <summary>
+            /// Proxies 维护了事件代理的关系。
+            /// </summary>
             protected Dictionary<int, List<GenericProxy>> Proxies;
 
             /// <summary>
-            /// 批量通知
+            /// Batches 是批量通知的事件列表。
             /// </summary>
             protected List<Callback> Batches;
 
+            /// <summary>
+            /// 构造一个 Manager 事件管理器。
+            /// </summary>
+            /// <param name="multiple">是否支持多重监听</param>
             public Manager(bool multiple = true)
             {
                 Multiple = multiple;
@@ -106,26 +123,26 @@ namespace EFramework.Utility
             }
 
             /// <summary>
-            /// 清除事件注册
+            /// Clear 清除事件注册。
             /// </summary>
             public virtual void Clear() { Callbacks.Clear(); Onces.Clear(); Proxies.Clear(); Batches.Clear(); }
 
             /// <summary>
-            /// 获取事件回调
+            /// Get 获取事件回调。
             /// </summary>
             /// <param name="eid">事件标识</param>
             /// <returns>事件回调</returns>
             public virtual List<Callback> Get(Enum eid) { return Callbacks.TryGetValue(eid.GetHashCode(), out var callbacks) ? callbacks : null; }
 
             /// <summary>
-            /// 获取事件回调
+            /// Get 获取事件回调。
             /// </summary>
             /// <param name="eid">事件标识</param>
             /// <returns>事件回调</returns>
             public virtual List<Callback> Get(int eid) { return Callbacks.TryGetValue(eid, out var callbacks) ? callbacks : null; }
 
             /// <summary>
-            /// 注册事件
+            /// Reg 注册事件。
             /// </summary>
             /// <param name="eid">事件标识</param>
             /// <param name="callback">回调函数</param>
@@ -134,7 +151,7 @@ namespace EFramework.Utility
             public virtual bool Reg(Enum eid, Callback callback, bool once = false) { return Reg(eid.GetHashCode(), callback, once); }
 
             /// <summary>
-            /// 注册事件
+            /// Reg 注册事件。
             /// </summary>
             /// <param name="eid">事件标识</param>
             /// <param name="callback">回调函数</param>
@@ -177,7 +194,7 @@ namespace EFramework.Utility
             public virtual bool Reg(Enum eid, Action callback, bool once = false) { return Reg(eid.GetHashCode(), callback, once); }
 
             /// <summary>
-            /// 注册事件
+            /// Reg 注册事件。
             /// </summary>
             /// <param name="eid">事件标识</param>
             /// <param name="callback">回调函数</param>
@@ -206,7 +223,7 @@ namespace EFramework.Utility
             }
 
             /// <summary>
-            /// 注册事件
+            /// Reg 注册事件。
             /// </summary>
             /// <typeparam name="T1">事件参数1</typeparam>
             /// <param name="eid">事件标识</param>
@@ -216,7 +233,7 @@ namespace EFramework.Utility
             public virtual bool Reg<T1>(Enum eid, Action<T1> callback, bool once = false) { return Reg(eid.GetHashCode(), callback, once); }
 
             /// <summary>
-            /// 注册事件
+            /// Reg 注册事件。
             /// </summary>
             /// <typeparam name="T1">事件参数1</typeparam>
             /// <param name="eid">事件标识</param>
@@ -250,7 +267,7 @@ namespace EFramework.Utility
             }
 
             /// <summary>
-            /// 注册事件
+            /// Reg 注册事件。
             /// </summary>
             /// <typeparam name="T1">事件参数1</typeparam>
             /// <typeparam name="T2">事件参数2</typeparam>
@@ -261,7 +278,7 @@ namespace EFramework.Utility
             public virtual bool Reg<T1, T2>(Enum eid, Action<T1, T2> callback, bool once = false) { return Reg(eid.GetHashCode(), callback, once); }
 
             /// <summary>
-            /// 注册事件
+            /// Reg 注册事件。
             /// </summary>
             /// <typeparam name="T1">事件参数1</typeparam>
             /// <typeparam name="T2">事件参数2</typeparam>
@@ -297,7 +314,7 @@ namespace EFramework.Utility
             }
 
             /// <summary>
-            /// 注册事件
+            /// Reg 注册事件。
             /// </summary>
             /// <typeparam name="T1">事件参数1</typeparam>
             /// <typeparam name="T2">事件参数2</typeparam>
@@ -309,7 +326,7 @@ namespace EFramework.Utility
             public virtual bool Reg<T1, T2, T3>(Enum eid, Action<T1, T2, T3> callback, bool once = false) { return Reg(eid.GetHashCode(), callback, once); }
 
             /// <summary>
-            /// 注册事件
+            /// Reg 注册事件。
             /// </summary>
             /// <typeparam name="T1">事件参数1</typeparam>
             /// <typeparam name="T2">事件参数2</typeparam>
@@ -347,7 +364,7 @@ namespace EFramework.Utility
             }
 
             /// <summary>
-            /// 注销事件
+            /// Unreg 注销事件。
             /// </summary>
             /// <param name="eid">事件标识</param>
             /// <param name="callback">回调函数</param>
@@ -355,7 +372,7 @@ namespace EFramework.Utility
             public virtual bool Unreg(Enum eid, Callback callback = null) { return Unreg(eid.GetHashCode(), callback); }
 
             /// <summary>
-            /// 注销事件
+            /// Unreg 注销事件。
             /// </summary>
             /// <param name="eid">事件标识</param>
             /// <param name="callback">回调函数</param>
@@ -389,7 +406,7 @@ namespace EFramework.Utility
             }
 
             /// <summary>
-            /// 注销事件
+            /// Unreg 注销事件。
             /// </summary>
             /// <param name="eid">事件标识</param>
             /// <param name="callback">回调函数</param>
@@ -397,7 +414,7 @@ namespace EFramework.Utility
             public virtual bool Unreg(Enum eid, Action callback) { return Unreg(eid.GetHashCode(), callback); }
 
             /// <summary>
-            /// 注销事件
+            /// Unreg 注销事件。
             /// </summary>
             /// <param name="eid">事件标识</param>
             /// <param name="callback">回调函数</param>
@@ -427,7 +444,7 @@ namespace EFramework.Utility
             }
 
             /// <summary>
-            /// 注销事件
+            /// Unreg 注销事件。
             /// </summary>
             /// <typeparam name="T1">事件参数1</typeparam>
             /// <param name="eid">事件标识</param>
@@ -436,7 +453,7 @@ namespace EFramework.Utility
             public virtual bool Unreg<T1>(Enum eid, Action<T1> callback) { return Unreg(eid.GetHashCode(), callback); }
 
             /// <summary>
-            /// 注销事件
+            /// Unreg 注销事件。
             /// </summary>
             /// <typeparam name="T1">事件参数1</typeparam>
             /// <param name="eid">事件标识</param>
@@ -467,7 +484,7 @@ namespace EFramework.Utility
             }
 
             /// <summary>
-            /// 注销事件
+            /// Unreg 注销事件。
             /// </summary>
             /// <typeparam name="T1">事件参数1</typeparam>
             /// <typeparam name="T2">事件参数2</typeparam>
@@ -477,7 +494,7 @@ namespace EFramework.Utility
             public virtual bool Unreg<T1, T2>(Enum eid, Action<T1, T2> callback) { return Unreg(eid.GetHashCode(), callback); }
 
             /// <summary>
-            /// 注销事件
+            /// Unreg 注销事件。
             /// </summary>
             /// <typeparam name="T1">事件参数1</typeparam>
             /// <typeparam name="T2">事件参数2</typeparam>
@@ -509,7 +526,7 @@ namespace EFramework.Utility
             }
 
             /// <summary>
-            /// 注销事件
+            /// Unreg 注销事件。
             /// </summary>
             /// <typeparam name="T1">事件参数1</typeparam>
             /// <typeparam name="T2">事件参数2</typeparam>
@@ -520,7 +537,7 @@ namespace EFramework.Utility
             public virtual bool Unreg<T1, T2, T3>(Enum eid, Action<T1, T2, T3> callback) { return Unreg(eid.GetHashCode(), callback); }
 
             /// <summary>
-            /// 注销事件
+            /// Unreg 注销事件。
             /// </summary>
             /// <typeparam name="T1">事件参数1</typeparam>
             /// <typeparam name="T2">事件参数2</typeparam>
@@ -553,14 +570,14 @@ namespace EFramework.Utility
             }
 
             /// <summary>
-            /// 通知事件
+            /// Notify 通知事件。
             /// </summary>
             /// <param name="eid">事件标识</param>
             /// <param name="args">事件参数</param>
             public virtual void Notify(Enum eid, params object[] args) { Notify(eid.GetHashCode(), args); }
 
             /// <summary>
-            /// 通知事件
+            /// Notify 通知事件。
             /// </summary>
             /// <param name="eid">事件标识</param>
             /// <param name="args">事件参数</param>
