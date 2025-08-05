@@ -66,7 +66,7 @@ namespace EFramework.Utility
     ///     XPool.GObject.Set("global_prefab", prefab, XPool.GObject.CacheType.Global);
     ///     
     ///     // 检查预制体是否存在
-    ///     bool exists = XPool.GObject.Has("test_prefab");
+    ///     var exists = XPool.GObject.Has("test_prefab");
     /// 
     /// 2.2 获取实例
     ///     // 基本实例化
@@ -135,23 +135,23 @@ namespace EFramework.Utility
     public class XPool
     {
         /// <summary>
-        /// 基础对象缓存池，提供线程安全的泛型对象池实现。
+        /// SObject 是基础对象（System.Object）的缓存池，提供线程安全的泛型对象池实现。
         /// </summary>
         /// <typeparam name="T">对象类型，必须是引用类型</typeparam>
         public class SObject<T> where T : class
         {
             /// <summary>
-            /// 对象池最大容量
+            /// PoolMax 是对象池的最大容量。
             /// </summary>
             internal const int PoolMax = 500;
 
             /// <summary>
-            /// 对象池队列
+            /// pools 是对象池的队列。
             /// </summary>
             internal static readonly Queue<T> pools = new();
 
             /// <summary>
-            /// 获取对象实例。
+            /// Get 从对象池获取对象实例。
             /// 如果池中有可用对象则返回缓存的对象，否则创建新对象。
             /// </summary>
             /// <returns>对象实例</returns>
@@ -174,7 +174,7 @@ namespace EFramework.Utility
             }
 
             /// <summary>
-            /// 回收对象实例到对象池。
+            /// Put 回收对象实例到对象池。
             /// 如果池未满则缓存对象，否则丢弃。
             /// </summary>
             /// <param name="obj">要回收的对象实例</param>
@@ -189,44 +189,44 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 基础对象缓存池，提供线程安全的非泛型对象池实现。
+        /// SObject 是基础对象（System.Object）的缓存池，提供线程安全的非泛型对象池实现。
         /// </summary>
         public class SObject
         {
             /// <summary>
-            /// 对象池最大容量
+            /// PoolMax 是对象池最大容量。
             /// </summary>
             internal const int PoolMax = 500;
 
             /// <summary>
-            /// 对象池队列
+            /// pools 是对象池的队列。
             /// </summary>
             internal readonly Queue pools = new();
 
             /// <summary>
-            /// 对象类型
+            /// type 是对象的类型。
             /// </summary>
             internal readonly Type type;
 
             /// <summary>
-            /// 对象创建器
+            /// activator 是对象的创建器。
             /// </summary>
             internal readonly Func<object> activator;
 
             /// <summary>
-            /// 使用类型初始化对象池
+            /// 使用类型构造对象池 SObject 实例。
             /// </summary>
             /// <param name="type">对象类型</param>
             public SObject(Type type) { this.type = type; }
 
             /// <summary>
-            /// 使用创建器初始化对象池
+            /// 使用创建器构造对象池 SObject 实例。
             /// </summary>
             /// <param name="activator">对象创建器</param>
             public SObject(Func<object> activator) { this.activator = activator; }
 
             /// <summary>
-            /// 获取对象实例。
+            /// Get 从对象池获取对象实例。
             /// 如果池中有可用对象则返回缓存的对象，否则使用类型或创建器创建新对象。
             /// </summary>
             /// <returns>对象实例</returns>
@@ -250,7 +250,7 @@ namespace EFramework.Utility
             }
 
             /// <summary>
-            /// 回收对象实例到对象池。
+            /// Put 回收对象实例到对象池。
             /// 如果池未满则缓存对象，否则丢弃。
             /// </summary>
             /// <param name="obj">要回收的对象实例</param>
@@ -265,84 +265,84 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// Unity 游戏对象缓存池，提供预制体实例的缓存和复用。
+        /// GObject 是 Unity 游戏对象（GameObject）的缓存池，提供预制体实例的缓存和复用。
         /// </summary>
         public class GObject : MonoBehaviour
         {
             /// <summary>
-            /// 缓存类型，决定对象的生命周期范围
+            /// CacheType 枚举了缓存类型，决定对象的生命周期范围。
             /// </summary>
             public enum CacheType
             {
                 /// <summary>
-                /// 场景级缓存，场景卸载时自动清理
+                /// Scene 是场景级的缓存，场景卸载时自动清理。
                 /// </summary>
                 Scene,
 
                 /// <summary>
-                /// 全局级缓存，直到游戏结束才清理
+                /// Global 是全局级的缓存，直到进程结束才清理。
                 /// </summary>
                 Global,
             }
 
             /// <summary>
-            /// 缓存句柄，管理预制体及其实例
+            /// CacheHandler 是缓存句柄，管理预制体及其实例。
             /// </summary>
             internal class CacheHandler
             {
                 /// <summary>
-                /// 预制体路径
+                /// Path 是预制体的路径。
                 /// </summary>
                 public string Path;
 
                 /// <summary>
-                /// 预制体原型
+                /// Origin 是预制体的原型。
                 /// </summary>
                 public GameObject Origin;
 
                 /// <summary>
-                /// 缓存类型
+                /// Type 是缓存的类型。
                 /// </summary>
                 public CacheType Type;
 
                 /// <summary>
-                /// 实例对象池
+                /// Pool 是实例的对象池。
                 /// </summary>
                 public Queue<GameObject> Pool = new();
             }
 
             /// <summary>
-            /// 对象池
+            /// pools 维护了所有的缓存。
             /// </summary>
             internal static readonly Dictionary<string, CacheHandler> pools = new();
 
             /// <summary>
-            /// 所有对象
+            /// objects 维护了所有的对象。
             /// </summary>
             internal static readonly Dictionary<GameObject, byte> objects = new();
 
             /// <summary>
-            /// 使用中的对象
+            /// usings 表示使用中的对象。
             /// </summary>
             internal static readonly Dictionary<GameObject, CacheHandler> usings = new();
 
             /// <summary>
-            /// GC优化
+            /// keysToRemove 用于 GC 优化。
             /// </summary>
             internal static readonly List<GameObject> keysToRemove = new();
 
             /// <summary>
-            /// GC优化
+            /// keysToRemove2 用于 GC 优化。
             /// </summary>
             internal static readonly List<string> keysToRemove2 = new();
 
             /// <summary>
-            /// 是否已释放
+            /// disposed 表示是否已释放。
             /// </summary>
             internal static bool disposed;
 
             /// <summary>
-            /// 单例
+            /// instance 是 GObject 的单例。
             /// </summary>
             internal static GObject instance;
 
@@ -353,9 +353,9 @@ namespace EFramework.Utility
                 {
                     if (instance == null)
                     {
-                        var go = new GameObject("[XPool]");
-                        go.AddComponent<GObject>();
-                        DontDestroyOnLoad(go);
+                        var gameObject = new GameObject("[XPool]");
+                        gameObject.AddComponent<GObject>();
+                        DontDestroyOnLoad(gameObject);
                     }
                 };
                 SceneManager.sceneUnloaded += scene =>
@@ -369,12 +369,12 @@ namespace EFramework.Utility
                             {
                                 if (kvp.Value.Type == CacheType.Scene) keysToRemove.Add(kvp.Key);
                             }
-                            foreach (var go in keysToRemove)
+                            foreach (var key in keysToRemove)
                             {
-                                usings.Remove(go);
-                                try { DestroyImmediate(go); }
+                                usings.Remove(key);
+                                try { DestroyImmediate(key); }
                                 catch (Exception e) { XLog.Panic(e); }
-                                finally { objects.Remove(go); }
+                                finally { objects.Remove(key); }
                             }
                             keysToRemove.Clear();
 
@@ -390,10 +390,10 @@ namespace EFramework.Utility
                                 objects.Remove(handler.Origin);
                                 while (handler.Pool.Count > 0)
                                 {
-                                    var go = handler.Pool.Dequeue();
-                                    try { DestroyImmediate(go); }
+                                    var gameObject = handler.Pool.Dequeue();
+                                    try { DestroyImmediate(gameObject); }
                                     catch (Exception e) { XLog.Panic(e); }
-                                    finally { objects.Remove(go); }
+                                    finally { objects.Remove(gameObject); }
                                 }
                             }
                             keysToRemove2.Clear();
@@ -417,7 +417,7 @@ namespace EFramework.Utility
             }
 
             /// <summary>
-            /// 检查预制体是否已注册到对象池。
+            /// Has 检查预制体是否已注册到对象池。
             /// </summary>
             /// <param name="key">预制体标识</param>
             /// <returns>是否存在</returns>
@@ -437,7 +437,7 @@ namespace EFramework.Utility
             public static Func<string, GameObject, CacheType, GameObject> OnSet;
 
             /// <summary>
-            /// 注册预制体到对象池。
+            /// Set 注册预制体到对象池。
             /// </summary>
             /// <param name="key">预制体标识</param>
             /// <param name="origin">预制体对象</param>
@@ -466,7 +466,7 @@ namespace EFramework.Utility
             }
 
             /// <summary>
-            /// 从对象池移除预制体及其所有实例。
+            /// Del 从对象池移除预制体及其所有实例。
             /// </summary>
             /// <param name="key">预制体标识</param>
             /// <returns>是否移除成功</returns>
@@ -503,7 +503,7 @@ namespace EFramework.Utility
             }
 
             /// <summary>
-            /// 从对象池获取预制体实例。
+            /// Get 从对象池获取预制体实例。
             /// </summary>
             /// <param name="key">预制体标识</param>
             /// <param name="active">是否激活对象</param>
@@ -520,56 +520,56 @@ namespace EFramework.Utility
 
                 if (pools.TryGetValue(key, out var handler))
                 {
-                    GameObject go;
-                    if (handler.Pool.Count > 0) go = handler.Pool.Dequeue();
+                    GameObject gameObject;
+                    if (handler.Pool.Count > 0) gameObject = handler.Pool.Dequeue();
                     else
                     {
-                        go = Instantiate(handler.Origin);
-                        go.name = handler.Origin.name;
-                        objects.Add(go, 0);
+                        gameObject = Instantiate(handler.Origin);
+                        gameObject.name = handler.Origin.name;
+                        objects.Add(gameObject, 0);
                     }
-                    go.SetActive(active);
-                    if (position != default) go.transform.position = position;
-                    if (rotation != default) go.transform.rotation = rotation;
-                    if (scale != default) go.transform.localScale = scale;
-                    usings[go] = handler;
-                    if (life > 0) XLoom.SetTimeout(() => Put(go), life);
-                    return go;
+                    gameObject.SetActive(active);
+                    if (position != default) gameObject.transform.position = position;
+                    if (rotation != default) gameObject.transform.rotation = rotation;
+                    if (scale != default) gameObject.transform.localScale = scale;
+                    usings[gameObject] = handler;
+                    if (life > 0) XLoom.SetTimeout(() => Put(gameObject), life);
+                    return gameObject;
                 }
                 return null;
             }
 
             /// <summary>
-            /// 回收预制体实例到对象池。
+            /// Put 回收预制体实例到对象池。
             /// </summary>
-            /// <param name="go">预制体实例</param>
+            /// <param name="gameObject">预制体实例</param>
             /// <param name="delay">延迟回收时间（毫秒）</param>
-            public static void Put(GameObject go, long delay = -1)
+            public static void Put(GameObject gameObject, long delay = -1)
             {
                 if (disposed) return;
                 if (instance == null) throw new Exception("XPool instance is null.");
-                if (go == null) { XLog.Error("XPool.GObject.Put: go is null."); return; }
+                if (gameObject == null) { XLog.Error("XPool.GObject.Put: gameObject is null."); return; }
 
-                if (delay > 0) XLoom.SetTimeout(() => DoPut(go), delay);
-                else DoPut(go);
+                if (delay > 0) XLoom.SetTimeout(() => DoPut(gameObject), delay);
+                else DoPut(gameObject);
             }
 
-            internal static void DoPut(GameObject go)
+            internal static void DoPut(GameObject gameObject)
             {
-                if (!disposed && instance && go) // 在延迟的生命周期里可能被删除了
+                if (!disposed && instance && gameObject) // 在延迟的生命周期里可能被删除了
                 {
-                    if (usings.TryGetValue(go, out var handler))
+                    if (usings.TryGetValue(gameObject, out var handler))
                     {
-                        go.transform.parent = instance.transform;
-                        go.SetActive(false);
-                        handler.Pool.Enqueue(go);
-                        usings.Remove(go);
+                        gameObject.transform.parent = instance.transform;
+                        gameObject.SetActive(false);
+                        handler.Pool.Enqueue(gameObject);
+                        usings.Remove(gameObject);
                     }
                     else
                     {
-                        if (!objects.ContainsKey(go)) // 避免多次回收
+                        if (!objects.ContainsKey(gameObject)) // 避免多次回收
                         {
-                            DestroyImmediate(go);
+                            DestroyImmediate(gameObject);
                         }
                     }
                 }
@@ -577,47 +577,47 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 字节流缓存池，提供高性能的字节数组缓冲和复用。
+        /// SBuffer 是字节流（StreamBuffer）的缓存池，提供高性能的字节数组缓冲和复用。
         /// </summary>
         public sealed class SBuffer : IDisposable
         {
             /// <summary>
-            /// 字节数组
+            /// buffer 是字节数组。
             /// </summary>
             internal byte[] buffer;
 
             /// <summary>
-            /// 内存流
+            /// stream 是内存流。
             /// </summary>
             internal MemoryStream stream;
 
             /// <summary>
-            /// 二进制读取器
+            /// reader 是二进制读取器。
             /// </summary>
             internal BinaryReader reader;
 
             /// <summary>
-            /// 二进制写入器
+            /// writer 是二进制写入器。
             /// </summary>
             internal BinaryWriter writer;
 
             /// <summary>
-            /// 获取字节容量
+            /// Capacity 获取字节容量。
             /// </summary>
             public int Capacity { get => buffer.Length; }
 
             /// <summary>
-            /// 获取或设置有效字节长度
+            /// Length 获取或设置有效字节长度。
             /// </summary>
             public int Length { get; internal set; }
 
             /// <summary>
-            /// 获取或设置当前读写位置
+            /// Position 获取或设置当前读写位置。
             /// </summary>
             public int Position { get => (int)Stream.Position; set => Stream.Position = value; }
 
             /// <summary>
-            /// 获取内存流实例
+            /// Stream 获取内存流实例。
             /// </summary>
             public MemoryStream Stream
             {
@@ -629,7 +629,7 @@ namespace EFramework.Utility
             }
 
             /// <summary>
-            /// 获取二进制读取器
+            /// Reader 获取二进制读取器。
             /// </summary>
             public BinaryReader Reader
             {
@@ -641,7 +641,7 @@ namespace EFramework.Utility
             }
 
             /// <summary>
-            /// 获取二进制写入器
+            /// Writer 获取二进制写入器。
             /// </summary>
             public BinaryWriter Writer
             {
@@ -653,12 +653,12 @@ namespace EFramework.Utility
             }
 
             /// <summary>
-            /// 获取底层字节数组
+            /// Buffer 获取底层字节数组。
             /// </summary>
             public byte[] Buffer { get => buffer; }
 
             /// <summary>
-            /// 使用现有字节数组初始化缓冲区
+            /// 使用现有字节数组构造缓冲区 SBuffer 实例。
             /// </summary>
             /// <param name="buffer">字节数组</param>
             /// <param name="offset">起始偏移</param>
@@ -670,7 +670,7 @@ namespace EFramework.Utility
             }
 
             /// <summary>
-            /// 创建指定大小的缓冲区
+            /// 构造指定大小的缓冲区 SBuffer 实例。
             /// </summary>
             /// <param name="size">缓冲区大小</param>
             public SBuffer(int size)
@@ -680,7 +680,7 @@ namespace EFramework.Utility
             }
 
             /// <summary>
-            /// 将缓冲区数据转换为字节数组
+            /// ToArray 将缓冲区数据转换为字节数组。
             /// </summary>
             /// <param name="offset">起始偏移</param>
             /// <param name="count">复制长度</param>
@@ -694,7 +694,7 @@ namespace EFramework.Utility
             }
 
             /// <summary>
-            /// 将缓冲区数据复制到目标数组
+            /// CopyTo 将缓冲区数据复制到目标数组。
             /// </summary>
             /// <param name="srcOffset">源偏移</param>
             /// <param name="dst">目标数组</param>
@@ -703,17 +703,17 @@ namespace EFramework.Utility
             public void CopyTo(int srcOffset, Array dst, int dstOffset, int count) { System.Buffer.BlockCopy(buffer, srcOffset, dst, dstOffset, count); }
 
             /// <summary>
-            /// 完成写入操作，更新数据长度并重置位置
+            /// Flush 完成写入操作，更新数据长度并重置位置。
             /// </summary>
             public void Flush() { Length = Position; Stream.Seek(0, SeekOrigin.Begin); }
 
             /// <summary>
-            /// 重置缓冲区状态
+            /// Reset 重置缓冲区的状态。
             /// </summary>
             public void Reset() { Length = -1; Stream.Seek(0, SeekOrigin.Begin); }
 
             /// <summary>
-            /// 释放缓冲区资源
+            /// Dispose 释放缓冲区的资源。
             /// </summary>
             public void Dispose()
             {
@@ -729,27 +729,27 @@ namespace EFramework.Utility
             }
 
             /// <summary>
-            /// 缓冲池最大容量
+            /// PoolMax 是缓冲池的最大容量。
             /// </summary>
             public static int PoolMax = 500;
 
             /// <summary>
-            /// 单个缓冲区最大字节数
+            /// ByteMax 是单个缓冲区的最大字节数。
             /// </summary>
             public static int ByteMax = 60 * 1024;
 
             /// <summary>
-            /// 缓冲池列表
+            /// buffers 是缓冲池的列表。
             /// </summary>
             internal static List<SBuffer> buffers = new();
 
             /// <summary>
-            /// 缓冲池哈希表
+            /// buffersHash 是缓冲池的哈希表。
             /// </summary>
             internal static Dictionary<int, byte> buffersHash = new();
 
             /// <summary>
-            /// 获取指定大小的缓冲区。
+            /// Get 获取指定大小的缓冲区。
             /// 如果池中有合适大小的缓冲区则返回缓存的实例，否则创建新实例。
             /// </summary>
             /// <param name="expected">预期大小</param>
@@ -781,7 +781,7 @@ namespace EFramework.Utility
             }
 
             /// <summary>
-            /// 回收缓冲区到缓冲池。
+            /// Put 回收缓冲区到缓冲池。
             /// 如果缓冲区大小超过限制或池已满则不缓存。
             /// </summary>
             /// <param name="buffer">缓冲区实例</param>

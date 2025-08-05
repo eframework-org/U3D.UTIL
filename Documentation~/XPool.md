@@ -64,7 +64,7 @@ XPool.GObject.Set("test_prefab", prefab);
 XPool.GObject.Set("global_prefab", prefab, XPool.GObject.CacheType.Global);
 
 // 检查预制体是否存在
-bool exists = XPool.GObject.Has("test_prefab");
+var exists = XPool.GObject.Has("test_prefab");
 ```
 
 #### 2.2 获取实例
