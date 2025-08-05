@@ -119,7 +119,7 @@ namespace EFramework.Utility
     ///     var result = "${greeting} ${name}".Eval(dict1, dict2);  // 输出：Hello World
     /// 
     /// 5.2 自定义求值器
-    ///     public class ConfigEvaluator : XString.IEval 
+    ///     public class ConfigEvaluator : XString.IEvaluator 
     ///     {
     ///         private Dictionary&lt;string, string&gt; configs;
     ///         
@@ -569,10 +569,10 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// IEval 是变量求值接口，用于实现自定义的变量替换逻辑。
+        /// IEvaluator 是变量求值接口，用于实现自定义的变量替换逻辑。
         /// 实现此接口的类可以定义自己的变量替换规则，常用于配置系统、模板引擎等场景。
         /// </summary>
-        public interface IEval
+        public interface IEvaluator
         {
             /// <summary>
             /// Eval 对输入字符串进行变量求值。
@@ -587,12 +587,12 @@ namespace EFramework.Utility
         /// 按顺序使用每个求值器处理字符串，前一个求值器的结果作为下一个求值器的输入。
         /// </summary>
         /// <param name="input">包含变量的字符串</param>
-        /// <param name="sources">求值器列表</param>
+        /// <param name="evaluators">求值器列表</param>
         /// <returns>替换变量后的字符串</returns>
-        public static string Eval(this string input, params IEval[] sources)
+        public static string Eval(this string input, params IEvaluator[] evaluators)
         {
             if (string.IsNullOrEmpty(input)) return string.Empty;
-            foreach (var source in sources)
+            foreach (var source in evaluators)
             {
                 if (source != null) input = source.Eval(input);
             }
@@ -603,12 +603,12 @@ namespace EFramework.Utility
         /// Eval 使用多个字典对字符串进行变量替换。
         /// </summary>
         /// <param name="input">包含变量的字符串</param>
-        /// <param name="sources">变量字典列表</param>
+        /// <param name="dictionaries">变量字典列表</param>
         /// <returns>替换变量后的字符串</returns>
-        public static string Eval(this string input, params Dictionary<string, string>[] sources)
+        public static string Eval(this string input, params Dictionary<string, string>[] dictionaries)
         {
             if (string.IsNullOrEmpty(input)) return string.Empty;
-            foreach (var source in sources)
+            foreach (var source in dictionaries)
             {
                 if (source != null)
                 {

@@ -131,7 +131,7 @@ var result = "${greeting} ${name}".Eval(dict1, dict2);  // 输出：Hello World
 
 #### 5.2 自定义求值器
 ```csharp
-public class ConfigEvaluator : XString.IEval 
+public class ConfigEvaluator : XString.IEvaluator 
 {
     private Dictionary<string, string> configs;
     

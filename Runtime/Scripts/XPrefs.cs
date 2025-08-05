@@ -158,7 +158,7 @@ namespace EFramework.Utility
         /// <summary>
         /// IBase 是配置基类，提供配置的基本读写和变量替换功能。
         /// </summary>
-        public partial class IBase : JSONObject, XObject.Json.IEncoder, XString.IEval
+        public partial class IBase : JSONObject, XObject.Json.IEncoder, XString.IEvaluator
         {
             /// <summary>
             /// File 是配置文件的路径。

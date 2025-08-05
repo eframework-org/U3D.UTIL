@@ -980,7 +980,7 @@ namespace EFramework.Utility
         /// 3. 防止循环引用
         /// 4. 提供默认值和错误处理
         /// </remarks>
-        public sealed class Eval : XString.IEval
+        public sealed class Eval : XString.IEvaluator
         {
             /// <summary>
             /// 环境变量引用的正则表达式模式。
@@ -1006,7 +1006,7 @@ namespace EFramework.Utility
             ///    - 系统环境变量
             /// 4. 处理未知变量
             /// </remarks>
-            string XString.IEval.Eval(string input)
+            string XString.IEvaluator.Eval(string input)
             {
                 if (string.IsNullOrEmpty(input)) return input;
 
