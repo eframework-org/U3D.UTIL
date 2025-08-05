@@ -10,24 +10,17 @@ using UnityEngine;
 using EFramework.Utility;
 
 /// <summary>
-/// XComp组件工具集单元测试
+/// XComp 组件工具集单元测试。
 /// </summary>
 public class TestXComp
 {
-    #region 测试基础设施
+    #region 测试环境准备
     private GameObject rootObject;
+
     private GameObject childObject;
+
     private GameObject grandChildObject;
 
-    /// <summary>
-    /// 在每个测试用例执行前初始化测试环境
-    /// </summary>
-    /// <remarks>
-    /// 创建三层游戏对象层级结构：
-    /// Root
-    /// └── Child
-    ///     └── GrandChild
-    /// </remarks>
     [SetUp]
     public void Setup()
     {
@@ -40,9 +33,6 @@ public class TestXComp
         grandChildObject.transform.SetParent(childObject.transform);
     }
 
-    /// <summary>
-    /// 在每个测试用例执行后清理测试环境
-    /// </summary>
     [TearDown]
     public void Reset()
     {
@@ -253,9 +243,7 @@ public class TestXComp
 
             // Assert - 验证父子关系和位置保持
             Assert.AreEqual(newParent.transform, target.transform.parent, "目标对象的父对象应为新创建的父对象");
-            if (worldPositionStays)
-                Assert.That(Vector3.Distance(target.transform.position, originalPosition), Is.LessThan(0.001f),
-                    "当worldPositionStays为true时，对象的世界坐标位置应保持不变");
+            if (worldPositionStays) Assert.That(Vector3.Distance(target.transform.position, originalPosition), Is.LessThan(0.001f), "当worldPositionStays为true时，对象的世界坐标位置应保持不变");
         }
         finally
         {
@@ -270,16 +258,16 @@ public class TestXComp
     /// <param name="immediate">是否立即销毁</param>
     [TestCase(null, true)]
     [TestCase("Child", false)]
-    public void DestroyGO(string path, bool immediate)
+    public void DestroyGameObject(string path, bool immediate)
     {
         // Arrange
         var target = path != null ? rootObject.GetTransform(path).gameObject : rootObject;
 
         // Act
         if (path != null)
-            rootObject.DestroyGO(path, immediate);
+            rootObject.DestroyGameObject(path, immediate);
         else
-            target.DestroyGO(immediate);
+            target.DestroyGameObject(immediate);
 
         // Assert - 验证对象是否被正确销毁
         if (immediate)
@@ -290,13 +278,13 @@ public class TestXComp
     /// 测试克隆游戏对象功能
     /// </summary>
     [Test]
-    public void CloneGO()
+    public void CloneGameObject()
     {
         // Arrange
         var originalName = rootObject.name;
 
         // Act
-        var clone = rootObject.CloneGO();
+        var clone = rootObject.CloneGameObject();
 
         try
         {
@@ -341,16 +329,14 @@ public class TestXComp
     /// <param name="active">目标激活状态</param>
     [TestCase(null, true)]
     [TestCase("Child", false)]
-    public void SetActiveState(string path, bool active)
+    public void SetGameObjectActive(string path, bool active)
     {
         // Arrange
         var target = path != null ? rootObject.GetTransform(path).gameObject : rootObject;
 
         // Act
-        if (path != null)
-            rootObject.SetActiveState(path, active);
-        else
-            target.SetActiveState(active);
+        if (path != null) rootObject.SetGameObjectActive(path, active);
+        else target.SetGameObjectActive(active);
 
         // Assert - 验证对象的激活状态是否正确设置
         Assert.AreEqual(active, target.activeSelf, $"对象的激活状态应为 {active}");
@@ -379,8 +365,7 @@ public class TestXComp
             Assert.AreEqual(count, rootObject.transform.childCount, $"子对象数量应为 {count}");
             for (int i = 0; i < count; i++)
             {
-                Assert.AreEqual(active, rootObject.transform.GetChild(i).gameObject.activeSelf,
-                    $"第 {i} 个子对象的激活状态应为 {active}");
+                Assert.AreEqual(active, rootObject.transform.GetChild(i).gameObject.activeSelf, $"第 {i} 个子对象的激活状态应为 {active}");
             }
         }
         finally

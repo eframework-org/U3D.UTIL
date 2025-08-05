@@ -19,11 +19,11 @@ XComp 提供了一组 Unity 游戏对象和组件操作的扩展工具集，用�
 #### 1.1 获取 Transform
 ```csharp
 // 从不同类型对象获取 Transform
-Transform trans = gameObject.GetTransform();
-Transform childTrans = gameObject.GetTransform("Child/SubChild");
+var transform = gameObject.GetTransform();
+var childTransforms = gameObject.GetTransform("Child/SubChild");
 
 // 获取子节点数组
-Transform[] children = parentObj.GetChildren(includeInactive: true);
+var children = parentObj.GetChildren(includeInactive: true);
 ```
 
 #### 1.2 变换操作
@@ -56,13 +56,13 @@ gameObject.SetActiveState(true);
 #### 1.4 对象操作
 ```csharp
 // 克隆对象
-GameObject clone = sourceObj.CloneGO();
+var clone = sourceObj.CloneGO();
 
 // 销毁对象
 gameObject.DestroyGO(immediate: false);
 
 // 添加子对象
-Transform child = parentTrans.AddChild(prefab, layer: 5);
+var child = parentTrans.AddChild(prefab, layer: 5);
 ```
 
 ### 2. 组件管理

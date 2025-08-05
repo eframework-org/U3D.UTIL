@@ -22,8 +22,8 @@ namespace EFramework.Utility
     /// 
     ///     1.1 获取 Transform
     ///     // 从不同类型对象获取 Transform
-    ///     Transform trans = gameObject.GetTransform();
-    ///     Transform childTrans = gameObject.GetTransform("Child/SubChild");
+    ///     var transform = gameObject.GetTransform();
+    ///     var childTransforms = gameObject.GetTransform("Child/SubChild");
     ///     
     ///     1.2 变换操作
     ///     // 设置世界坐标和旋转
@@ -55,14 +55,14 @@ namespace EFramework.Utility
     {
         #region 节点操作
         /// <summary>
-        /// 遍历子节点时的回调委托。
+        /// ForeachChildHandler 是遍历子节点时的回调委托。
         /// </summary>
         /// <param name="index">子节点的索引序号</param>
         /// <param name="child">子节点的 Transform 组件</param>
         public delegate void ForeachChildHandler(int index, Transform child);
 
         /// <summary>
-        /// 获取对象的 Transform 组件。支持从 Transform、GameObject 和 Component 类型获取。
+        /// GetTransform 获取对象的 Transform 组件。支持从 Transform、GameObject 和 Component 类型获取。
         /// </summary>
         /// <param name="rootObj">目标对象，可以是 Transform、GameObject 或其他 Component</param>
         /// <returns>目标对象的 Transform 组件，若目标对象为空或类型不支持则返回 null</returns>
@@ -89,7 +89,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 根据路径获取对象的 Transform 组件。
+        /// GetTransform 根据路径获取对象的 Transform 组件。
         /// </summary>
         /// <param name="parentObj">父级对象，可以是 Transform、GameObject 或其他 Component</param>
         /// <param name="path">目标对象的相对路径，支持层级查找，如 "Child/SubChild"</param>
@@ -103,7 +103,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 获取所有子节点的 Transform 组件。
+        /// GetChildren 获取所有子节点的 Transform 组件。
         /// </summary>
         /// <param name="rootObj">父级对象</param>
         /// <param name="includeInactive">是否包含未激活的子节点，默认为 true</param>
@@ -111,7 +111,7 @@ namespace EFramework.Utility
         public static Transform[] GetChildren(this Object rootObj, bool includeInactive = true) { return GetChildren(rootObj, null, includeInactive); }
 
         /// <summary>
-        /// 根据路径获取所有子节点的 Transform 组件。
+        /// GetChildren 根据路径获取所有子节点的 Transform 组件。
         /// </summary>
         /// <param name="parentObj">父级对象</param>
         /// <param name="path">目标对象的相对路径</param>
@@ -127,7 +127,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 设置对象的世界坐标位置。
+        /// SetPosition 设置对象的世界坐标位置。
         /// </summary>
         /// <param name="rootObj">目标对象</param>
         /// <param name="position">世界坐标系中的目标位置</param>
@@ -138,7 +138,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 根据路径设置对象的世界坐标位置。
+        /// SetPosition 根据路径设置对象的世界坐标位置。
         /// </summary>
         /// <param name="parentObj">父级对象</param>
         /// <param name="path">目标对象的相对路径</param>
@@ -154,7 +154,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 设置对象的局部坐标位置（相对于父级对象）。
+        /// SetLocalPosition 设置对象的局部坐标位置（相对于父级对象）。
         /// </summary>
         /// <param name="rootObj">目标对象</param>
         /// <param name="position">局部坐标系中的目标位置</param>
@@ -165,7 +165,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 根据路径设置对象的局部坐标位置。
+        /// SetLocalPosition 根据路径设置对象的局部坐标位置。
         /// </summary>
         /// <param name="parentObj">父级对象</param>
         /// <param name="path">目标对象的相对路径</param>
@@ -181,7 +181,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 设置对象的世界旋转角度。
+        /// SetRotation 设置对象的世界旋转角度。
         /// </summary>
         /// <param name="rootObj">目标对象</param>
         /// <param name="eulerAngles">世界坐标系中的欧拉角旋转值（度）</param>
@@ -192,7 +192,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 根据路径设置对象的世界旋转角度。
+        /// SetRotation 根据路径设置对象的世界旋转角度。
         /// </summary>
         /// <param name="parentObj">父级对象</param>
         /// <param name="path">目标对象的相对路径</param>
@@ -208,7 +208,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 设置对象的局部旋转角度（相对于父级对象）。
+        /// SetLocalRotation 设置对象的局部旋转角度（相对于父级对象）。
         /// </summary>
         /// <param name="rootObj">目标对象</param>
         /// <param name="eulerAngles">局部坐标系中的欧拉角旋转值（度）</param>
@@ -219,7 +219,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 根据路径设置对象的局部旋转角度。
+        /// SetLocalRotation 根据路径设置对象的局部旋转角度。
         /// </summary>
         /// <param name="parentObj">父级对象</param>
         /// <param name="path">目标对象的相对路径</param>
@@ -235,7 +235,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 设置对象的局部缩放值。
+        /// SetLocalScale 设置对象的局部缩放值。
         /// </summary>
         /// <param name="rootObj">目标对象</param>
         /// <param name="scale">局部坐标系中的缩放值，xyz 分别对应三个轴向的缩放比例</param>
@@ -246,7 +246,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 根据路径设置对象的局部缩放值。
+        /// SetLocalScale 根据路径设置对象的局部缩放值。
         /// </summary>
         /// <param name="parentObj">父级对象</param>
         /// <param name="path">目标对象的相对路径</param>
@@ -262,7 +262,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 设置对象的父级对象。
+        /// SetParent 设置对象的父级对象。
         /// </summary>
         /// <param name="childObj">子对象</param>
         /// <param name="parentObj">父对象</param>
@@ -280,7 +280,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 根据路径设置对象的父级对象。
+        /// SetParent 根据路径设置对象的父级对象。
         /// </summary>
         /// <param name="childObj">子对象</param>
         /// <param name="rootObj">根对象</param>
@@ -304,17 +304,17 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 销毁游戏对象。
+        /// DestroyGameObject 销毁游戏对象。
         /// </summary>
         /// <param name="rootObj">要销毁的对象</param>
-        public static void DestroyGO(this Object rootObj) { DestroyGO(rootObj, false); }
+        public static void DestroyGameObject(this Object rootObj) { DestroyGameObject(rootObj, false); }
 
         /// <summary>
-        /// 销毁游戏对象，可选择是否立即销毁。
+        /// DestroyGameObject 销毁游戏对象。
         /// </summary>
         /// <param name="rootObj">要销毁的对象</param>
         /// <param name="immediate">是否立即销毁，若为 false 则在当前帧结束时销毁</param>
-        public static void DestroyGO(this Object rootObj, bool immediate)
+        public static void DestroyGameObject(this Object rootObj, bool immediate)
         {
             var root = GetTransform(rootObj);
             if (root && root.gameObject)
@@ -325,19 +325,19 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 根据路径销毁游戏对象。
+        /// DestroyGameObject 根据路径销毁游戏对象。
         /// </summary>
         /// <param name="parentObj">父级对象</param>
         /// <param name="path">要销毁对象的相对路径</param>
-        public static void DestroyGO(this Object parentObj, string path) { DestroyGO(parentObj, path, false); }
+        public static void DestroyGameObject(this Object parentObj, string path) { DestroyGameObject(parentObj, path, false); }
 
         /// <summary>
-        /// 根据路径销毁游戏对象，可选择是否立即销毁。
+        /// DestroyGameObject 根据路径销毁游戏对象。
         /// </summary>
         /// <param name="parentObj">父级对象</param>
         /// <param name="path">要销毁对象的相对路径</param>
         /// <param name="immediate">是否立即销毁，若为 false 则在当前帧结束时销毁</param>
-        public static void DestroyGO(this Object parentObj, string path, bool immediate)
+        public static void DestroyGameObject(this Object parentObj, string path, bool immediate)
         {
             var root = GetTransform(parentObj, path);
             if (root && root.gameObject)
@@ -348,12 +348,12 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 克隆游戏对象。
+        /// CloneGameObject 克隆游戏对象。
         /// </summary>
         /// <param name="rootObj">要克隆的对象</param>
         /// <returns>克隆出的新游戏对象，克隆失败时返回 null</returns>
         /// <remarks>克隆后的对象会保持原对象的名称（不会添加 "(Clone)" 后缀）</remarks>
-        public static GameObject CloneGO(this Object rootObj)
+        public static GameObject CloneGameObject(this Object rootObj)
         {
             var root = GetTransform(rootObj);
             if (root && root.gameObject)
@@ -367,7 +367,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 设置游戏对象及其所有子对象的层级。
+        /// SetLayer 设置游戏对象及其所有子对象的层级。
         /// </summary>
         /// <param name="rootObj">目标对象</param>
         /// <param name="layerName">目标层级的名称</param>
@@ -382,7 +382,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 根据路径设置游戏对象及其所有子对象的层级。
+        /// SetLayer 根据路径设置游戏对象及其所有子对象的层级。
         /// </summary>
         /// <param name="parentObj">父级对象</param>
         /// <param name="path">目标对象的相对路径</param>
@@ -402,14 +402,14 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 递归设置游戏对象及其所有子对象的层级。
+        /// SetLayer 递归设置游戏对象及其所有子对象的层级。
         /// </summary>
-        /// <param name="go">目标游戏对象</param>
+        /// <param name="gameObject">目标游戏对象</param>
         /// <param name="layer">目标层级的索引值</param>
-        public static void SetLayer(this GameObject go, int layer)
+        public static void SetLayer(this GameObject gameObject, int layer)
         {
-            go.layer = layer;
-            var t = go.transform;
+            gameObject.layer = layer;
+            var t = gameObject.transform;
             for (int i = 0, imax = t.childCount; i < imax; ++i)
             {
                 var child = t.GetChild(i);
@@ -418,30 +418,30 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 设置游戏对象的激活状态。
+        /// SetGameObjectActive 设置游戏对象的激活状态。
         /// </summary>
         /// <param name="rootObj">目标对象</param>
         /// <param name="active">是否激活</param>
-        public static void SetActiveState(this Object rootObj, bool active)
+        public static void SetGameObjectActive(this Object rootObj, bool active)
         {
             var root = GetTransform(rootObj);
             if (root && root.gameObject) root.gameObject.SetActive(active);
         }
 
         /// <summary>
-        /// 根据路径设置游戏对象的激活状态。
+        /// SetGameObjectActive 根据路径设置游戏对象的激活状态。
         /// </summary>
         /// <param name="parentObj">父级对象</param>
         /// <param name="path">目标对象的相对路径</param>
         /// <param name="active">是否激活</param>
-        public static void SetActiveState(this Object parentObj, string path, bool active)
+        public static void SetGameObjectActive(this Object parentObj, string path, bool active)
         {
             var parent = GetTransform(parentObj);
-            if (parent != null) SetActiveState(parent.Find(path), active);
+            if (parent != null) SetGameObjectActive(parent.Find(path), active);
         }
 
         /// <summary>
-        /// 添加预制体实例作为子对象。
+        /// AddChild 添加预制体实例作为子对象。
         /// </summary>
         /// <param name="parent">父级 Transform</param>
         /// <param name="prefab">预制体对象</param>
@@ -471,7 +471,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 确保父对象下有指定数量的子对象，不足时通过复制补足。
+        /// EnsureChild 确保父对象下有指定数量的子对象，不足时通过复制补足。
         /// </summary>
         /// <param name="parent">父级 Transform</param>
         /// <param name="count">目标子对象数量</param>
@@ -494,12 +494,12 @@ namespace EFramework.Utility
             }
             for (int i = 0; i < count; i++)
             {
-                parent.GetChild(i).SetActiveState(active);
+                parent.GetChild(i).SetGameObjectActive(active);
             }
         }
 
         /// <summary>
-        /// 遍历所有子对象并执行回调操作。
+        /// EachChild 遍历所有子对象并执行回调操作。
         /// </summary>
         /// <param name="parent">父级 Transform</param>
         /// <param name="handler">子对象处理回调，提供子对象的索引和 Transform 组件</param>
@@ -513,7 +513,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 显示所有子对象，并可选择执行额外操作。
+        /// ShowChild 显示所有子对象，并可选择执行额外操作。
         /// </summary>
         /// <param name="parent">父级 Transform</param>
         /// <param name="handler">子对象处理回调，在显示后执行</param>
@@ -528,7 +528,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 隐藏所有子对象，并可选择执行额外操作。
+        /// HideChild 隐藏所有子对象，并可选择执行额外操作。
         /// </summary>
         /// <param name="parent">父级 Transform</param>
         /// <param name="handler">子对象处理回调，在隐藏后执行</param>
@@ -545,12 +545,12 @@ namespace EFramework.Utility
 
         #region 组件管理
         /// <summary>
-        /// Unity Object 类型的内部缓存引用。
+        /// ClazzUnityObject 是 Unity Object 类型的内部缓存引用。
         /// </summary>
         internal static System.Type ClazzUnityObject = typeof(Object);
 
         /// <summary>
-        /// 获取对象父级中的指定类型组件。
+        /// GetComponentInParent 获取对象父级中的指定类型组件。
         /// </summary>
         /// <param name="rootObj">目标对象</param>
         /// <param name="type">组件类型</param>
@@ -560,7 +560,7 @@ namespace EFramework.Utility
         public static object GetComponentInParent(this Object rootObj, System.Type type, bool includeInactive = false) { return GetComponentInParent(rootObj, null, type, includeInactive); }
 
         /// <summary>
-        /// 从父节点中获取组件
+        /// GetComponentInParent 从父节点中获取组件。
         /// </summary>
         /// <param name="parentObj">父节点</param>
         /// <param name="path">节点路径</param>
@@ -577,7 +577,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 获取对象上的指定类型组件。
+        /// GetComponent 获取对象上的指定类型组件。
         /// </summary>
         /// <param name="rootObj">目标对象</param>
         /// <param name="type">组件类型</param>
@@ -587,7 +587,7 @@ namespace EFramework.Utility
         public static object GetComponent(this Object rootObj, System.Type type, bool attachIfMissing = false) { return GetComponent(rootObj, null, type, attachIfMissing); }
 
         /// <summary>
-        /// 从当前节点中获取组件
+        /// GetComponent 从当前节点中获取组件。
         /// </summary>
         /// <param name="parentObj">父节点</param>
         /// <param name="path">节点路径</param>
@@ -608,7 +608,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 从子节点中获取组件
+        /// GetComponentInChildren 从子节点中获取组件。
         /// </summary>
         /// <param name="rootObj">节点</param>
         /// <param name="type">类型</param>
@@ -617,7 +617,7 @@ namespace EFramework.Utility
         public static object GetComponentInChildren(this Object rootObj, System.Type type, bool includeInactive = false) { return GetComponentInChildren(rootObj, null, type, includeInactive); }
 
         /// <summary>
-        /// 从子节点中获取组件
+        /// GetComponentInChildren 从子节点中获取组件。
         /// </summary>
         /// <param name="parentObj">父节点</param>
         /// <param name="path">节点路径</param>
@@ -634,7 +634,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 从父节点中获取组件数组
+        /// GetComponentsInParent 从父节点中获取组件数组。
         /// </summary>
         /// <param name="rootObj">节点</param>
         /// <param name="type">类型</param>
@@ -643,7 +643,7 @@ namespace EFramework.Utility
         public static object[] GetComponentsInParent(this Object rootObj, System.Type type, bool includeInactive = false) { return GetComponentsInParent(rootObj, null, type, includeInactive); }
 
         /// <summary>
-        /// 从父节点中获取组件数组
+        /// GetComponentsInParent 从父节点中获取组件数组。
         /// </summary>
         /// <param name="parentObj">父节点</param>
         /// <param name="path">节点路径</param>
@@ -673,7 +673,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 从当前节点中获取组件数组
+        /// GetComponents 从当前节点中获取组件数组。
         /// </summary>
         /// <param name="rootObj">节点</param>
         /// <param name="type">类型</param>
@@ -681,7 +681,7 @@ namespace EFramework.Utility
         public static object[] GetComponents(this Object rootObj, System.Type type) { return GetComponents(rootObj, null, type); }
 
         /// <summary>
-        /// 从当前节点中获取组件数组
+        /// GetComponents 从当前节点中获取组件数组。
         /// </summary>
         /// <param name="parentObj">父节点</param>
         /// <param name="path">节点路径</param>
@@ -710,7 +710,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 从子节点中获取组件数组
+        /// GetComponentsInChildren 从子节点中获取组件数组。
         /// </summary>
         /// <param name="rootObj">节点</param>
         /// <param name="type">类型</param>
@@ -719,7 +719,7 @@ namespace EFramework.Utility
         public static object[] GetComponentsInChildren(this Object rootObj, System.Type type, bool includeInactive = false) { return GetComponentsInChildren(rootObj, null, type, includeInactive); }
 
         /// <summary>
-        /// 从子节点中获取组件数组
+        /// GetComponentsInChildren 从子节点中获取组件数组。
         /// </summary>
         /// <param name="parentObj">父节点</param>
         /// <param name="path">节点路径</param>
@@ -749,7 +749,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 添加组件
+        /// AddComponent 添加组件。
         /// </summary>
         /// <param name="rootObj">节点</param>
         /// <param name="type">类型</param>
@@ -757,7 +757,7 @@ namespace EFramework.Utility
         public static object AddComponent(this Object rootObj, System.Type type) { return AddComponent(rootObj, null, type); }
 
         /// <summary>
-        /// 添加组件
+        /// AddComponent 添加组件。
         /// </summary>
         /// <param name="parentObj">父节点</param>
         /// <param name="path">节点路径</param>
@@ -773,7 +773,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 移除组件
+        /// RemoveComponent 移除组件。
         /// </summary>
         /// <param name="rootObj">节点</param>
         /// <param name="type">类型</param>
@@ -781,7 +781,7 @@ namespace EFramework.Utility
         public static void RemoveComponent(this Object rootObj, System.Type type, bool immediate = false) { RemoveComponent(rootObj, null, type, immediate); }
 
         /// <summary>
-        /// 移除组件
+        /// RemoveComponent 移除组件。
         /// </summary>
         /// <param name="parentObj">父节点</param>
         /// <param name="path">节点路径</param>
@@ -801,7 +801,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 设置组件启用状态
+        /// SetComponentEnabled 设置组件启用状态。
         /// </summary>
         /// <param name="rootObj">节点</param>
         /// <param name="type">类型</param>
@@ -810,7 +810,7 @@ namespace EFramework.Utility
         public static object SetComponentEnabled(this Object rootObj, System.Type type, bool enabled) { return SetComponentEnabled(rootObj, null, type, enabled); }
 
         /// <summary>
-        /// 设置组件启用状态
+        /// SetComponentEnabled 设置组件启用状态。
         /// </summary>
         /// <param name="parentObj">父节点</param>
         /// <param name="path">节点路径</param>
@@ -829,12 +829,12 @@ namespace EFramework.Utility
 
         #region 快速索引
         /// <summary>
-        /// 定义可索引对象的接口。
+        /// IIndexable 定义了可索引对象的接口。
         /// </summary>
         public interface IIndexable
         {
             /// <summary>
-            /// 根据名称和类型查找对象。
+            /// Index 根据名称和类型查找对象。
             /// </summary>
             /// <param name="name">目标对象名称</param>
             /// <param name="type">可选的组件类型</param>
@@ -843,7 +843,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 在对象层级中查找指定名称的对象或组件。
+        /// Index 在对象层级中查找指定名称的对象或组件。
         /// </summary>
         /// <param name="obj">起始对象</param>
         /// <param name="name">目标对象名称</param>
@@ -895,49 +895,49 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 在游戏对象的层级中查找指定名称的对象或组件。
+        /// Index 在 GameObject 的层级中查找指定名称的对象或组件。
         /// </summary>
-        /// <param name="obj">起始游戏对象</param>
-        /// <param name="name">目标对象名称</param>
-        /// <param name="type">可选的组件类型</param>
+        /// <param name="gameObject">起始节点</param>
+        /// <param name="name">目标名称</param>
+        /// <param name="type">目标类型</param>
         /// <returns>找到的对象或组件实例</returns>
-        public static object Index(this GameObject obj, string name, System.Type type = null)
+        public static object Index(this GameObject gameObject, string name, System.Type type = null)
         {
-            if (obj)
+            if (gameObject)
             {
-                var index = obj.GetComponent<IIndexable>();
+                var index = gameObject.GetComponent<IIndexable>();
                 if (index != null) return Index(index, name, type);
-                else return Index((object)obj, name, type);
+                else return Index((object)gameObject, name, type);
             }
             return null;
         }
 
         /// <summary>
-        /// 在游戏对象的层级中查找指定名称和类型的组件。
+        /// Index 在 GameObject 的层级中查找指定名称和类型的组件。
         /// </summary>
-        /// <typeparam name="T">目标组件类型</typeparam>
-        /// <param name="obj">起始游戏对象</param>
-        /// <param name="name">目标对象名称</param>
+        /// <typeparam name="T">目标类型</typeparam>
+        /// <param name="gameObject">起始节点</param>
+        /// <param name="name">目标名称</param>
         /// <returns>找到的组件实例</returns>
-        public static T Index<T>(this GameObject obj, string name) where T : class { return Index(obj, name, typeof(T)) as T; }
+        public static T Index<T>(this GameObject gameObject, string name) where T : class { return Index(gameObject, name, typeof(T)) as T; }
 
         /// <summary>
-        /// 在 Transform 的层级中查找指定名称的对象或组件。
+        /// Index 在 Transform 的层级中查找指定名称的对象或组件。
         /// </summary>
-        /// <param name="trans">起始 Transform</param>
-        /// <param name="name">目标对象名称</param>
-        /// <param name="type">可选的组件类型</param>
+        /// <param name="transform">起始节点</param>
+        /// <param name="name">目标名称</param>
+        /// <param name="type">目标类型</param>
         /// <returns>找到的对象或组件实例</returns>
-        public static object Index(this Transform trans, string name, System.Type type = null) { if (trans) return Index(trans.gameObject, name, type); else return null; }
+        public static object Index(this Transform transform, string name, System.Type type = null) { if (transform) return Index(transform.gameObject, name, type); else return null; }
 
         /// <summary>
-        /// 在 Transform 的层级中查找指定名称和类型的组件。
+        /// Index 在 Transform 的层级中查找指定名称和类型的组件。
         /// </summary>
-        /// <typeparam name="T">目标组件类型</typeparam>
-        /// <param name="trans">起始 Transform</param>
-        /// <param name="name">目标对象名称</param>
+        /// <typeparam name="T">目标类型</typeparam>
+        /// <param name="transform">起始节点</param>
+        /// <param name="name">目标名称</param>
         /// <returns>找到的组件实例</returns>
-        public static T Index<T>(this Transform trans, string name) where T : class { if (trans) return Index<T>(trans.gameObject, name); else return null; }
+        public static T Index<T>(this Transform transform, string name) where T : class { if (transform) return Index<T>(transform.gameObject, name); else return null; }
         #endregion
     }
 }
