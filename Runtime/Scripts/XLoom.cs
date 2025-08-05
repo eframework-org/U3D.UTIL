@@ -35,14 +35,14 @@ namespace EFramework.Utility
     ///     }
     ///     
     ///     // 启动协程并获取句柄
-    ///     Coroutine cr = XLoom.StartCR(YourCoroutine());
+    ///     var coroutine = XLoom.StartCoroutine(YourCoroutine());
     /// 
     /// 1.2 停止协程
     ///     // 使用协程句柄停止
-    ///     XLoom.StopCR(cr);
+    ///     XLoom.StopCoroutine(coroutine);
     ///     
     ///     // 或使用协程迭代器停止
-    ///     XLoom.StopCR(YourCoroutine());
+    ///     XLoom.StopCoroutine(YourCoroutine());
     /// 
     /// 2. 定时器管理
     /// 
@@ -78,7 +78,7 @@ namespace EFramework.Utility
     /// 
     /// 3.2 主线程检查
     ///     // 检查当前是否在主线程中执行
-    ///     bool isMainThread = XLoom.IsInMain();
+    ///     var isMainThread = XLoom.IsInMain();
     /// 
     /// 3.3 下一帧执行
     ///     // 在主线程的下一帧执行任务
@@ -101,83 +101,83 @@ namespace EFramework.Utility
     public class XLoom : MonoBehaviour
     {
         /// <summary>
-        /// 定时器类，用于管理定时执行的任务。
+        /// Timer 是定时器类，用于管理定时执行的任务。
         /// </summary>
         public class Timer
         {
             /// <summary>
-            /// 原始时长
+            /// Period 为原始时长。
             /// </summary>
             public float Period;
 
             /// <summary>
-            /// 剩余时长
+            /// Tick 是剩余时长。
             /// </summary>
             public float Tick;
 
             /// <summary>
-            /// 是否重复执行
+            /// Repeat 表示是否重复执行。
             /// </summary>
             public bool Repeat;
 
             /// <summary>
-            /// 定时器回调函数
+            /// Callback 是定时器回调函数。
             /// </summary>
             public Action Callback;
         }
 
         /// <summary>
-        /// XLoom 单例实例
+        /// instance 是 XLoom 的单例实例。
         /// </summary>
         internal static XLoom instance;
 
         /// <summary>
-        /// 是否已销毁
+        /// disposed 表示是否已销毁。
         /// </summary>
         internal static bool disposed;
 
         /// <summary>
-        /// 主线程 ID
+        /// mainThread 是主线程 的ID。
         /// </summary>
         internal static int mainThread;
 
         /// <summary>
-        /// 待执行的任务队列
+        /// allTasks 是待执行的任务队列。
         /// </summary>
         internal static Queue<Action> allTasks = new();
 
         /// <summary>
-        /// 批处理任务队列
+        /// batchTasks 是批处理的任务队列。
         /// </summary>
         internal static Queue<Action> batchTasks = new();
 
         /// <summary>
-        /// 定时器对象池
+        /// timerPool 是定时器的对象池。
         /// </summary>
         internal static ObjectPool<Timer> timerPool = new(() => new Timer(), null, null, null);
 
         /// <summary>
-        /// 所有活动的定时器列表
+        /// allTimers 是所有活动的定时器列表。
         /// </summary>
         internal static List<Timer> allTimers = new();
 
         /// <summary>
-        /// 批处理定时器队列
+        /// batchTimers 是批处理定时器的队列。
         /// </summary>
         internal static Queue<Timer> batchTimers = new();
 
         /// <summary>
-        /// 初始化 XLoom 实例。
+        /// Awake 初始化 XLoom 实例。
         /// </summary>
         internal void Awake() { disposed = false; instance = this; }
 
         /// <summary>
-        /// 更新定时器状态。
+        /// Update 更新定时器状态。
         /// </summary>
         internal void Update() { Tick(Time.deltaTime); }
 
         /// <summary>
-        /// 清理 XLoom 实例。
+        /// OnDestroy 清理 XLoom 实例。
         /// </summary>
         internal void OnDestroy() { disposed = true; instance = null; Reset(); }
 
@@ -235,7 +235,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 更新定时器和任务状态。
+        /// Tick 更新定时器和任务状态。
         /// </summary>
         /// <param name="delta">时间增量</param>
         internal static void Tick(float delta)
@@ -281,7 +281,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 重置所有任务和定时器。
+        /// Reset 重置所有任务和定时器。
         /// </summary>
         internal static void Reset()
         {
@@ -310,62 +310,62 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 启动协程。
+        /// StartCoroutine 启动协程。
         /// </summary>
         /// <remarks>
         /// 只能在主线程中调用，且必须在 Play 模式下。
         /// </remarks>
-        /// <param name="cr">协程迭代器</param>
+        /// <param name="enumerator">协程迭代器</param>
         /// <returns>协程句柄</returns>
         /// <exception cref="Exception">当应用未在运行或实例未初始化时抛出</exception>
-        public static Coroutine StartCR(IEnumerator cr)
+        public static new Coroutine StartCoroutine(IEnumerator enumerator)
         {
-            if (cr == null) return null;
+            if (enumerator == null) return null;
             if (!Application.isPlaying) throw new Exception("Application is not playing.");
             if (instance == null) throw new Exception("XLoom instance is null.");
-            return instance.StartCoroutine(cr);
+            return (instance as MonoBehaviour).StartCoroutine(enumerator);
         }
 
         /// <summary>
-        /// 停止协程。
+        /// StopCoroutine 停止协程。
         /// </summary>
         /// <remarks>
         /// 只能在主线程中调用，且必须在 Play 模式下。
         /// </remarks>
-        /// <param name="cr">协程句柄</param>
+        /// <param name="coroution">协程句柄</param>
         /// <exception cref="Exception">当应用未在运行或实例未初始化时抛出</exception>
-        public static void StopCR(Coroutine cr)
+        public static new void StopCoroutine(Coroutine coroution)
         {
-            if (cr == null) return;
+            if (coroution == null) return;
             if (!Application.isPlaying) throw new Exception("Application is not playing.");
             if (disposed) return;
-            instance.StopCoroutine(cr);
+            (instance as MonoBehaviour).StopCoroutine(coroution);
         }
 
         /// <summary>
-        /// 停止协程。
+        /// StopCoroutine 停止协程。
         /// </summary>
         /// <remarks>
         /// 只能在主线程中调用，且必须在 Play 模式下。
         /// </remarks>
-        /// <param name="cr">协程迭代器</param>
+        /// <param name="enumerator">协程迭代器</param>
         /// <exception cref="Exception">当应用未在运行或实例未初始化时抛出</exception>
-        public static void StopCR(IEnumerator cr)
+        public static new void StopCoroutine(IEnumerator enumerator)
         {
-            if (cr == null) return;
+            if (enumerator == null) return;
             if (!Application.isPlaying) throw new Exception("Application is not playing.");
             if (disposed) return;
-            instance.StopCoroutine(cr);
+            (instance as MonoBehaviour).StopCoroutine(enumerator);
         }
 
         /// <summary>
-        /// 检查当前是否在主线程中执行。
+        /// IsInMain 检查当前是否在主线程中执行。
         /// </summary>
         /// <returns>是否在主线程中</returns>
         public static bool IsInMain() { return Thread.CurrentThread.ManagedThreadId == mainThread; }
 
         /// <summary>
-        /// 在主线程中执行任务。
+        /// RunInMain 在主线程中执行任务。
         /// </summary>
         /// <remarks>
         /// 如果当前已在主线程中，则直接执行；否则将任务加入队列等待主线程执行。
@@ -393,7 +393,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 在主线程的下一帧执行任务。
+        /// RunInNext 在主线程的下一帧执行任务。
         /// </summary>
         /// <param name="callback">要执行的任务</param>
         /// <returns>任务的异步操作句柄</returns>
@@ -410,7 +410,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 异步执行任务。
+        /// RunAsync 异步执行任务。
         /// </summary>
         /// <param name="callback">要执行的任务</param>
         /// <returns>任务的异步操作句柄</returns>
@@ -427,7 +427,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 设置一次性定时器。
+        /// SetTimeout 设置一次性定时器。
         /// </summary>
         /// <param name="callback">定时器回调函数</param>
         /// <param name="timeout">超时时间（毫秒）</param>
@@ -444,7 +444,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 清除一次性定时器。
+        /// ClearTimeout 清除一次性定时器。
         /// </summary>
         /// <param name="timer">要清除的定时器实例</param>
         public static void ClearTimeout(Timer timer)
@@ -461,7 +461,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 设置重复定时器。
+        /// SetInterval 设置重复定时器。
         /// </summary>
         /// <param name="callback">定时器回调函数</param>
         /// <param name="interval">时间间隔（毫秒）</param>
@@ -478,7 +478,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 清除重复定时器。
+        /// ClearInterval 清除重复定时器。
         /// </summary>
         /// <param name="timer">要清除的定时器实例</param>
         public static void ClearInterval(Timer timer)

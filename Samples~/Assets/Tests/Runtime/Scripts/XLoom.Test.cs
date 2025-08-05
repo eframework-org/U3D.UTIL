@@ -4,11 +4,11 @@
 
 #if UNITY_INCLUDE_TESTS
 using NUnit.Framework;
-using EFramework.Utility;
-using UnityEngine;
 using System;
 using System.Collections;
+using UnityEngine;
 using UnityEngine.TestTools;
+using EFramework.Utility;
 
 public class TestXLoom : MonoBehaviour
 {
@@ -120,14 +120,14 @@ public class TestXLoom : MonoBehaviour
     }
 
     [UnityTest]
-    public IEnumerator StartCR()
+    public IEnumerator StartCoroutine()
     {
         // Arrange
         var called = false;
         IEnumerator coroutine = TestCoroutine(() => called = true);
 
         // Act
-        XLoom.StartCR(coroutine);
+        XLoom.StartCoroutine(coroutine);
         Assert.IsFalse(called, "协程不应立即执行完成");
         yield return new WaitForSeconds(0.1f);
 
@@ -135,26 +135,26 @@ public class TestXLoom : MonoBehaviour
         Assert.IsTrue(called, "协程应在等待时间后执行完成");
     }
 
-    private IEnumerator TestCoroutine(Action action)
-    {
-        yield return new WaitForSeconds(0.1f);
-        action.Invoke();
-    }
-
     [UnityTest]
-    public IEnumerator StopCR()
+    public IEnumerator StopCoroutine()
     {
         // Arrange
         var called = false;
         IEnumerator coroutine = TestCoroutine(() => called = true);
-        Coroutine cr = XLoom.StartCR(coroutine);
+        Coroutine cr = XLoom.StartCoroutine(coroutine);
 
         // Act
-        XLoom.StopCR(cr);
+        XLoom.StopCoroutine(cr);
         yield return new WaitForSeconds(0.1f);
 
         // Assert
         Assert.IsFalse(called, "已停止的协程不应执行回调");
+    }
+
+    private IEnumerator TestCoroutine(Action action)
+    {
+        yield return new WaitForSeconds(0.1f);
+        action.Invoke();
     }
 }
 #endif

@@ -26,16 +26,16 @@ IEnumerator YourCoroutine()
 }
 
 // 启动协程并获取句柄
-Coroutine cr = XLoom.StartCR(YourCoroutine());
+var coroutine = XLoom.StartCoroutine(YourCoroutine());
 ```
 
 #### 1.2 停止协程
 ```csharp
 // 使用协程句柄停止
-XLoom.StopCR(cr);
+XLoom.StopCoroutine(coroutine);
 
 // 或使用协程迭代器停止
-XLoom.StopCR(YourCoroutine());
+XLoom.StopCoroutine(YourCoroutine());
 ```
 
 ### 2. 定时器管理
@@ -79,7 +79,7 @@ await XLoom.RunInMain(() =>
 #### 3.2 主线程检查
 ```csharp
 // 检查当前是否在主线程中执行
-bool isMainThread = XLoom.IsInMain();
+var isMainThread = XLoom.IsInMain();
 ```
 
 #### 3.3 下一帧执行
@@ -105,7 +105,7 @@ await XLoom.RunAsync(() =>
 ## 常见问题
 
 ### 1. 协程无法启动
-- 检查是否在主线程中调用 StartCR
+- 检查是否在主线程中调用 StartCoroutine
 - 确保在 Play 模式下运行
 - 验证 XLoom 实例是否正确初始化
 

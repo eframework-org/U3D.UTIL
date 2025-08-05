@@ -5,6 +5,7 @@
 - 修改 XPrefs.IPanel 接口的 OnActivate、OnSave、OnApply 等函数的签名
 - 修改 XEnv、XLog 模块对新版 XPrefs.IPanel 接口的适配
 - 修改 XComp 若干函数的名称：CloneGO -> CloneGameObject、DestroyGO -> DestroyGameObject、SetActiveState -> SetGameObjectActive
+- 修改 XLoom 若干函数的名称：StartCR -> StartCoroutine、StopCR -> StopCoroutine
 
 ## [0.1.7] - 2025-07-07
 ### 变更
@@ -41,7 +42,7 @@
 - 修改 XLog 文件适配器，支持捕捉所有 Debug.Log* 的日志
 
 ### 修复
-- 修复应用退出时 XLoom.StopCR 因脚本执行时序抛出的空异常
+- 修复应用退出时 XLoom.StopCoroutine 因脚本执行时序抛出的空异常
 - 修复潜在的 XPrefs.IAsset/ILocal 环境变量覆盖的安全问题
 - 修复 XLog 文件适配器未读取文件的行数及大小导致的轮转错误问题
 - 修复 XLog 文件适配器潜在的多线程并发写入及文件释放问题
