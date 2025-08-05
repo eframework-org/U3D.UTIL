@@ -67,387 +67,387 @@ namespace EFramework.Utility
     public static class XTime
     {
         /// <summary>
-        /// 表示 1 秒的时间常量，值为 1。
+        /// Second1 表示 1 秒的时间常量，值为 1。
         /// </summary>
         public const int Second1 = 1;
 
         /// <summary>
-        /// 表示 2 秒的时间常量，值为 2。
+        /// Second2 表示 2 秒的时间常量，值为 2。
         /// </summary>
         public const int Second2 = 2;
 
         /// <summary>
-        /// 表示 3 秒的时间常量，值为 3。
+        /// Second3 表示 3 秒的时间常量，值为 3。
         /// </summary>
         public const int Second3 = 3;
 
         /// <summary>
-        /// 表示 4 秒的时间常量，值为 4。
+        /// Second4 表示 4 秒的时间常量，值为 4。
         /// </summary>
         public const int Second4 = 4;
 
         /// <summary>
-        /// 表示 5 秒的时间常量，值为 5。
+        /// Second5 表示 5 秒的时间常量，值为 5。
         /// </summary>
         public const int Second5 = 5;
 
         /// <summary>
-        /// 表示 6 秒的时间常量，值为 6。
+        /// Second6 表示 6 秒的时间常量，值为 6。
         /// </summary>
         public const int Second6 = 6;
 
         /// <summary>
-        /// 表示 7 秒的时间常量，值为 7。
+        /// Second7 表示 7 秒的时间常量，值为 7。
         /// </summary>
         public const int Second7 = 7;
 
         /// <summary>
-        /// 表示 8 秒的时间常量，值为 8。
+        /// Second8 表示 8 秒的时间常量，值为 8。
         /// </summary>
         public const int Second8 = 8;
 
         /// <summary>
-        /// 表示 9 秒的时间常量，值为 9。
+        /// Second9 表示 9 秒的时间常量，值为 9。
         /// </summary>
         public const int Second9 = 9;
 
         /// <summary>
-        /// 表示 10 秒的时间常量，值为 10。
+        /// Second10 表示 10 秒的时间常量，值为 10。
         /// </summary>
         public const int Second10 = 10;
 
         /// <summary>
-        /// 表示 15 秒的时间常量，值为 15。
+        /// Second15 表示 15 秒的时间常量，值为 15。
         /// </summary>
         public const int Second15 = 15;
 
         /// <summary>
-        /// 表示 20 秒的时间常量，值为 20。
+        /// Second20 表示 20 秒的时间常量，值为 20。
         /// </summary>
         public const int Second20 = 20;
 
         /// <summary>
-        /// 表示 25 秒的时间常量，值为 25。
+        /// Second25 表示 25 秒的时间常量，值为 25。
         /// </summary>
         public const int Second25 = 25;
 
         /// <summary>
-        /// 表示 30 秒的时间常量，值为 30。
+        /// Second30 表示 30 秒的时间常量，值为 30。
         /// </summary>
         public const int Second30 = 30;
 
         /// <summary>
-        /// 表示 35 秒的时间常量，值为 35。
+        /// Second35 表示 35 秒的时间常量，值为 35。
         /// </summary>
         public const int Second35 = 35;
 
         /// <summary>
-        /// 表示 40 秒的时间常量，值为 40。
+        /// Second40 表示 40 秒的时间常量，值为 40。
         /// </summary>
         public const int Second40 = 40;
 
         /// <summary>
-        /// 表示 45 秒的时间常量，值为 45。
+        /// Second45 表示 45 秒的时间常量，值为 45。
         /// </summary>
         public const int Second45 = 45;
 
         /// <summary>
-        /// 表示 50 秒的时间常量，值为 50。
+        /// Second50 表示 50 秒的时间常量，值为 50。
         /// </summary>
         public const int Second50 = 50;
 
         /// <summary>
-        /// 表示 55 秒的时间常量，值为 55。
+        /// Second55 表示 55 秒的时间常量，值为 55。
         /// </summary>
         public const int Second55 = 55;
 
         /// <summary>
-        /// 表示 1 分钟的时间常量，值为 60。
+        /// Minute1 表示 1 分钟的时间常量，值为 60。
         /// </summary>
         public const int Minute1 = 60;
 
         /// <summary>
-        /// 表示 2 分钟的时间常量，值为 120。
+        /// Minute2 表示 2 分钟的时间常量，值为 120。
         /// </summary>
         public const int Minute2 = 120;
 
         /// <summary>
-        /// 表示 3 分钟的时间常量，值为 180。
+        /// Minute3 表示 3 分钟的时间常量，值为 180。
         /// </summary>
         public const int Minute3 = 180;
 
         /// <summary>
-        /// 表示 4 分钟的时间常量，值为 240。
+        /// Minute4 表示 4 分钟的时间常量，值为 240。
         /// </summary>
         public const int Minute4 = 240;
 
         /// <summary>
-        /// 表示 5 分钟的时间常量，值为 300。
+        /// Minute5 表示 5 分钟的时间常量，值为 300。
         /// </summary>
         public const int Minute5 = 300;
 
         /// <summary>
-        /// 表示 6 分钟的时间常量，值为 360。
+        /// Minute6 表示 6 分钟的时间常量，值为 360。
         /// </summary>
         public const int Minute6 = 360;
 
         /// <summary>
-        /// 表示 7 分钟的时间常量，值为 420。
+        /// Minute7 表示 7 分钟的时间常量，值为 420。
         /// </summary>
         public const int Minute7 = 420;
 
         /// <summary>
-        /// 表示 8 分钟的时间常量，值为 480。
+        /// Minute8 表示 8 分钟的时间常量，值为 480。
         /// </summary>
         public const int Minute8 = 480;
 
         /// <summary>
-        /// 表示 9 分钟的时间常量，值为 540。
+        /// Minute9 表示 9 分钟的时间常量，值为 540。
         /// </summary>
         public const int Minute9 = 540;
 
         /// <summary>
-        /// 表示 10 分钟的时间常量，值为 600。
+        /// Minute10 表示 10 分钟的时间常量，值为 600。
         /// </summary>
         public const int Minute10 = 600;
 
         /// <summary>
-        /// 表示 12 分钟的时间常量，值为 720。
+        /// Minute12 表示 12 分钟的时间常量，值为 720。
         /// </summary>
         public const int Minute12 = 720;
 
         /// <summary>
-        /// 表示 15 分钟的时间常量，值为 900。
+        /// Minute15 表示 15 分钟的时间常量，值为 900。
         /// </summary>
         public const int Minute15 = 900;
 
         /// <summary>
-        /// 表示 20 分钟的时间常量，值为 1200。
+        /// Minute20 表示 20 分钟的时间常量，值为 1200。
         /// </summary>
         public const int Minute20 = 1200;
 
         /// <summary>
-        /// 表示 25 分钟的时间常量，值为 1500。
+        /// Minute25 表示 25 分钟的时间常量，值为 1500。
         /// </summary>
         public const int Minute25 = 1500;
 
         /// <summary>
-        /// 表示 30 分钟的时间常量，值为 1800。
+        /// Minute30 表示 30 分钟的时间常量，值为 1800。
         /// </summary>
         public const int Minute30 = 1800;
 
         /// <summary>
-        /// 表示 35 分钟的时间常量，值为 2100。
+        /// Minute35 表示 35 分钟的时间常量，值为 2100。
         /// </summary>
         public const int Minute35 = 2100;
 
         /// <summary>
-        /// 表示 40 分钟的时间常量，值为 2400。
+        /// Minute40 表示 40 分钟的时间常量，值为 2400。
         /// </summary>
         public const int Minute40 = 2400;
 
         /// <summary>
-        /// 表示 45 分钟的时间常量，值为 2700。
+        /// Minute45 表示 45 分钟的时间常量，值为 2700。
         /// </summary>
         public const int Minute45 = 2700;
 
         /// <summary>
-        /// 表示 50 分钟的时间常量，值为 3000。
+        /// Minute50 表示 50 分钟的时间常量，值为 3000。
         /// </summary>
         public const int Minute50 = 3000;
 
         /// <summary>
-        /// 表示 55 分钟的时间常量，值为 3300。
+        /// Minute55 表示 55 分钟的时间常量，值为 3300。
         /// </summary>
         public const int Minute55 = 3300;
 
         /// <summary>
-        /// 表示 1 小时的时间常量，值为 3600。
+        /// Hour1 表示 1 小时的时间常量，值为 3600。
         /// </summary>
         public const int Hour1 = 3600;
 
         /// <summary>
-        /// 表示 2 小时的时间常量，值为 7200。
+        /// Hour2 表示 2 小时的时间常量，值为 7200。
         /// </summary>
         public const int Hour2 = 7200;
 
         /// <summary>
-        /// 表示 3 小时的时间常量，值为 10800。
+        /// Hour3 表示 3 小时的时间常量，值为 10800。
         /// </summary>
         public const int Hour3 = 10800;
 
         /// <summary>
-        /// 表示 4 小时的时间常量，值为 14400。
+        /// Hour4 表示 4 小时的时间常量，值为 14400。
         /// </summary>
         public const int Hour4 = 14400;
 
         /// <summary>
-        /// 表示 5 小时的时间常量，值为 18000。
+        /// Hour5 表示 5 小时的时间常量，值为 18000。
         /// </summary>
         public const int Hour5 = 18000;
 
         /// <summary>
-        /// 表示 6 小时的时间常量，值为 21600。
+        /// Hour6 表示 6 小时的时间常量，值为 21600。
         /// </summary>
         public const int Hour6 = 21600;
 
         /// <summary>
-        /// 表示 7 小时的时间常量，值为 25200。
+        /// Hour7 表示 7 小时的时间常量，值为 25200。
         /// </summary>
         public const int Hour7 = 25200;
 
         /// <summary>
-        /// 表示 8 小时的时间常量，值为 28800。
+        /// Hour8 表示 8 小时的时间常量，值为 28800。
         /// </summary>
         public const int Hour8 = 28800;
 
         /// <summary>
-        /// 表示 9 小时的时间常量，值为 32400。
+        /// Hour9 表示 9 小时的时间常量，值为 32400。
         /// </summary>
         public const int Hour9 = 32400;
 
         /// <summary>
-        /// 表示 10 小时的时间常量，值为 36000。
+        /// Hour10 表示 10 小时的时间常量，值为 36000。
         /// </summary>
         public const int Hour10 = 36000;
 
         /// <summary>
-        /// 表示 11 小时的时间常量，值为 39600。
+        /// Hour11 表示 11 小时的时间常量，值为 39600。
         /// </summary>
         public const int Hour11 = 39600;
 
         /// <summary>
-        /// 表示 12 小时的时间常量，值为 43200。
+        /// Hour12 表示 12 小时的时间常量，值为 43200。
         /// </summary>
         public const int Hour12 = 43200;
 
         /// <summary>
-        /// 表示 13 小时的时间常量，值为 46800。
+        /// Hour13 表示 13 小时的时间常量，值为 46800。
         /// </summary>
         public const int Hour13 = 46800;
 
         /// <summary>
-        /// 表示 14 小时的时间常量，值为 50400。
+        /// Hour14 表示 14 小时的时间常量，值为 50400。
         /// </summary>
         public const int Hour14 = 50400;
 
         /// <summary>
-        /// 表示 15 小时的时间常量，值为 54000。
+        /// Hour15 表示 15 小时的时间常量，值为 54000。
         /// </summary>
         public const int Hour15 = 54000;
 
         /// <summary>
-        /// 表示 16 小时的时间常量，值为 57600。
+        /// Hour16 表示 16 小时的时间常量，值为 57600。
         /// </summary>
         public const int Hour16 = 57600;
 
         /// <summary>
-        /// 表示 17 小时的时间常量，值为 61200。
+        /// Hour17 表示 17 小时的时间常量，值为 61200。
         /// </summary>
         public const int Hour17 = 61200;
 
         /// <summary>
-        /// 表示 18 小时的时间常量，值为 64800。
+        /// Hour18 表示 18 小时的时间常量，值为 64800。
         /// </summary>
         public const int Hour18 = 64800;
 
         /// <summary>
-        /// 表示 19 小时的时间常量，值为 68400。
+        /// Hour19 表示 19 小时的时间常量，值为 68400。
         /// </summary>
         public const int Hour19 = 68400;
 
         /// <summary>
-        /// 表示 20 小时的时间常量，值为 72000。
+        /// Hour20 表示 20 小时的时间常量，值为 72000。
         /// </summary>
         public const int Hour20 = 72000;
 
         /// <summary>
-        /// 表示 21 小时的时间常量，值为 75600。
+        /// Hour21 表示 21 小时的时间常量，值为 75600。
         /// </summary>
         public const int Hour21 = 75600;
 
         /// <summary>
-        /// 表示 22 小时的时间常量，值为 79200。
+        /// Hour22 表示 22 小时的时间常量，值为 79200。
         /// </summary>
         public const int Hour22 = 79200;
 
         /// <summary>
-        /// 表示 23 小时的时间常量，值为 82800。
+        /// Hour23 表示 23 小时的时间常量，值为 82800。
         /// </summary>
         public const int Hour23 = 82800;
 
         /// <summary>
-        /// 表示 1 天的时间常量，值为 86400。
+        /// Day1 表示 1 天的时间常量，值为 86400。
         /// </summary>
         public const int Day1 = 86400;
 
         /// <summary>
-        /// 表示 2 天的时间常量，值为 172800。
+        /// Day2 表示 2 天的时间常量，值为 172800。
         /// </summary>
         public const int Day2 = 172800;
 
         /// <summary>
-        /// 表示 3 天的时间常量，值为 259200。
+        /// Day3 表示 3 天的时间常量，值为 259200。
         /// </summary>
         public const int Day3 = 259200;
 
         /// <summary>
-        /// 表示 4 天的时间常量，值为 345600。
+        /// Day4 表示 4 天的时间常量，值为 345600。
         /// </summary>
         public const int Day4 = 345600;
 
         /// <summary>
-        /// 表示 5 天的时间常量，值为 432000。
+        /// Day5 表示 5 天的时间常量，值为 432000。
         /// </summary>
         public const int Day5 = 432000;
 
         /// <summary>
-        /// 表示 6 天的时间常量，值为 518400。
+        /// Day6 表示 6 天的时间常量，值为 518400。
         /// </summary>
         public const int Day6 = 518400;
 
         /// <summary>
-        /// 表示 7 天的时间常量，值为 604800。
+        /// Day7 表示 7 天的时间常量，值为 604800。
         /// </summary>
         public const int Day7 = 604800;
 
         /// <summary>
-        /// 表示 8 天的时间常量，值为 691200。
+        /// Day8 表示 8 天的时间常量，值为 691200。
         /// </summary>
         public const int Day8 = 691200;
 
         /// <summary>
-        /// 表示 9 天的时间常量，值为 777600。
+        /// Day9 表示 9 天的时间常量，值为 777600。
         /// </summary>
         public const int Day9 = 777600;
 
         /// <summary>
-        /// 表示 10 天的时间常量，值为 864000。
+        /// Day10 表示 10 天的时间常量，值为 864000。
         /// </summary>
         public const int Day10 = 864000;
 
         /// <summary>
-        /// 表示 15 天的时间常量，值为 1296000。
+        /// Day15 表示 15 天的时间常量，值为 1296000。
         /// </summary>
         public const int Day15 = 1296000;
 
         /// <summary>
-        /// 表示 20 天的时间常量，值为 1728000。
+        /// Day20 表示 20 天的时间常量，值为 1728000。
         /// </summary>
         public const int Day20 = 1728000;
 
         /// <summary>
-        /// 表示 30 天的时间常量，值为 2592000。
+        /// Day30 表示 30 天的时间常量，值为 2592000。
         /// </summary>
         public const int Day30 = 2592000;
 
         /// <summary>
-        /// 初始时间，1970-01-01，已根据本地时区进行调整。
+        /// Initial 表示初始时间，1970-01-01，已根据本地时区进行调整。
         /// </summary>
         public static DateTime Initial = new DateTime(1970, 1, 1) + TimeZoneInfo.Local.BaseUtcOffset;
 
         /// <summary>
-        /// 获取当前时间的秒级时间戳。
+        /// GetTimestamp 获取当前时间的秒级时间戳。
         /// </summary>
         /// <returns>从1970年1月1日至今的秒数。</returns>
         /// <remarks>
@@ -460,7 +460,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 获取当前时间的毫秒级时间戳。
+        /// GetMillisecond 获取当前时间的毫秒级时间戳。
         /// </summary>
         /// <returns>从1970年1月1日至今的毫秒数。</returns>
         /// <remarks>
@@ -473,7 +473,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 获取当前系统时间。
+        /// NowTime 获取当前系统时间。
         /// </summary>
         /// <returns>当前的 DateTime 对象。</returns>
         /// <remarks>
@@ -482,7 +482,7 @@ namespace EFramework.Utility
         public static DateTime NowTime() { return DateTime.Now; }
 
         /// <summary>
-        /// 将秒级时间戳转换为 DateTime 对象。
+        /// ToTime 将秒级时间戳转换为 DateTime 对象。
         /// </summary>
         /// <param name="timestamp">秒级时间戳。</param>
         /// <returns>对应的 DateTime 对象。</returns>
@@ -492,7 +492,7 @@ namespace EFramework.Utility
         public static DateTime ToTime(int timestamp) { return Initial.AddSeconds(timestamp); }
 
         /// <summary>
-        /// 计算距离下一个零点的秒数。
+        /// TimeToZero 计算距离下一个零点的秒数。
         /// </summary>
         /// <param name="timestamp">指定时间戳，默认使用当前时间。</param>
         /// <returns>距离下一个零点的秒数。</returns>
@@ -507,7 +507,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 获取指定时间当天零点的时间戳。
+        /// ZeroTime 获取指定时间当天零点的时间戳。
         /// </summary>
         /// <param name="timestamp">指定时间戳，默认使用当前时间。</param>
         /// <returns>当天零点的秒级时间戳。</returns>
@@ -522,7 +522,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 格式化秒级时间戳为字符串。
+        /// Format 格式化秒级时间戳为字符串。
         /// </summary>
         /// <param name="timestamp">秒级时间戳。</param>
         /// <param name="format">日期时间格式字符串，默认为 "yyyy-MM-dd HH:mm:ss"。</param>
@@ -533,7 +533,7 @@ namespace EFramework.Utility
         public static string Format(int timestamp, string format = "yyyy-MM-dd HH:mm:ss") { return Initial.AddSeconds(timestamp).ToString(format); }
 
         /// <summary>
-        /// 格式化毫秒级时间戳为字符串。
+        /// Format 格式化毫秒级时间戳为字符串。
         /// </summary>
         /// <param name="timestamp">毫秒级时间戳。</param>
         /// <param name="format">日期时间格式字符串，默认为 "yyyy-MM-dd HH:mm:ss.fff"。</param>
@@ -544,7 +544,7 @@ namespace EFramework.Utility
         public static string Format(long timestamp, string format = "yyyy-MM-dd HH:mm:ss.fff") { return Initial.AddMilliseconds(timestamp).ToString(format); }
 
         /// <summary>
-        /// 格式化 DateTime 对象为字符串。
+        /// Format 格式化 DateTime 对象为字符串。
         /// </summary>
         /// <param name="time">DateTime 对象。</param>
         /// <param name="format">日期时间格式字符串，默认为 "yyyy-MM-dd HH:mm:ss.fff"。</param>

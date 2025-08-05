@@ -130,17 +130,17 @@ namespace EFramework.Utility
         public partial class Json
         {
             /// <summary>
-            /// JSON 编码器接口，实现此接口的类可以自定义 JSON 序列化逻辑。
+            /// IEncoder 是 JSON 的编码器接口，实现此接口的类可以自定义 JSON 序列化逻辑。
             /// </summary>
             public interface IEncoder { JSONNode Encode(); }
 
             /// <summary>
-            /// JSON 解码器接口，实现此接口的类可以自定义 JSON 反序列化逻辑。
+            /// IDecoder 是 JSON 的解码器接口，实现此接口的类可以自定义 JSON 反序列化逻辑。
             /// </summary>
             public interface IDecoder { void Decode(JSONNode json); }
 
             /// <summary>
-            /// 排除特性，用于标记不需要序列化的字段或属性。
+            /// ExcludeAttribute 是排除特性，用于标记不需要序列化的字段或属性。
             /// </summary>
             /// <remarks>
             /// 可以指定具体要排除的字段名，如果不指定则排除被标记的整个成员。
@@ -149,26 +149,26 @@ namespace EFramework.Utility
             public class ExcludeAttribute : Attribute
             {
                 /// <summary>
-                /// 要排除的字段名
+                /// Field 是要排除的字段名。
                 /// </summary>
                 public string Field;
 
                 /// <summary>
-                /// 初始化排除特性
+                /// 构造一个排除特性 ExcludeAttribute。
                 /// </summary>
                 /// <param name="field">要排除的字段名，为空则排除整个成员</param>
                 public ExcludeAttribute(string field = "") { Field = field; }
             }
 
             /// <summary>
-            /// 包含特性，用于标记需要序列化的私有字段或属性。
+            /// IncludeAttribute 是包含特性，用于标记需要序列化的私有字段或属性。
             /// </summary>
             [AttributeUsage(AttributeTargets.Class | AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = true)]
             public class IncludeAttribute : Attribute { }
         }
 
         /// <summary>
-        /// 结构体转字节数组（序列化）。
+        /// ToByte 将结构体序列化为字节数组。
         /// </summary>
         /// <remarks>
         /// 使用 Marshal 类将结构体序列化为字节数组，支持所有基础类型字段。
@@ -194,7 +194,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 字节数组转结构体（反序列化）。
+        /// FromByte 将字节数组反序列化为结构体。
         /// </summary>
         /// <remarks>
         /// 使用 Marshal 类将字节数组反序列化为结构体，支持所有基础类型字段。
@@ -220,7 +220,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// Json 转对象。
+        /// FromJson 将 Json 文本反序列化为对象。
         /// </summary>
         /// <remarks>
         /// 支持基础类型、数组、列表、字典和自定义类型的反序列化。
@@ -231,7 +231,7 @@ namespace EFramework.Utility
         public static T FromJson<T>(string json) where T : class { return FromJson(json, typeof(T)) as T; }
 
         /// <summary>
-        /// Json 转对象。
+        /// FromJson 将 Json 节点反序列化为对象。
         /// </summary>
         /// <remarks>
         /// 支持基础类型、数组、列表、字典和自定义类型的反序列化。
@@ -242,7 +242,7 @@ namespace EFramework.Utility
         public static T FromJson<T>(JSONNode node) where T : class { return FromJson(node, typeof(T)) as T; }
 
         /// <summary>
-        /// Json 转对象。
+        /// FromJson 将 Json 文本反序列化为对象。
         /// </summary>
         /// <remarks>
         /// 支持基础类型、数组、列表、字典和自定义类型的反序列化。
@@ -258,7 +258,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// Json 转对象。
+        /// FromJson 将 Json 节点反序列化为对象。
         /// </summary>
         /// <remarks>
         /// 支持基础类型、数组、列表、字典和自定义类型的反序列化。
@@ -362,7 +362,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// Json 转对象。
+        /// FromJson 将 Json 文本反序列化为对象。
         /// </summary>
         /// <remarks>
         /// 将 JSON 数据解析到现有对象实例中，支持自定义类型的反序列化。
@@ -377,7 +377,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// Json 转对象。
+        /// FromJson 将 Json 节点反序列化为对象。
         /// </summary>
         /// <remarks>
         /// 将 JSON 节点数据解析到现有对象实例中，支持自定义类型的反序列化。
@@ -419,7 +419,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 对象转 Json。
+        /// ToJson 将对象序列化为 Json 文本。
         /// </summary>
         /// <remarks>
         /// 支持基础类型、数组、列表、字典和自定义类型的序列化。
@@ -436,7 +436,7 @@ namespace EFramework.Utility
         }
 
         /// <summary>
-        /// 对象转 Json。
+        /// ToJson 将对象序列化为 Json 节点。
         /// </summary>
         /// <remarks>
         /// 支持基础类型、数组、列表、字典和自定义类型的序列化。
